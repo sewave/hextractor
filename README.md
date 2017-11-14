@@ -1,7 +1,7 @@
 # hextractor
-Tool with different modes to help translate games using table files.  
-Herramienta con diferentes modos para ayudar a traducir juegos utilizando tablas.  
-Type -? for help. / Escribe -? para ayuda  
+Tool with different modes to help translate games using table files and fixed string length.  
+Herramienta con diferentes modos para ayudar a traducir juegos utilizando tablas y cadenas de longitud fija.  
+#### Type -? for help. / Escribe -? para ayuda  
 #### EXTRACT ASCII FILE FROM HEX / EXTRAER ARCHIVO ASCII DE HEXADECIMAL  
 -a tableFile file scriptAsciiFile offsetsList (START-END-STRING_END_CHAR(1+))  
 #### INSERT ASCII AS HEX / INSERTAR ASCII COMO HEX  
