@@ -3,16 +3,16 @@ Tool with different modes to help translate games using table files and fixed st
 Herramienta con diferentes modos para ayudar a traducir juegos utilizando tablas y cadenas de longitud fija.  
 #### Type -? for help. / Escribe -? para ayuda  
 #### EXTRACT ASCII FILE FROM HEX / EXTRAER ARCHIVO ASCII DE HEXADECIMAL  
--a tableFile file scriptAsciiFile offsetsList (START-END-STRING_END_CHAR(1+))  
+-a tableFile file scriptAsciiFile offsetsList or file (START-END-STRING_END_CHAR(1+))  
 #### INSERT ASCII AS HEX / INSERTAR ASCII COMO HEX  
 -h scriptAsciiFile tableFile targetFile  
 #### INSERT DIRECT HEX VALUES / INSERTAR HEXADECIMAL DIRECTO  
 -ih scriptHexFile targetFile  
 #### EXTRACT DIRECT HEX VALUES / EXTRAER HEXADECIMAL  
 -eh srcFile destFile ((INIT-END,)|(INIT:LENGTH,))+  
-#### INTERLEAVE FILES / INTERCALAR ARCHIVOS  
--i evenLinesFile oddLinesFile FIX MEGADRIVE CHECKSUM / REPARAR CHECKSUM MEGADRIVE  
--fcm rom FIX GAME BOY CHECKSUM / REPARAR CHECKSUM GAME BOY  
+#### FIX MEGADRIVE CHECKSUM / REPARAR CHECKSUM MEGADRIVE  
+-fcm rom 
+#### FIX GAME BOY CHECKSUM / REPARAR CHECKSUM GAME BOY  
 -fcg rom  
 #### FIX SNES CHECKSUM / REPARAR CHECKSUM SNES  
 -fcs rom  
