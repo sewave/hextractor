@@ -223,7 +223,7 @@ public class FileUtils {
 	}
 
 	/**
-	 *
+	 *Extracts the ascii from secondFile using table firstFile to thirdFile.
 	 * @param firstFile
 	 * @param secondFile
 	 * @param thirdFile
