@@ -336,7 +336,7 @@ public class HexViewer extends JFrame implements ActionListener {
 				offset -= OFFSET_BLOCK;
 				break;
 			case KeyEvent.VK_END:
-				if((keyEvent.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK ) != 0) {
+				if((keyEvent.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK ) != 0) {
 					offset = (fileBytes.length - VIEW_SIZE);
 				}
 				else {
@@ -347,7 +347,7 @@ public class HexViewer extends JFrame implements ActionListener {
 				}
 				break;
 			case KeyEvent.VK_HOME:
-				if((keyEvent.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) != 0) {
+				if((keyEvent.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
 					offset = 0;
 				}
 				else {
