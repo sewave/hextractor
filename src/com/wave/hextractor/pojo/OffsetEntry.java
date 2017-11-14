@@ -1,40 +1,104 @@
-package com.wave.hextractor;
+package com.wave.hextractor.pojo;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.wave.hextractor.util.Constants;
+import com.wave.hextractor.util.Utils;
+
+/**
+ * Offset pair entry.
+ * @author slcantero
+ */
 public class OffsetEntry implements Comparable<OffsetEntry> {
+
+	/** The start. */
 	public int start;
+
+	/**
+	 * Gets the start.
+	 *
+	 * @return the start
+	 */
 	public int getStart() {
 		return start;
 	}
+
+	/**
+	 * Sets the start.
+	 *
+	 * @param start the new start
+	 */
 	public void setStart(int start) {
 		this.start = start;
 	}
+
+	/**
+	 * Gets the end.
+	 *
+	 * @return the end
+	 */
 	public int getEnd() {
 		return end;
 	}
+
+	/**
+	 * Sets the end.
+	 *
+	 * @param end the new end
+	 */
 	public void setEnd(int end) {
 		this.end = end;
 	}
+
+	/**
+	 * Gets the end chars.
+	 *
+	 * @return the end chars
+	 */
 	public List<String> getEndChars() {
 		return endChars;
 	}
+
+	/**
+	 * Sets the end chars.
+	 *
+	 * @param endChars the new end chars
+	 */
 	public void setEndChars(List<String> endChars) {
 		this.endChars = endChars;
 	}
 
+	/** The end. */
 	public int end;
+
+	/** The end chars. */
 	public List<String> endChars = new ArrayList<String>();
+
+	/**
+	 * Instantiates a new offset entry.
+	 */
 	public OffsetEntry() {
 	}
 
+	/**
+	 * Instantiates a new offset entry.
+	 *
+	 * @param start the start
+	 * @param end the end
+	 * @param endChars the end chars
+	 */
 	public OffsetEntry(int start, int end, List<String> endChars) {
 		this.start = start;
 		this.end = end;
 		this.endChars = endChars;
 	}
 
+	/**
+	 * Instantiates a new offset entry.
+	 *
+	 * @param asciiString the ascii string
+	 */
 	public OffsetEntry(String asciiString) {
 		String[] values = (asciiString.substring(1)).split(String.valueOf(Constants.OFFSET_CHAR_SEPARATOR));
 		start = Integer.parseInt(values[0], Constants.HEX_RADIX);
@@ -47,10 +111,19 @@ public class OffsetEntry implements Comparable<OffsetEntry> {
 			}
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return String.valueOf(Constants.ADDR_CHAR) + toEntryString();
 	}
 
+	/**
+	 * To entry string.
+	 *
+	 * @return the string
+	 */
 	public String toEntryString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(Utils.fillLeft(Integer.toHexString(start), Constants.HEX_ADDR_SIZE).toUpperCase())
@@ -63,8 +136,9 @@ public class OffsetEntry implements Comparable<OffsetEntry> {
 	}
 
 	/**
-	 * Comment in style: START-END:BYTES
-	 * @return
+	 * Comment in style: START-END:BYTES.
+	 *
+	 * @return the hex comment
 	 */
 	public String getHexComment() {
 		StringBuilder sb = new StringBuilder();
@@ -77,6 +151,12 @@ public class OffsetEntry implements Comparable<OffsetEntry> {
 		return sb.toString();
 	}
 
+	/**
+	 * Gets the hex string.
+	 *
+	 * @param bytes the bytes
+	 * @return the hex string
+	 */
 	public String getHexString(byte[] bytes) {
 		StringBuilder sb = new StringBuilder();
 		for(int i = this.getStart(); i <= this.getEnd(); i++) {
@@ -85,6 +165,13 @@ public class OffsetEntry implements Comparable<OffsetEntry> {
 		return sb.toString();
 	}
 
+	/**
+	 * Split the entry into minMaxLength chunks.
+	 *
+	 * @param minMaxLength the min max length
+	 * @param bytes the bytes
+	 * @return the list
+	 */
 	public List<OffsetEntry> split(int minMaxLength, byte[] bytes) {
 		List<OffsetEntry> res = new ArrayList<OffsetEntry>();
 		int readedBytes = 0;
@@ -104,13 +191,22 @@ public class OffsetEntry implements Comparable<OffsetEntry> {
 		return res;
 	}
 
-	public Object getHexTarget() {
+	/**
+	 * Gets the hex target.
+	 *
+	 * @return the hex target
+	 */
+	public String getHexTarget() {
 		StringBuilder sb = new StringBuilder(Constants.ADDR_STR);
 		sb.append(Utils.intToHexString(start, Constants.HEX_ADDR_SIZE));
 		sb.append(Constants.OFFSET_LENGTH_SEPARATOR);
 		sb.append(Utils.intToHexString(end, Constants.HEX_ADDR_SIZE));
 		return sb.toString();
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(OffsetEntry entry) {
 		int res = 0;
@@ -126,10 +222,10 @@ public class OffsetEntry implements Comparable<OffsetEntry> {
 	}
 
 	/**
-	 * El bloque insertado no puede solaparse con otros, de manera que si estan
-	 * totalmente dentro, se los come y si están una parte dentro y otra fuera
-	 * se expande hacia los limites de esa entrada.
-	 * @param offEntries
+	 * The inserted block can't touch others, so if they are totally inside</br>
+	 * it eats them and if they are mid inside mid outside it expands.
+	 *
+	 * @param offEntries the off entries
 	 */
 	public void mergeInto(List<OffsetEntry> offEntries) {
 		List<OffsetEntry> result = new ArrayList<OffsetEntry>();

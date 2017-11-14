@@ -1,4 +1,4 @@
-package com.wave.hextractor;
+package com.wave.hextractor.object;
 
 import java.awt.datatransfer.DataFlavor;
 import java.io.BufferedReader;

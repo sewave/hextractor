@@ -1,4 +1,4 @@
-package com.wave.hextractor;
+package com.wave.hextractor.object;
 
 import java.awt.Adjustable;
 import java.awt.Color;
@@ -26,7 +26,6 @@ import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -70,218 +69,499 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
+import com.wave.hextractor.pojo.OffsetEntry;
+import com.wave.hextractor.pojo.TableSearchResult;
+import com.wave.hextractor.util.Constants;
+import com.wave.hextractor.util.FileUtils;
+import com.wave.hextractor.util.ProjectUtils;
+import com.wave.hextractor.util.Utils;
+
 /**
  * Gui for the hextractor tools.
- * @author wave
- *
+ * @author slcantero
  */
+//TODO: refactor this
 public class HexViewer extends JFrame implements ActionListener {
 
-	/**
-	 *
-	 */
+	/**  serialVersion UID. */
 	private static final long serialVersionUID = -4438721009010549343L;
 
+	/** The Constant DEFAULT_SPLIT_VALUE. */
 	//Various constants
 	private static final int DEFAULT_SPLIT_VALUE = 1024;
+
+	/** The Constant NEW_PROJECT_NAME_MIN_LENGTH. */
 	private static final int NEW_PROJECT_NAME_MIN_LENGTH = 4;
+
+	/** The Constant NEW_PROJECT_GRID_ROWS. */
 	private static final int NEW_PROJECT_GRID_ROWS = 4;
+
+	/** The Constant NEW_PROJECT_GRID_COLS. */
 	private static final int NEW_PROJECT_GRID_COLS = 3;
+
+	/** The Constant NEW_PROJECT_GRID_HGAP. */
 	private static final int NEW_PROJECT_GRID_HGAP = 10;
+
+	/** The Constant NEW_PROJECT_GRID_VGAP. */
 	private static final int NEW_PROJECT_GRID_VGAP = 10;
+
+	/** The Constant OFFSET_UNIT. */
 	private static final int OFFSET_UNIT = 32;
+
+	/** The Constant OFFSET_BLOCK. */
 	private static final int OFFSET_BLOCK = OFFSET_UNIT * OFFSET_UNIT;
+
+	/** The Constant VIEW_SIZE. */
 	private static final int VIEW_SIZE = OFFSET_UNIT * OFFSET_UNIT;
+
+	/** The Constant HEX_STARTS. */
 	private static final String HEX_STARTS = "0x";
+
+	/** The Constant DEC_STARTS. */
 	private static final String DEC_STARTS = "d";
+
+	/** The Constant RB_NAME. */
 	private static final String RB_NAME= "app";
+
+	/** The Constant CURRENT_DIR. */
 	private static final String CURRENT_DIR = ".";
+
+	/** The Constant DEFAULT_TABLE. */
 	private static final String DEFAULT_TABLE = "ascii.tbl";
+
+	/** The Constant DEFAULT_HEXFILE. */
 	private static final String DEFAULT_HEXFILE = "empty.hex";
+
+	/** The Constant EXTENSION_TABLE. */
 	private static final String EXTENSION_TABLE = ".tbl";
+
+	/** The Constant EXTENSION_OFFSET. */
 	private static final String EXTENSION_OFFSET = ".off";
+
+	/** The Constant SEARCH_RES_DIMENSION. */
 	private static final Dimension SEARCH_RES_DIMENSION = new Dimension(600, 200);
+
+	/** The Constant SEARCHRES_FONT. */
 	private static final String SEARCHRES_FONT = "Courier New";
+
+	/** The Constant SEARCHRES_FONT_SIZE. */
 	private static final int SEARCHRES_FONT_SIZE =  18;
+
+	/** The Constant HEX_VALUE_SIZE. */
 	private static final int HEX_VALUE_SIZE =  3;
+
+	/** The Constant REGEXP_OFFSET_ENTRIES. */
 	private static final String REGEXP_OFFSET_ENTRIES = "[0-9A-Fa-f]{2}(-[0-9A-Fa-f]{2})*";
 
-	private static final List<String> EXTENSIONS_MEGADRIVE = Arrays.asList(new String[]{"smd", "gen", "bin", "md", "32x"});
-	private static final List<String> EXTENSIONS_SNES = Arrays.asList(new String[]{"sfc", "smc"});
-	private static final List<String> EXTENSIONS_GB = Arrays.asList(new String[]{"gb", "gbc"});
-	private static final List<String> EXTENSIONS_TAP = Arrays.asList(new String[]{"tap"});
-	private static final List<String> EXTENSIONS_TZX_CDT = Arrays.asList(new String[]{"tzx", "cdt"});
-
-	private static final String ECHO_OFF = "@echo off";
-	private static final String PAUSE = "pause";
-	private static final String PROG_CALL = "java -jar Hextractor.jar ";
-	private static final String EXCUTEHEXVIEWER_FILE = "0.hexviewer.bat";
-	private static final String SEARCHALL_FILE = "1.searchAll.bat";
-	private static final String CLEANEXTRACTED_FILE = "2.cleanAutoExtract.bat";
-	private static final String EXTRACTHEX_FILE = "3.extractHex.bat";
-	private static final String ORIGINALSCRIPT_FILE = "4.originalScript.bat";
-	private static final String CLEAN_FILE = "5.clean.bat";
-	private static final String INSERT_FILE = "6.insert.bat";
-	private static final String CREATEPATCH_FILE = "7.createPatch.bat";
-	private static final String HEX_EXTENSION = ".hex";
-	private static final String TR_FILENAME_PREFIX = "TR_";
-	private static final String YEAR = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
-	private static final String SCRIPTNAME_VAR = "%SCRIPTNAME%";
-	private static final String TFILENAMENAME_VAR = "%T_FILENAME%";
-	private static final String SFILENAMENAME_VAR = "%S_FILENAME%";
-
-	//Create project
-	private static final String FILE_TYPE_OTHER =  "0";
-	private static final String FILE_TYPE_MEGADRIVE =  "1";
-	private static final String FILE_TYPE_NGB =  "2";
-	private static final String FILE_TYPE_SNES =  "3";
-	private static final String FILE_TYPE_ZXTAP =  "4";
-	private static final String FILE_TYPE_TZX =  "5";
-
-	private static final String FILE_HEXTRACTOR = "Hextractor.jar";
-	private static final String FILE_README = "_readme.txt";
-
+	/** The Constant KEY_FILEMENU. */
 	//Resource bundle keys
 	private static final String KEY_FILEMENU = "fileMenu";
+
+	/** The Constant KEY_YES. */
 	private static final String KEY_YES ="yes";
+
+	/** The Constant KEY_NO. */
 	private static final String KEY_NO ="no";
+
+	/** The Constant KEY_CONFIRM_EXIT. */
 	private static final String KEY_CONFIRM_EXIT = "confirmExit";
+
+	/** The Constant KEY_EXIT_MENUITEM. */
 	private static final String KEY_EXIT_MENUITEM = "exitMenuItem";
+
+	/** The Constant KEY_TABLEMENU. */
 	private static final String KEY_TABLEMENU = "tableMenu";
+
+	/** The Constant KEY_OFFSETMENU. */
 	private static final String KEY_OFFSETMENU = "offsetMenu";
+
+	/** The Constant KEY_NEXT_RANGE_MENUITEM. */
 	private static final String KEY_NEXT_RANGE_MENUITEM	 = "nextRangeMenuItem";
+
+	/** The Constant KEY_PREV_TANGE_MENUITEM. */
 	private static final String KEY_PREV_TANGE_MENUITEM	 = "prevRangeMenuItem";
+
+	/** The Constant KEY_OPEN_TABLE_MENUITEM. */
 	private static final String KEY_OPEN_TABLE_MENUITEM = "openTableMenuItem";
+
+	/** The Constant KEY_SAVE_TABLE_MENUITEM. */
 	private static final String KEY_SAVE_TABLE_MENUITEM = "saveTableMenuItem";
+
+	/** The Constant KEY_OPEN_OFFSETS_MENUITEM. */
 	private static final String KEY_OPEN_OFFSETS_MENUITEM = "openOffsetsMenuItem";
+
+	/** The Constant KEY_SAVE_OFFSETS_MENUITEM. */
 	private static final String KEY_SAVE_OFFSETS_MENUITEM = "saveOffsetsMenuItem";
+
+	/** The Constant KEY_HELP_MENU. */
 	private static final String KEY_HELP_MENU = "helpMenu";
+
+	/** The Constant KEY_ABOUT_MENUITEM. */
 	private static final String KEY_ABOUT_MENUITEM = "aboutMenuItem";
+
+	/** The Constant KEY_HELP_MENUITEM. */
 	private static final String KEY_HELP_MENUITEM = "helpMenuItem";
+
+	/** The Constant KEY_TOOLS_MENU. */
 	private static final String KEY_TOOLS_MENU = "toolsMenu";
+
+	/** The Constant KEY_GOTO_MENUITEM. */
 	private static final String KEY_GOTO_MENUITEM = "goToMenuItem";
+
+	/** The Constant KEY_SEARCH_RELATIVE_MENUITEM. */
 	private static final String KEY_SEARCH_RELATIVE_MENUITEM = "searchRelativeMenuItem";
+
+	/** The Constant KEY_OFFSET_INPUT. */
 	private static final String KEY_OFFSET_INPUT = "offsetInput";
+
+	/** The Constant KEY_SEARCH_RELATIVE. */
 	private static final String KEY_SEARCH_RELATIVE = "searchRelative";
+
+	/** The Constant KEY_SEARCH_RELATIVE_MIN_LENGTH. */
 	private static final String KEY_SEARCH_RELATIVE_MIN_LENGTH = "searchRelativeMinLength";
+
+	/** The Constant KEY_FIND_MENUITEM. */
 	private static final String KEY_FIND_MENUITEM = "findMenuItem";
+
+	/** The Constant KEY_FIND. */
 	private static final String KEY_FIND = "find";
+
+	/** The Constant KEY_FIND_MIN_LENGTH. */
 	private static final String KEY_FIND_MIN_LENGTH = "findMinLength";
+
+	/** The Constant KEY_TITLE. */
 	private static final String KEY_TITLE= "appTitle";
+
+	/** The Constant KEY_FILTER_TABLE. */
 	private static final String KEY_FILTER_TABLE = "filterTable";
+
+	/** The Constant KEY_FILTER_OFFSET. */
 	private static final String KEY_FILTER_OFFSET = "filterOffset";
+
+	/** The Constant KEY_SAVE_BUTTON. */
 	private static final String KEY_SAVE_BUTTON = "saveButton";
+
+	/** The Constant KEY_OPEN_FILE_MENUITEM. */
 	private static final String KEY_OPEN_FILE_MENUITEM = "openFileMenuItem";
+
+	/** The Constant KEY_NEW_PROJECT_MENUITEM. */
 	private static final String KEY_NEW_PROJECT_MENUITEM = "newProjectMenuItem";
+
+	/** The Constant KEY_SEARCH_RESULT_TITLE. */
 	private static final String KEY_SEARCH_RESULT_TITLE = "searchResultTitle";
+
+	/** The Constant KEY_SEARCH_RESULT_TABLE. */
 	private static final String KEY_SEARCH_RESULT_TABLE = "selectSearchResTable";
+
+	/** The Constant KEY_SEARCH_RESULT_TABLE_TITLE. */
 	private static final String KEY_SEARCH_RESULT_TABLE_TITLE = "selectSearchResTableTitle";
+
+	/** The Constant KEY_OFFSET_SET_START. */
 	private static final String KEY_OFFSET_SET_START = "offsetSetStart";
+
+	/** The Constant KEY_OFFSET_SET_END. */
 	private static final String KEY_OFFSET_SET_END = "offsetSetEnd";
+
+	/** The Constant KEY_OFFSET_DELETE. */
 	private static final String KEY_OFFSET_DELETE = "offsetDelete";
+
+	/** The Constant KEY_OFFSET_SPLIT. */
 	private static final String KEY_OFFSET_SPLIT = "offsetSplit";
+
+	/** The Constant KEY_OFFSET_SPLIT_CANCEL_TITLE. */
 	private static final String KEY_OFFSET_SPLIT_CANCEL_TITLE = "offsetSplitCancelTitle";
+
+	/** The Constant KEY_OFFSET_SPLIT_CANCEL. */
 	private static final String KEY_OFFSET_SPLIT_CANCEL = "offsetSplitCancel";
+
+	/** The Constant KEY_CONFIRM_RANGE_DELETE. */
 	private static final String KEY_CONFIRM_RANGE_DELETE = "confirmRangeDelete";
+
+	/** The Constant KEY_CONFIRM_RANGE_DELETE_TITLE. */
 	private static final String KEY_CONFIRM_RANGE_DELETE_TITLE = "confirmRangeDeleteTitle";
+
+	/** The Constant KEY_ALERT_INVALID_ENDCHARS. */
 	private static final String KEY_ALERT_INVALID_ENDCHARS = "alertInvalidEndchars";
+
+	/** The Constant KEY_ALERT_INVALID_ENDCHARS_TITLE. */
 	private static final String KEY_ALERT_INVALID_ENDCHARS_TITLE = "alertInvalidEndcharsTitle";
+
+	/** The Constant KEY_INPUT_ENDCHARS. */
 	private static final String KEY_INPUT_ENDCHARS = "inputEndchars";
+
+	/** The Constant KEY_HELP_DESC. */
 	private static final String KEY_HELP_DESC = "helpDesc";
+
+	/** The Constant KEY_ABOUT_DESC. */
 	private static final String KEY_ABOUT_DESC = "aboutDesc";
+
+	/** The Constant KEY_OFFSET_LABEL. */
 	private static final String KEY_OFFSET_LABEL = "offsetLabel";
+
+	/** The Constant KEY_NO_RESULTS_DESC. */
 	private static final String KEY_NO_RESULTS_DESC = "noResultsDesc";
+
+	/** The Constant KEY_NO_RESULTS_TITLE. */
 	private static final String KEY_NO_RESULTS_TITLE = "noResultsTitle";
+
+	/** The Constant KEY_CLEAN_OFFSETS. */
 	private static final String KEY_CLEAN_OFFSETS = "clearOffsets";
+
+	/** The Constant KEY_NEW_PRJ_TITLE. */
 	private static final String KEY_NEW_PRJ_TITLE = "newProjectTitle";
+
+	/** The Constant KEY_NEW_PRJ_NAME. */
 	private static final String KEY_NEW_PRJ_NAME = "newProjectName";
+
+	/** The Constant KEY_NEW_PRJ_FILE. */
 	private static final String KEY_NEW_PRJ_FILE = "newProjectFile";
+
+	/** The Constant KEY_NEW_PRJ_FILETYPE. */
 	private static final String KEY_NEW_PRJ_FILETYPE = "newProjectTipoArchivo";
+
+	/** The Constant KEY_NEW_PRJ_SMD. */
 	private static final String KEY_NEW_PRJ_SMD = "newProjectTipoArchivoMegadrive";
+
+	/** The Constant KEY_NEW_PRJ_SNES. */
 	private static final String KEY_NEW_PRJ_SNES = "newProjectTipoArchivoSnes";
+
+	/** The Constant KEY_NEW_PRJ_NGB. */
 	private static final String KEY_NEW_PRJ_NGB = "newProjectTipoArchivoGameboy";
+
+	/** The Constant KEY_NEW_PRJ_SPT. */
 	private static final String KEY_NEW_PRJ_SPT = "newProjectTipoArchivoSpectrumTap";
+
+	/** The Constant KEY_NEW_PRJ_SPZ. */
 	private static final String KEY_NEW_PRJ_SPZ = "newProjectTipoArchivoTZX";
+
+	/** The Constant KEY_NEW_PRJ_OTHER. */
 	private static final String KEY_NEW_PRJ_OTHER= "newProjectTipoArchivoOtros";
+
+	/** The Constant KEY_NEW_PRJ_CREA_BUT. */
 	private static final String KEY_NEW_PRJ_CREA_BUT = "newProjectCreateButton";
+
+	/** The Constant KEY_NEW_PRJ_CLOSE_BUT. */
 	private static final String KEY_NEW_PRJ_CLOSE_BUT = "newProjectClose";
+
+	/** The Constant KEY_NEW_PRJ_GENERATING_MSG. */
 	private static final String KEY_NEW_PRJ_GENERATING_MSG = "newProjectMsgGenerating";
+
+	/** The Constant KEY_NEW_PRJ_ERRORS_MSG. */
 	private static final String KEY_NEW_PRJ_ERRORS_MSG = "newProjectErrors";
+
+	/** The Constant KEY_ERROR. */
 	private static final String KEY_ERROR = "error";
+
+	/** The Constant KEY_ERROR_TITLE. */
 	private static final String KEY_ERROR_TITLE = "errorTitle";
 
+	/** The Constant KEY_CONFIRM_ACTION_TITLE. */
 	private static final String KEY_CONFIRM_ACTION_TITLE = "confirmActionTitle";
+
+	/** The Constant KEY_CONFIRM_ACTION. */
 	private static final String KEY_CONFIRM_ACTION = "confirmAction";
+
+	/** The Constant KEY_CONFIRM_FILE_OVERWRITE_ACTION. */
 	private static final String KEY_CONFIRM_FILE_OVERWRITE_ACTION = "confirmReplaceFileAction";
 
+	/** The other entry. */
 	private SimpleEntry<String, String> otherEntry;
+
+	/** The smd entry. */
 	private SimpleEntry<String, String> smdEntry;
+
+	/** The snes entry. */
 	private SimpleEntry<String, String> snesEntry;
+
+	/** The gb entry. */
 	private SimpleEntry<String, String> gbEntry;
+
+	/** The tap entry. */
 	private SimpleEntry<String, String> tapEntry;
+
+	/** The tzx entry. */
 	private SimpleEntry<String, String> tzxEntry;
 
+	/** The file bytes. */
 	private byte[] fileBytes;
+
+	/** The hex table. */
 	private HexTable hexTable;
+
+	/** The offset. */
 	private int offset = 0;
+
+	/** The hex file. */
 	private File hexFile;
+
+	/** The table file. */
 	private File tableFile;
+
+	/** The offset file. */
 	private File offsetFile;
+
+	/** The off entries. */
 	private List<OffsetEntry> offEntries;
+
+	/** The curr entry. */
 	private OffsetEntry currEntry;
+
+	/** The last selected end chars. */
 	private String lastSelectedEndChars = "FF";
+
+	/** The project file. */
 	private File projectFile;
 
+	/** The offset label. */
 	//GUI members
 	private JLabel offsetLabel;
+
+	/** The offset label value. */
 	private JTextField offsetLabelValue;
+
+	/** The menu bar. */
 	private JMenuBar menuBar;
+
+	/** The file menu. */
 	private JMenu fileMenu;
+
+	/** The table menu. */
 	private JMenu tableMenu;
+
+	/** The offset menu. */
 	private JMenu offsetMenu;
+
+	/** The open table. */
 	private JMenuItem openTable;
+
+	/** The save table. */
 	private JMenuItem saveTable;
+
+	/** The open offsets. */
 	private JMenuItem openOffsets;
+
+	/** The save offsets. */
 	private JMenuItem saveOffsets;
+
+	/** The next offset. */
 	private JMenuItem nextOffset;
+
+	/** The prev offset. */
 	private JMenuItem prevOffset;
+
+	/** The open file. */
 	private JMenuItem openFile;
+
+	/** The new project. */
 	private JMenuItem newProject;
+
+	/** The exit. */
 	private JMenuItem exit;
+
+	/** The help menu. */
 	private JMenu helpMenu;
+
+	/** The about menu item. */
 	private JMenuItem aboutMenuItem;
+
+	/** The help item. */
 	private JMenuItem helpItem;
+
+	/** The tools menu. */
 	private JMenu toolsMenu;
+
+	/** The go to. */
 	private JMenuItem goTo;
+
+	/** The search relative. */
 	private JMenuItem searchRelative;
+
+	/** The clear offsets. */
 	private JMenuItem clearOffsets;
+
+	/** The find. */
 	private JMenuItem find;
+
+	/** The rb. */
 	private ResourceBundle rb;
+
+	/** The hex text area. */
 	private JTextArea hexTextArea;
+
+	/** The ascii text area. */
 	private JTextArea asciiTextArea;
+
+	/** The offsets text area. */
 	private JTextArea offsetsTextArea;
+
+	/** The v list. */
 	private VerticalListener vList;
+
+	/** The vsb. */
 	private JScrollBar vsb;
+
+	/** The p mouse wheel listener. */
 	private PanelMouseWheelListener pMouseWheelListener;
+
+	/** The key listener. */
 	private KeyListener keyListener;
+
+	/** The first row. */
 	private JPanel firstRow;
+
+	/** The second row. */
 	private JPanel secondRow;
+
+	/** The table filter. */
 	private SimpleFilter tableFilter;
+
+	/** The offset file filter. */
 	private SimpleFilter offsetFileFilter;
+
+	/** The results window. */
 	private JFrame resultsWindow;
+
+	/** The search results. */
 	private JList<TableSearchResult> searchResults;
+
+	/** The new project window. */
 	private JFrame newProjectWindow;
 
+	/** The new project window name label. */
 	private JLabel newProjectWindowNameLabel;
+
+	/** The new project window name input. */
 	private JTextField newProjectWindowNameInput;
+
+	/** The new project window file label. */
 	private JLabel newProjectWindowFileLabel;
+
+	/** The new project window file input. */
 	private JTextField newProjectWindowFileInput;
+
+	/** The new project window file type label. */
 	private JLabel newProjectWindowFileTypeLabel;
+
+	/** The new project window file type options. */
 	private JComboBox<Entry<String, String>> newProjectWindowFileTypeOptions;
+
+	/** The new project window search file button. */
 	private JButton newProjectWindowSearchFileButton;
+
+	/** The new project window create button. */
 	private JButton newProjectWindowCreateButton;
+
+	/** The new project window cancel button. */
 	private JButton newProjectWindowCancelButton;
 
+	/**
+	 * Instantiates a new hex viewer.
+	 *
+	 * @param fileBytes the file bytes
+	 * @param fileName the file name
+	 * @param hexTable the hex table
+	 * @param tableName the table name
+	 */
 	public HexViewer(byte[] fileBytes, String fileName, HexTable hexTable, String tableName) {
 		this.hexFile = new File(fileName);
 		this.fileBytes = fileBytes;
@@ -299,6 +579,11 @@ public class HexViewer extends JFrame implements ActionListener {
 		createFrame();
 	}
 
+	/**
+	 * Gets the project name.
+	 *
+	 * @return the project name
+	 */
 	private String getProjectName() {
 		try {
 			return new File(CURRENT_DIR).getCanonicalFile().getName();
@@ -308,7 +593,22 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * The listener interface for receiving panelMouseWheel events.
+	 * The class that is interested in processing a panelMouseWheel
+	 * event implements this interface, and the object created
+	 * with that class is registered with a component using the
+	 * component's <code>addPanelMouseWheelListener<code> method. When
+	 * the panelMouseWheel event occurs, that object's appropriate
+	 * method is invoked.
+	 *
+	 * @see PanelMouseWheelEvent
+	 */
 	class PanelMouseWheelListener implements MouseWheelListener {
+
+		/* (non-Javadoc)
+		 * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+		 */
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			if (e.getWheelRotation() < 0) {
@@ -324,7 +624,22 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * The listener interface for receiving panelKey events.
+	 * The class that is interested in processing a panelKey
+	 * event implements this interface, and the object created
+	 * with that class is registered with a component using the
+	 * component's <code>addPanelKeyListener<code> method. When
+	 * the panelKey event occurs, that object's appropriate
+	 * method is invoked.
+	 *
+	 * @see PanelKeyEvent
+	 */
 	class PanelKeyListener implements KeyListener {
+
+		/* (non-Javadoc)
+		 * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
+		 */
 		@Override
 		public void keyPressed(KeyEvent keyEvent) {
 			//Estas se autorepiten
@@ -369,20 +684,47 @@ public class HexViewer extends JFrame implements ActionListener {
 			}
 			refreshAll();
 		}
+
+		/* (non-Javadoc)
+		 * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
+		 */
 		@Override
 		public void keyReleased(KeyEvent keyEvent) {
 		}
+
+		/* (non-Javadoc)
+		 * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
+		 */
 		@Override
 		public void keyTyped(KeyEvent keyEvent) {
 		}
 	}
 
+	/**
+	 * The listener interface for receiving panelSelection events.
+	 * The class that is interested in processing a panelSelection
+	 * event implements this interface, and the object created
+	 * with that class is registered with a component using the
+	 * component's <code>addPanelSelectionListener<code> method. When
+	 * the panelSelection event occurs, that object's appropriate
+	 * method is invoked.
+	 *
+	 * @see PanelSelectionEvent
+	 */
 	class PanelSelectionListener implements CaretListener {
+
+		/* (non-Javadoc)
+		 * @see javax.swing.event.CaretListener#caretUpdate(javax.swing.event.CaretEvent)
+		 */
 		@Override
 		public void caretUpdate(CaretEvent e) {
 			refreshSelection();
 		}
 	}
+
+	/**
+	 * Refresh selection.
+	 */
 	private void refreshSelection() {
 		HighlightPainter bluePainter = new DefaultHighlighter.DefaultHighlightPainter(Color.BLUE);
 		HighlightPainter lightGrayPainter= new DefaultHighlighter.DefaultHighlightPainter(Color.LIGHT_GRAY);
@@ -427,6 +769,15 @@ public class HexViewer extends JFrame implements ActionListener {
 		//		}
 	}
 
+	/**
+	 * Draw offset entry.
+	 *
+	 * @param entry the entry
+	 * @param highlighter the highlighter
+	 * @param painter the painter
+	 * @param borderPainter the border painter
+	 * @throws BadLocationException the bad location exception
+	 */
 	private void drawOffsetEntry(OffsetEntry entry, Highlighter highlighter,
 			HighlightPainter painter, HighlightPainter borderPainter) throws BadLocationException {
 		if(entry.getStart() <= offset + VIEW_SIZE && entry.getEnd() >= offset) {
@@ -444,24 +795,61 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * The Class SimpleFilter.
+	 */
 	class SimpleFilter extends FileFilter {
+
+		/** The ext. */
 		String ext;
+
+		/** The message. */
 		String message;
+
+		/**
+		 * Instantiates a new simple filter.
+		 *
+		 * @param ext the ext
+		 * @param message the message
+		 */
 		public SimpleFilter(String ext, String message) {
 			this.ext = ext;
 			this.message = message;
 		}
+
+		/* (non-Javadoc)
+		 * @see javax.swing.filechooser.FileFilter#accept(java.io.File)
+		 */
 		@Override
 		public boolean accept(File selectedFile) {
 			return selectedFile.getName().endsWith(ext) || selectedFile.isDirectory();
 		}
+
+		/* (non-Javadoc)
+		 * @see javax.swing.filechooser.FileFilter#getDescription()
+		 */
 		@Override
 		public String getDescription() {
 			return message;
 		}
 	}
 
+	/**
+	 * The listener interface for receiving vertical events.
+	 * The class that is interested in processing a vertical
+	 * event implements this interface, and the object created
+	 * with that class is registered with a component using the
+	 * component's <code>addVerticalListener<code> method. When
+	 * the vertical event occurs, that object's appropriate
+	 * method is invoked.
+	 *
+	 * @see VerticalEvent
+	 */
 	class VerticalListener implements AdjustmentListener {
+
+		/* (non-Javadoc)
+		 * @see java.awt.event.AdjustmentListener#adjustmentValueChanged(java.awt.event.AdjustmentEvent)
+		 */
 		public void adjustmentValueChanged(AdjustmentEvent evt) {
 			Adjustable source = evt.getAdjustable();
 			if (evt.getValueIsAdjusting()) {
@@ -495,14 +883,34 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * The Class PopUpOffsetEntry.
+	 */
 	class PopUpOffsetEntry extends JPopupMenu {
-		/** serialVersionUID */
+
+		/**  serialVersionUID. */
 		private static final long serialVersionUID = 8840279664255620962L;
+
+		/** The start item. */
 		JMenuItem startItem;
+
+		/** The end item. */
 		JMenuItem endItem;
+
+		/** The delete item. */
 		JMenuItem deleteItem;
+
+		/** The split item. */
 		JMenuItem splitItem;
+
+		/** The selected entry. */
 		OffsetEntry selectedEntry;
+
+		/**
+		 * Instantiates a new pop up offset entry.
+		 *
+		 * @param entry the entry
+		 */
 		public PopUpOffsetEntry(OffsetEntry entry){
 			selectedEntry = entry;
 			startItem = new JMenuItem();
@@ -555,6 +963,11 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Delete item action.
+	 *
+	 * @param selectedEntry the selected entry
+	 */
 	private void deleteItemAction(OffsetEntry selectedEntry) {
 		int selectedOption = JOptionPane.showConfirmDialog(null,
 				rb.getString(KEY_CONFIRM_RANGE_DELETE) + selectedEntry.toEntryString(),
@@ -566,6 +979,11 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Split item action.
+	 *
+	 * @param selectedEntry the selected entry
+	 */
 	private void splitItemAction(OffsetEntry selectedEntry) {
 		int minMaxLength = 0;
 		String valor = JOptionPane.showInputDialog(rb.getString(KEY_OFFSET_SPLIT), DEFAULT_SPLIT_VALUE);
@@ -584,6 +1002,11 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * End item action.
+	 *
+	 * @param selectedEntry the selected entry
+	 */
 	private void endItemAction(OffsetEntry selectedEntry) {
 		asciiTextArea.setSelectionEnd(asciiTextArea.getCaretPosition());
 		String result = JOptionPane.showInputDialog(rb.getString(KEY_INPUT_ENDCHARS), lastSelectedEndChars);
@@ -611,6 +1034,11 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Gets the caret entry.
+	 *
+	 * @return the caret entry
+	 */
 	private OffsetEntry getCaretEntry() {
 		//By default our current is in range, is there anybody else?
 		int caretPosition = asciiTextArea.getCaretPosition() + offset;
@@ -624,6 +1052,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		return inRange;
 	}
 
+	/**
+	 * Close app.
+	 */
 	private void closeApp() {
 		String ObjButtons[] = {rb.getString(KEY_YES), rb.getString(KEY_NO)};
 		int PromptResult = JOptionPane.showOptionDialog(null, rb.getString(KEY_CONFIRM_EXIT),
@@ -635,6 +1066,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Creates the frame.
+	 */
 	private void createFrame() {
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
@@ -737,12 +1171,12 @@ public class HexViewer extends JFrame implements ActionListener {
 		newProjectWindowNameInput = new JTextField(30);
 		newProjectWindowFileInput = new JTextField();
 		newProjectWindowFileTypeOptions = new JComboBox<Map.Entry<String, String>>();
-		otherEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_OTHER), FILE_TYPE_OTHER);
-		smdEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_SMD), FILE_TYPE_MEGADRIVE);
-		snesEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_SNES), FILE_TYPE_SNES);
-		gbEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_NGB), FILE_TYPE_NGB);
-		tapEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_SPT), FILE_TYPE_ZXTAP);
-		tzxEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_SPZ), FILE_TYPE_TZX);
+		otherEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_OTHER), Constants.FILE_TYPE_OTHER);
+		smdEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_SMD), Constants.FILE_TYPE_MEGADRIVE);
+		snesEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_SNES), Constants.FILE_TYPE_SNES);
+		gbEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_NGB), Constants.FILE_TYPE_NGB);
+		tapEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_SPT), Constants.FILE_TYPE_ZXTAP);
+		tzxEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KEY_NEW_PRJ_SPZ), Constants.FILE_TYPE_TZX);
 		newProjectWindowFileTypeOptions.addItem(otherEntry);
 		newProjectWindowFileTypeOptions.addItem(smdEntry);
 		newProjectWindowFileTypeOptions.addItem(gbEntry);
@@ -773,7 +1207,7 @@ public class HexViewer extends JFrame implements ActionListener {
 						newProjectWindow.repaint();
 						for(File file : files) {
 							try {
-								createProject(file);
+								ProjectUtils.createProject(file);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -789,7 +1223,7 @@ public class HexViewer extends JFrame implements ActionListener {
 							newProjectWindowFileInput.setText(file.getName());
 							projectFile = file;
 							selectProjectFileType(projectFile);
-							newProjectWindowNameInput.setText(getProjectName(projectFile.getName()));
+							newProjectWindowNameInput.setText(ProjectUtils.getProjectName(projectFile.getName()));
 						}
 					}
 				}
@@ -884,41 +1318,12 @@ public class HexViewer extends JFrame implements ActionListener {
 		refreshAll();
 	}
 
-	private void createProject(File file) throws Exception {
-		createNewProject(getProjectName(file.getName()), file.getName(), getFileType(file), file);
-	}
-
-	private String getFileType(File file) {
-		String res = FILE_TYPE_OTHER;
-		if(file != null) {
-			String extension =  FileUtils.getFileExtension(file);
-			if(EXTENSIONS_MEGADRIVE.contains(extension)) {
-				res = FILE_TYPE_MEGADRIVE;
-			}
-			else {
-				if(EXTENSIONS_SNES.contains(extension)) {
-					res = FILE_TYPE_SNES;
-				}
-				else {
-					if(EXTENSIONS_GB.contains(extension)) {
-						res = FILE_TYPE_NGB;
-					}
-					else {
-						if(EXTENSIONS_TAP.contains(extension)) {
-							res = FILE_TYPE_ZXTAP;
-						}
-						else {
-							if(EXTENSIONS_TZX_CDT.contains(extension)) {
-								res = FILE_TYPE_TZX;
-							}
-						}
-					}
-				}
-			}
-		}
-		return res;
-	}
-
+	/**
+	 * Gets the visible offsets.
+	 *
+	 * @param offset2 the offset 2
+	 * @return the visible offsets
+	 */
 	private String getVisibleOffsets(int offset2) {
 		StringBuffer sb = new StringBuffer((Constants.HEX_ADDR_SIZE + HEX_STARTS.length()) * OFFSET_UNIT);
 		for(int i = 0; i < OFFSET_UNIT; i++) {
@@ -930,10 +1335,16 @@ public class HexViewer extends JFrame implements ActionListener {
 		return sb.toString();
 	}
 
+	/**
+	 * Refresh title.
+	 */
 	private void refreshTitle() {
 		setTitle(rb.getString(KEY_TITLE) + " [" + hexFile +"] - [" + tableFile.getName() + "] - [" + offsetFile.getName() + "]" );
 	}
 
+	/**
+	 * Refresh all.
+	 */
 	private void refreshAll() {
 		Collections.sort(offEntries);
 		if(offset > fileBytes.length - VIEW_SIZE) {
@@ -957,6 +1368,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		offsetsTextArea.repaint();
 	}
 
+	/**
+	 * Creates the menu.
+	 */
 	private void createMenu() {
 		//Create objects
 		menuBar = new JMenuBar();
@@ -1034,6 +1448,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		clearOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK));
 	}
 
+	/**
+	 * Next offset.
+	 */
 	private void nextOffset() {
 		Collections.sort(offEntries);
 		//Nos paramos en el primero cuyo start sea mayor a nuestro offset
@@ -1046,6 +1463,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Prev offset.
+	 */
 	private void prevOffset() {
 		Collections.sort(offEntries, Collections.reverseOrder());
 		for(OffsetEntry entry : offEntries) {
@@ -1057,6 +1477,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Clean offsets.
+	 */
 	private void cleanOffsets() {
 		int selectedOption = JOptionPane.showConfirmDialog(null,
 				rb.getString(KEY_CONFIRM_ACTION),
@@ -1069,6 +1492,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Sets the actions.
+	 */
 	private void setActions() {
 		helpItem.setAction(new AbstractAction(rb.getString(KEY_HELP_MENUITEM)) {
 			/**
@@ -1391,7 +1817,7 @@ public class HexViewer extends JFrame implements ActionListener {
 					newProjectWindowFileInput.setText(file.getName());
 					projectFile = file;
 					selectProjectFileType(projectFile);
-					newProjectWindowNameInput.setText(getProjectName(projectFile.getName()));
+					newProjectWindowNameInput.setText(ProjectUtils.getProjectName(projectFile.getName()));
 				}
 			}
 		});
@@ -1418,7 +1844,7 @@ public class HexViewer extends JFrame implements ActionListener {
 						newProjectWindow.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 						disableProjectWindow();
 						newProjectWindow.repaint();
-						createNewProject(name, fileName, ((Entry<String, String>) newProjectWindowFileTypeOptions.getSelectedItem()).getValue(), projectFile);
+						ProjectUtils.createNewProject(name, fileName, ((Entry<String, String>) newProjectWindowFileTypeOptions.getSelectedItem()).getValue(), projectFile);
 						newProjectWindow.setVisible(false);
 						JOptionPane.showMessageDialog(asciiTextArea.getParent(),
 								rb.getString(KEY_NEW_PRJ_GENERATING_MSG),
@@ -1447,6 +1873,12 @@ public class HexViewer extends JFrame implements ActionListener {
 		});
 	}
 
+	/**
+	 * Confirm selected file.
+	 *
+	 * @param selectedFile the selected file
+	 * @return true, if successful
+	 */
 	protected boolean confirmSelectedFile(File selectedFile) {
 		boolean accepted = true;
 		if (selectedFile != null && selectedFile.exists()) {
@@ -1461,44 +1893,32 @@ public class HexViewer extends JFrame implements ActionListener {
 		return accepted;
 	}
 
-	private String getProjectName(String fileName) {
-		String projectName = fileName;
-		for(String ext : EXTENSIONS_MEGADRIVE) {
-			if(!"32x".equals(ext)) {
-				projectName = projectName.replace("."+ext, "smd");
-			}
-		}
-		for(String ext : EXTENSIONS_SNES) {
-			projectName = projectName.replace("."+ext, "sfc");
-		}
-		projectName = projectName.replaceAll(" ", "");
-		projectName = projectName.replaceAll("(\\(.*\\))", "");
-		projectName = projectName.replaceAll("(\\[.*\\])", "");
-		projectName = projectName.replaceAll("[^A-Za-z0-9]", "");
-		return projectName.toLowerCase();
-	}
-
+	/**
+	 * Select project file type.
+	 *
+	 * @param file the file
+	 */
 	private void selectProjectFileType(File file) {
 		if(file != null) {
 			String extension =  FileUtils.getFileExtension(file);
 			newProjectWindowFileTypeOptions.setSelectedItem(otherEntry);
-			if(EXTENSIONS_MEGADRIVE.contains(extension)) {
+			if(Constants.EXTENSIONS_MEGADRIVE.contains(extension)) {
 				newProjectWindowFileTypeOptions.setSelectedItem(smdEntry);
 			}
 			else {
-				if(EXTENSIONS_SNES.contains(extension)) {
+				if(Constants.EXTENSIONS_SNES.contains(extension)) {
 					newProjectWindowFileTypeOptions.setSelectedItem(snesEntry);
 				}
 				else {
-					if(EXTENSIONS_GB.contains(extension)) {
+					if(Constants.EXTENSIONS_GB.contains(extension)) {
 						newProjectWindowFileTypeOptions.setSelectedItem(gbEntry);
 					}
 					else {
-						if(EXTENSIONS_TAP.contains(extension)) {
+						if(Constants.EXTENSIONS_TAP.contains(extension)) {
 							newProjectWindowFileTypeOptions.setSelectedItem(tapEntry);
 						}
 						else {
-							if(EXTENSIONS_TZX_CDT.contains(extension)) {
+							if(Constants.EXTENSIONS_TZX_CDT.contains(extension)) {
 								newProjectWindowFileTypeOptions.setSelectedItem(tzxEntry);
 							}
 						}
@@ -1508,174 +1928,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
-	private String getTfileName(String name) {
-		return "set T_FILENAME=\"" + name + "\"";
-	}
-
-	private String getSfileName(String name) {
-		return "set S_FILENAME=\"" + name + "\"";
-	}
-
-	private String getScriptName(String name) {
-		return "set SCRIPTNAME=\"" + name + "\"";
-	}
-
-	private void createNewProject(String name, String fileName, String fileType, File projectFile) throws Exception {
-		File projectFolder = createProjectFolder(name);
-		String transfileName = TR_FILENAME_PREFIX + fileName;
-		copyBaseFiles(projectFolder, name, projectFile);
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, EXCUTEHEXVIEWER_FILE), createHexviewerFile(name, fileName));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, SEARCHALL_FILE), createSearchAllFile(name, fileName));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, CLEANEXTRACTED_FILE), createCleanExtractedFile(fileName));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, EXTRACTHEX_FILE), createExtractHexFile(name, fileName, transfileName));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, ORIGINALSCRIPT_FILE), createOriginalScriptFile(name, fileName));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, CLEAN_FILE), createCleanFile(name));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, INSERT_FILE), createInsertFile(name, fileName, fileType, transfileName));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, CREATEPATCH_FILE), createCreatePatchFile(name, fileName, transfileName));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, name + HEX_EXTENSION), createHexFile(name));
-	}
-
-	private String createHexviewerFile(String name, String fileName) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + EXCUTEHEXVIEWER_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append(Constants.NEWLINE);
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	private String createCleanFile(String name) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + CLEAN_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(getScriptName(name)).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-ca tr_"+ SCRIPTNAME_VAR +".ext tr_"+ SCRIPTNAME_VAR +"_clean.ext").append(Constants.NEWLINE);
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	private String createOriginalScriptFile(String name, String fileName) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + ORIGINALSCRIPT_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(getTfileName(fileName)).append(Constants.NEWLINE);
-		fileContent.append(getScriptName(name)).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-a "+ SCRIPTNAME_VAR +".tbl "+ TFILENAMENAME_VAR +" "+ SCRIPTNAME_VAR +".ext "+ SCRIPTNAME_VAR +".off").append(Constants.NEWLINE);
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	private String createInsertFile(String name, String fileName, String fileType, String transfileName) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + INSERT_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(getTfileName(transfileName)).append(Constants.NEWLINE);
-		fileContent.append(getSfileName(fileName)).append(Constants.NEWLINE);
-		fileContent.append(getScriptName(name)).append(Constants.NEWLINE);
-		fileContent.append("del " + TFILENAMENAME_VAR).append(Constants.NEWLINE);
-		fileContent.append("copy " + SFILENAMENAME_VAR + " " + TFILENAMENAME_VAR).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-ih "+ SCRIPTNAME_VAR +".hex " + TFILENAMENAME_VAR).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-h "+ SCRIPTNAME_VAR +".tbl tr_"+ SCRIPTNAME_VAR +".ext " + TFILENAMENAME_VAR).append(Constants.NEWLINE);
-		String checksumMode = Constants.EMPTY;
-		if(FILE_TYPE_MEGADRIVE.equals(fileType) || fileName.endsWith(".32x")) {
-			checksumMode = Hextractor.MODE_FIX_MEGADRIVE_CHECKSUM;
-		}
-		else {
-			if(FILE_TYPE_NGB.equals(fileType)) {
-				checksumMode = Hextractor.MODE_FIX_GAMEBOY_CHECKSUM;
-			}
-			else {
-				if(FILE_TYPE_SNES.equals(fileType)) {
-					checksumMode = Hextractor.MODE_FIX_SNES_CHECKSUM;
-				}
-				else {
-					if(FILE_TYPE_ZXTAP.equals(fileType)) {
-						checksumMode = Hextractor.MODE_FIX_ZXTAP_CHECKSUM;
-					}
-					else {
-						if(FILE_TYPE_TZX.equals(fileType)) {
-							checksumMode = Hextractor.MODE_FIX_ZXTZX_CHECKSUM;
-						}
-					}
-				}
-			}
-		}
-		if(checksumMode.length() > 0) {
-			fileContent.append(PROG_CALL).append(checksumMode + " " + TFILENAMENAME_VAR).append(Constants.NEWLINE);
-		}
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	private String createCreatePatchFile(String name, String fileName, String transFileName) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + CREATEPATCH_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(getTfileName(transFileName)).append(Constants.NEWLINE);
-		fileContent.append(getSfileName(fileName)).append(Constants.NEWLINE);
-		fileContent.append(getScriptName(name)).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-cip " + SFILENAMENAME_VAR + " " + TFILENAMENAME_VAR + " " + SCRIPTNAME_VAR +".ips").append(Constants.NEWLINE);
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	private String createSearchAllFile(String name, String fileName) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + SEARCHALL_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(getTfileName(fileName)).append(Constants.NEWLINE);
-		fileContent.append(getScriptName(name)).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-sa "+SCRIPTNAME_VAR+".tbl "+TFILENAMENAME_VAR+" 4 FF \"..\\EngDict.txt\"").append(Constants.NEWLINE);
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	private String createHexFile(String name) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + name + HEX_EXTENSION + "...");
-		fileContent.append(";Traducciones Wave " + YEAR).append(Constants.NEWLINE);
-		fileContent.append(";54 72 61 64 75 63 63 69 6F 6E 65 73 20 57 61 76 65 20 3");
-		fileContent.append(YEAR.substring(0, 1) + " 3" + YEAR.substring(1, 2) + " 3" + YEAR.substring(2, 3) + " 3" + YEAR.substring(3, 4) + "@000000E0:000000F5").append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	private String createCleanExtractedFile(String fileName) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + CLEANEXTRACTED_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(getTfileName(fileName)).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-cef "+ TFILENAMENAME_VAR +".ext "+ TFILENAMENAME_VAR +".ext.off").append(Constants.NEWLINE);
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	private String createExtractHexFile(String name, String fileName, String transfileName) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + EXTRACTHEX_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(getTfileName(transfileName)).append(Constants.NEWLINE);
-		fileContent.append(getScriptName(name)).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-eh "+ TFILENAMENAME_VAR +" "+ SCRIPTNAME_VAR +".ext.hex").append(Constants.NEWLINE);
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	private void copyBaseFiles(File projectFolder, String name, File projectFile) throws IOException {
-		Utils.copyFileUsingStream(FILE_HEXTRACTOR, Utils.getJoinedFileName(projectFolder, FILE_HEXTRACTOR));
-		Utils.copyFileUsingStream(FILE_README, Utils.getJoinedFileName(projectFolder, name + FILE_README));
-		if(projectFile != null) {
-			Utils.copyFileUsingStream(projectFile.getAbsolutePath(), Utils.getJoinedFileName(projectFolder, projectFile.getName()));
-		}
-	}
-
-	private File createProjectFolder(String name) throws Exception {
-		File projectFolder = new File(name);
-		if(!projectFolder.exists() && !projectFolder.mkdir()) {
-			throw new Exception("Error generating: " + name + " directory." );
-		}
-		return projectFolder;
-	}
-
+	/**
+	 * Enable project window.
+	 */
 	private void enableProjectWindow() {
 		newProjectWindowNameInput.setEnabled(true);
 		newProjectWindowFileInput.setEnabled(true);
@@ -1684,6 +1939,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		newProjectWindowCancelButton.setEnabled(true);
 	}
 
+	/**
+	 * Clean project window.
+	 */
 	private void cleanProjectWindow() {
 		newProjectWindowNameInput.setText(Constants.EMPTY);
 		newProjectWindowFileInput.setText(Constants.EMPTY);
@@ -1691,6 +1949,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		projectFile = null;
 	}
 
+	/**
+	 * Disable project window.
+	 */
 	private void disableProjectWindow() {
 		newProjectWindowNameInput.setEnabled(false);
 		newProjectWindowFileInput.setEnabled(false);
@@ -1699,6 +1960,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		newProjectWindowCancelButton.setEnabled(false);
 	}
 
+	/**
+	 * Creates the project window.
+	 */
 	private void createProjectWindow() {
 		cleanProjectWindow();
 		enableProjectWindow();
@@ -1707,6 +1971,11 @@ public class HexViewer extends JFrame implements ActionListener {
 		newProjectWindow.setVisible(true);
 	}
 
+	/**
+	 * Reload table file.
+	 *
+	 * @param selectedFile the selected file
+	 */
 	private void reloadTableFile(File selectedFile) {
 		tableFile = selectedFile;
 		try {
@@ -1717,6 +1986,11 @@ public class HexViewer extends JFrame implements ActionListener {
 		refreshAll();
 	}
 
+	/**
+	 * Reload offsets file.
+	 *
+	 * @param selectedFile the selected file
+	 */
 	private void reloadOffsetsFile(File selectedFile) {
 		offsetFile = selectedFile;
 		try {
@@ -1727,6 +2001,11 @@ public class HexViewer extends JFrame implements ActionListener {
 		refreshAll();
 	}
 
+	/**
+	 * Reload hex file.
+	 *
+	 * @param selectedFile the selected file
+	 */
 	private void reloadHexFile(File selectedFile) {
 		hexFile = selectedFile;
 		try {
@@ -1746,6 +2025,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		refreshAll();
 	}
 
+	/**
+	 * Sets the look and feel.
+	 */
 	private void setLookAndFeel() {
 		try {
 			UIManager.setLookAndFeel(
@@ -1762,21 +2044,46 @@ public class HexViewer extends JFrame implements ActionListener {
 		rb = ResourceBundle.getBundle(RB_NAME, Locale.getDefault());
 	}
 
+	/**
+	 * View.
+	 *
+	 * @param inputFile the input file
+	 * @param tableFile the table file
+	 * @throws Exception the exception
+	 */
 	public static void view(String inputFile, String tableFile) throws Exception {
 		System.out.println("Viewing Hex file \"" + inputFile + "\"\n with table file: \"" + tableFile + "\".");
 		new HexViewer(FileUtils.getFileBytes(inputFile), inputFile, new HexTable(tableFile), tableFile);
 	}
 
+	/**
+	 * View.
+	 *
+	 * @param inputFile the input file
+	 * @throws Exception the exception
+	 */
 	public static void view(String inputFile) throws Exception {
 		System.out.println("Viewing Hex file \"" + inputFile + "\"\n with table file ascii.");
 		new HexViewer(FileUtils.getFileBytes(inputFile), inputFile, new HexTable(0), DEFAULT_TABLE);
 	}
 
+	/**
+	 * View.
+	 *
+	 * @throws Exception the exception
+	 */
 	public static void view() throws Exception {
 		System.out.println("Viewing Hex file empty with table file ascii.");
 		new HexViewer(new byte[VIEW_SIZE], DEFAULT_HEXFILE, new HexTable(0), DEFAULT_TABLE);
 	}
 
+	/**
+	 * Gets the text area.
+	 *
+	 * @param offset the offset
+	 * @param length the length
+	 * @return the text area
+	 */
 	private String getTextArea(int offset, int length) {
 		StringBuffer sb = new StringBuffer(length);
 		int end = offset + length;
@@ -1789,6 +2096,13 @@ public class HexViewer extends JFrame implements ActionListener {
 		return sb.toString();
 	}
 
+	/**
+	 * Gets the hex area.
+	 *
+	 * @param offset the offset
+	 * @param length the length
+	 * @return the hex area
+	 */
 	private String getHexArea(int offset, int length) {
 		StringBuffer sb = new StringBuffer(length * HEX_VALUE_SIZE);
 		int end = offset + length;
@@ -1802,6 +2116,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		return sb.toString();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		//None

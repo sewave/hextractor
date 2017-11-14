@@ -1,9 +1,14 @@
-package com.wave.hextractor;
+package com.wave.hextractor.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.wave.hextractor.pojo.IpsPatchEntry;
+
+/**
+ * The Class Patcher.
+ */
 public class Patcher {
 
 	/**
@@ -58,11 +63,18 @@ public class Patcher {
 				patchEntries.add(createIpsEntry(modifiedFileBytes, i, end));
 			}
 		}
-		//		patchEntries = optimizePatchEntries(patchEntries);
 		FileUtils.writeFileBytes(patchFile, generatePatchFile(modifiedFile, patchEntries));
 		validateIpsPatch(originalFile, modifiedFile, patchFile);
 	}
 
+	/**
+	 * Returns true if a new entry is required.
+	 *
+	 * @param bytesOne the bytes one
+	 * @param bytesTwo the bytes two
+	 * @param offSet the off set
+	 * @return true, if successful
+	 */
 	private static boolean newEntryRequired(byte[] bytesOne, byte[] bytesTwo, int offSet) {
 		boolean required = true;
 		for (int i = 0; i < IpsPatchEntry.IPS_CHUNK_MIN_SIZE && required; i++) {
@@ -117,10 +129,27 @@ public class Patcher {
 		}
 	}
 
+	/**
+	 * Validate ips patch.
+	 *
+	 * @param originalFile the original file
+	 * @param modifiedFile the modified file
+	 * @param patchFile the patch file
+	 * @return true, if successful
+	 * @throws Exception the exception
+	 */
 	public static boolean validateIpsPatch(byte[] originalFile, byte[] modifiedFile, byte[] patchFile) throws Exception {
 		return (Arrays.equals(modifiedFile, applyIpsPatch(originalFile, getPatchEntries(patchFile))));
 	}
 
+	/**
+	 * Creates the ips entry.
+	 *
+	 * @param modifiedFileBytes the modified file bytes
+	 * @param offsetStart the offset start
+	 * @param offsetEnd the offset end
+	 * @return the ips patch entry
+	 */
 	private static IpsPatchEntry createIpsEntry(byte[] modifiedFileBytes, int offsetStart, int offsetEnd) {
 		byte[] entryData = Arrays.copyOfRange(modifiedFileBytes, offsetStart, offsetEnd);
 		IpsPatchEntry entry;
@@ -134,6 +163,13 @@ public class Patcher {
 		return entry;
 	}
 
+	/**
+	 * Generate patch file.
+	 *
+	 * @param modifiedFile the modified file
+	 * @param patchEntries the patch entries
+	 * @return the byte[]
+	 */
 	private static byte[] generatePatchFile(String modifiedFile, List<IpsPatchEntry> patchEntries) {
 		int patchFileSize = Constants.IPS_HEADER.length() + Constants.IPS_EOF.length();
 		for (IpsPatchEntry entry : patchEntries) {
@@ -153,10 +189,25 @@ public class Patcher {
 		return fileBytes;
 	}
 
+	/**
+	 * Apply ips patch.
+	 *
+	 * @param originalFile the original file
+	 * @param patchEntries the patch entries
+	 * @return the byte[]
+	 * @throws Exception the exception
+	 */
 	private static byte[] applyIpsPatch(String originalFile, List<IpsPatchEntry> patchEntries) throws Exception {
 		return applyIpsPatch(FileUtils.getFileBytes(originalFile), patchEntries);
 	}
 
+	/**
+	 * Apply ips patch.
+	 *
+	 * @param originalFileBytes the original file bytes
+	 * @param patchEntries the patch entries
+	 * @return the byte[]
+	 */
 	private static byte[] applyIpsPatch(byte[] originalFileBytes, List<IpsPatchEntry> patchEntries) {
 		int outputFileSize = originalFileBytes.length;
 		int maxEntryMod = getMaxEntryOffset(patchEntries);
@@ -178,10 +229,10 @@ public class Patcher {
 	}
 
 	/**
-	 * Returns the last offset modified (not zero based)
+	 * Returns the last offset modified (not zero based).
 	 *
-	 * @param patchEntries
-	 * @return
+	 * @param patchEntries the patch entries
+	 * @return the max entry offset
 	 */
 	private static int getMaxEntryOffset(List<IpsPatchEntry> patchEntries) {
 		int maxEntryOffset = 0;
@@ -199,10 +250,23 @@ public class Patcher {
 		return maxEntryOffset;
 	}
 
+	/**
+	 * Gets the patch entries.
+	 *
+	 * @param patchFile the patch file
+	 * @return the patch entries
+	 * @throws Exception the exception
+	 */
 	private static List<IpsPatchEntry> getPatchEntries(String patchFile) throws Exception {
 		return getPatchEntries(FileUtils.getFileBytes(patchFile));
 	}
 
+	/**
+	 * Gets the patch entries.
+	 *
+	 * @param patchBytes the patch bytes
+	 * @return the patch entries
+	 */
 	private static List<IpsPatchEntry> getPatchEntries(byte[] patchBytes) {
 		List<IpsPatchEntry> patchEntries = new ArrayList<IpsPatchEntry>();
 		for (int i = Constants.IPS_HEADER.length(); i < patchBytes.length - Constants.IPS_EOF.length();) {
@@ -226,59 +290,5 @@ public class Patcher {
 		}
 		return patchEntries;
 	}
-
-	//	private static List<IpsPatchEntry> optimizePatchEntries(List<IpsPatchEntry> patchEntries) throws Exception {
-	//		List<IpsPatchEntry> optPatchEntries = new ArrayList<IpsPatchEntry>();
-	//		for (IpsPatchEntry entry : patchEntries) {
-	//			optPatchEntries.addAll(optimizePatchEntry(entry));
-	//		}
-	//		return optPatchEntries;
-	//	}
-	//
-	//	private static List<IpsPatchEntry> getRleEntriesSplits(IpsPatchEntry entry) {
-	//		int initPtr = 0;
-	//		List<IpsPatchEntry> rlePatchEntries = new ArrayList<IpsPatchEntry>();
-	//		for(int i = 0; i < entry.getData().length; i++) {
-	//			if(entry.getData()[i] != entry.getData()[initPtr] || i == entry.getData().length - 1) {
-	//				if(i - initPtr > IpsPatchEntry.IPS_CHUNK_MIN_SIZE) {
-	//					IpsPatchEntry rleEntry = new IpsPatchEntry();
-	//					rleEntry.setOffset(entry.getOffset() + initPtr);
-	//					rleEntry.setSize(IpsPatchEntry.IPS_RLE_MODE);
-	//					rleEntry.setRleSize(i - initPtr + 1);
-	//					rleEntry.setData(new byte[]{entry.getData()[initPtr]});
-	//					rlePatchEntries.add(rleEntry);
-	//				}
-	//				initPtr = i;
-	//			}
-	//		}
-	//		return rlePatchEntries;
-	//	}
-	//
-	//	private static List<IpsPatchEntry> optimizePatchEntry(IpsPatchEntry entry) {
-	//		List<IpsPatchEntry> optPatchEntries = new ArrayList<IpsPatchEntry>();
-	//		if (entry.getSize() == IpsPatchEntry.IPS_RLE_MODE) {
-	//			optPatchEntries.add(entry);
-	//		} else {
-	//			IpsPatchEntry curEntry = entry;
-	//			for(IpsPatchEntry rleEntry : getRleEntriesSplits(entry)) {
-	//				//If there is a gap, it's a PAT entry
-	//				if(curEntry.getOffset() + curEntry.size != rleEntry.getOffset()) {
-	//					IpsPatchEntry patEtry = new IpsPatchEntry();
-	//					patEtry.setOffset(curEntry.getOffset());
-	//					patEtry.setSize(rleEntry.getOffset() - curEntry.getOffset());
-	//					patEtry.setRleSize(0);
-	//					patEtry.setData(Arrays.copyOfRange(entry.getData(), curEntry.getOffset() - entry.getOffset(), patEtry.getSize()));
-	//					optPatchEntries.add(patEtry);
-	//					curEntry = rleEntry;
-	//				}
-	//				optPatchEntries.add(rleEntry);
-	//			}
-	//			//No encontramos tramos RLE
-	//			if(optPatchEntries.isEmpty()) {
-	//				optPatchEntries.add(entry);
-	//			}
-	//		}
-	//		return optPatchEntries;
-	//	}
 
 }

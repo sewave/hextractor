@@ -1,4 +1,4 @@
-package com.wave.hextractor;
+package com.wave.hextractor.object;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.wave.hextractor.pojo.OffsetEntry;
+import com.wave.hextractor.util.Constants;
+import com.wave.hextractor.util.FileUtils;
+import com.wave.hextractor.util.Utils;
+
+/**
+ * Class for the table operations.
+ * @author slcantero
+ */
 public class HexTable {
 	private static final String TABLE_KEY_A = "A";
 	private static final String TABLE_KEY_LOWA = "a";
@@ -32,6 +41,11 @@ public class HexTable {
 	private Map<Byte, String> table;
 	private Map<String, Byte> reversed;
 
+	/**
+	 * Transforms the byte into a String.
+	 * @param aByte
+	 * @return
+	 */
 	public String toString(byte aByte) {
 		String res;
 		if(table.containsKey(aByte)) {
@@ -43,6 +57,10 @@ public class HexTable {
 		return res;
 	}
 
+	/**
+	 * Converts the table selection to a line description.
+	 * @return
+	 */
 	public String toSelectionString() {
 		StringBuffer res = new StringBuffer();
 		if(reversed.containsKey(TABLE_KEY_A)) {
@@ -112,14 +130,28 @@ public class HexTable {
 		loadLines(tableLines);
 	}
 
+	/**
+	 * Loads the table lines.
+	 * @param tableLines
+	 */
 	public HexTable(List<String> tableLines) {
 		loadLines(tableLines);
 	}
 
+	/**
+	 * Loads a table lines file.
+	 * @param tableFile
+	 * @throws Exception
+	 */
 	public HexTable(String tableFile) throws Exception {
 		loadLines(Arrays.asList(FileUtils.getAsciiFile(tableFile).replaceAll(Constants.UTF_8_BOM_BE, Constants.EMPTY).replaceAll(Constants.UTF_8_BOM_LE, Constants.EMPTY).split(String.valueOf(Constants.NEWLINE))));
 	}
 
+	/**
+	 * Translates a hex string to ascii.
+	 * @param hexString
+	 * @return
+	 */
 	public String toAscii(byte[] hexString) {
 		StringBuffer sb = new StringBuffer();
 		for(byte b : hexString) {
@@ -128,6 +160,12 @@ public class HexTable {
 		return sb.toString();
 	}
 
+	/**
+	 * Translates to ascii entry to a hex string.
+	 * @param hexString
+	 * @param entry
+	 * @return
+	 */
 	public String toAscii(byte[] hexString, OffsetEntry entry) {
 		StringBuilder sb = new StringBuilder();
 		int bytesreaded = 0;
@@ -167,6 +205,13 @@ public class HexTable {
 		return sb.toString();
 	}
 
+	/**
+	 * Transforms the ascii string to hex byte[]
+	 * @param string
+	 * @param pointerOffsets
+	 * @param entry
+	 * @return
+	 */
 	public byte[] toHex(String string, Map<Integer, Integer> pointerOffsets, OffsetEntry entry) {
 		int offset = 0;
 		int offsetStart = 0;
@@ -335,16 +380,26 @@ public class HexTable {
 		SKIPPING_CHARS,
 	};
 
+	/**
+	 * Get all entries from the file.
+	 * @param secondFileBytes
+	 * @param numMinChars
+	 * @param numIgnoredChars
+	 * @param endCharsList
+	 * @param dictFile
+	 * @return
+	 * @throws Exception
+	 */
 	public String getAllEntries(byte[] secondFileBytes, int numMinChars, int numIgnoredChars,
 			List<String> endCharsList, String dictFile) throws Exception {
-		List<OffsetEntry> offsetEntryList = new ArrayList<OffsetEntry>();
-		HashSet<String> dict = new HashSet<String>(Arrays.asList(FileUtils.getAsciiFile(dictFile).split(Constants.S_NEWLINE)));
+		List<OffsetEntry> offsetEntryList = new ArrayList<>();
+		HashSet<String> dict = new HashSet<>(Arrays.asList(FileUtils.getAsciiFile(dictFile).split(Constants.S_NEWLINE)));
 		int entryStart = 0;
 		boolean validString = false;
 		StringBuilder word = new StringBuilder();
 		StringBuilder sentence = new StringBuilder();
 		String dataChar = null;
-		List<String> skippedChars = new ArrayList<String>();
+		List<String> skippedChars = new ArrayList<>();
 		ENTRIES_STATUS status = ENTRIES_STATUS.SEARCHING_START_OF_STRING;
 		for(int i = 0; i < secondFileBytes.length - numMinChars; i++) {
 			Byte readedByteObj = Byte.valueOf(secondFileBytes[i]);
@@ -444,6 +499,10 @@ public class HexTable {
 		return res;
 	}
 
+	/**
+	 * Transforms the table into ascii.
+	 * @return
+	 */
 	public String toAsciiTable() {
 		StringBuffer sb = new StringBuffer();
 		for(Map.Entry<Byte, String> entry : Utils.sortByValue(table).entrySet()) {
@@ -458,6 +517,9 @@ public class HexTable {
 		return sb.toString();
 	}
 
+	/**
+	 * Equals.
+	 */
 	public boolean equals(Object obj) {
 		if(!(obj instanceof HexTable)) {
 			return false;

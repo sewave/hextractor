@@ -1,10 +1,14 @@
-package com.wave.hextractor;
+package com.wave.hextractor.util;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Utility class for checksum operations.
+ * @author slcantero
+ */
 public class Checksum {
 	private static final int BYTE_SIZE_16_BITS = 2;
 	private static final int TZX_HEADER_SIZE = 0x0A;
@@ -49,6 +53,12 @@ public class Checksum {
 	private static final byte TZX_ID_LOOP_END = 0x25;
 	private static final byte TZX_ID_RET_SEQ = 0x27;
 
+	/**
+	 * Fixes the header checksum and the rom checksum of the game boy file</br>
+	 * (if needed).
+	 * @param inputFile file to update.
+	 * @throws Exception
+	 */
 	public static void checkUpdateGameBoyChecksum(String inputFile) throws Exception {
 		byte[] fileBytes = FileUtils.getFileBytes(inputFile);
 		System.out.println("Fixing Game Boy checksum for \"" + inputFile + "\".");
@@ -85,21 +95,149 @@ public class Checksum {
 		}
 	}
 
+	/**
+	 * Fixes the megadrive rom checksum.
+	 * @param inputFile megadrive rom path.
+	 * @throws Exception
+	 */
 	public static void checkUpdateMegaDriveChecksum(String inputFile) throws Exception {
 		byte[] fileBytes = FileUtils.getFileBytes(inputFile);
 		System.out.println("Fixing Megadrive checksum for \"" + inputFile + "\".");
+		if(checkUpdateMegaDriveChecksum(fileBytes)) {
+			FileUtils.writeFileBytes(inputFile, fileBytes);
+		}
+	}
+
+	/**
+	 * Fixes the megadrive rom checksum.
+	 * @param fileBytes rom bytes.
+	 * @return true if bytes were modified, false otherwise.
+	 * @throws Exception
+	 */
+	public static boolean checkUpdateMegaDriveChecksum(byte[] fileBytes) throws Exception {
 		int checksum = Checksum.getMegaDriveChecksum(fileBytes);
 		System.out.println("Original checksum: 0x" + Integer.toHexString(checksum).toUpperCase());
 		int calculatedChecksum = Checksum.calculateMegaDriveChecksum(fileBytes);
 		System.out.println("Calculated checksum: 0x" + Integer.toHexString(calculatedChecksum).toUpperCase());
+		boolean res = false;
 		if (calculatedChecksum != checksum) {
+			res = true;
 			System.out.println("Updating calculated checksum.");
 			Checksum.updateMegadriveChecksum(calculatedChecksum, fileBytes);
-			FileUtils.writeFileBytes(inputFile, fileBytes);
+		} else {
+			System.out.println("Checksum correct, not overwriting it.");
+		}
+		return res;
+	}
+
+	/**
+	 * Update SNES rom checksum.
+	 * @param inputFile
+	 * @throws Exception
+	 */
+	public static void checkUpdateSnesChecksum(String inputFile) throws Exception {
+		System.out.println("Fixing SNES checksum for \"" + inputFile + "\".");
+		byte[] fileBytesRaw = FileUtils.getFileBytes(inputFile);
+		byte[] fileBytes = getNoSmcHeaderFixedLengthSnesRom(fileBytesRaw);
+		boolean isHiRom = isSnesRomHiRom(fileBytes);
+		byte[] internalHeader = getSnesInternalHeader(fileBytes, isHiRom);
+
+		if(isHiRom) {
+			System.out.println("Detected HIROM");
+		}
+		else {
+			System.out.println("Detected LOROM");
+		}
+
+		int origChecksum = getSnesRomChecksum(internalHeader);
+		int origChecksumNot = getSnesRomChecksumNot(internalHeader);
+		int calcCheck = calculateSnesRomChecksum(fileBytes, isHiRom);
+		int calcChecksumNot = calcCheck ^ Constants.MASK_16BIT;
+
+		System.out.println("ROM checksum           : " + Utils.getHexFilledLeft(origChecksum, Constants.HEXSIZE_16BIT_VALUE));
+		System.out.println("ROM checksum not       : " + Utils.getHexFilledLeft(origChecksumNot, Constants.HEXSIZE_16BIT_VALUE));
+		System.out.println("Calculated checksum    : " + Utils.getHexFilledLeft(calcCheck, Constants.HEXSIZE_16BIT_VALUE));
+		System.out.println("Calculated checksum not: " + Utils.getHexFilledLeft(calcChecksumNot, Constants.HEXSIZE_16BIT_VALUE));
+
+		if (calcCheck != origChecksum || origChecksumNot != calcChecksumNot) {
+			if(calcCheck != origChecksum) {
+				System.out.println("Updating checksum.");
+			}
+			if(origChecksumNot != calcChecksumNot) {
+				System.out.println("Updating checksumNot.");
+			}
+			updateSnesChecksum(internalHeader, calcCheck, calcChecksumNot);
+			int off = Constants.SNES_LOROM_HEADER_OFF;
+			if(isHiRom) {
+				off += Constants.SNES_HIROM_OFFSET;
+			}
+			if(fileBytesRaw.length % Constants.SNES_ROM_SIZE_1MBIT == Constants.SNES_SMC_HEADER_SIZE) {
+				off += Constants.SNES_SMC_HEADER_SIZE;
+			}
+			System.arraycopy(internalHeader, 0, fileBytesRaw, off, Constants.SNES_INT_HEADER_LEN);
+			FileUtils.writeFileBytes(inputFile, fileBytesRaw);
 		} else {
 			System.out.println("Checksum correct, not overwriting it.");
 		}
 	}
+
+	/**
+	 * Updates tap checksum .
+	 * @param inputFile
+	 * @throws Exception
+	 */
+	public static void checkUpdateZxTapChecksum(String inputFile) throws Exception {
+		checkUpdateZxTapChecksum(inputFile, null);
+	}
+
+	/**
+	 * Updates tap checksum if original tap has correct checksums.
+	 * @param inputFile
+	 * @param originalFile
+	 * @throws Exception
+	 */
+	public static void checkUpdateZxTapChecksum(String inputFile, String originalFile) throws Exception {
+		System.out.println("Fixing ZX TAP checksums for \"" + inputFile + "\" ");
+		byte[] originalFileBytes = null;
+		if(originalFile != null) {
+			originalFileBytes = FileUtils.getFileBytes(originalFile);
+			System.out.println("With original file \"" + originalFile + "\"");
+		}
+		else {
+			System.out.println();
+		}
+		FileUtils.writeFileBytes(inputFile, checkUpdateZxTapChecksum(FileUtils.getFileBytes(inputFile), false, originalFileBytes));
+	}
+
+	/**
+	 * Updates Tzx checksum
+	 * @param inputFile
+	 * @throws Exception
+	 */
+	public static void checkUpdateZxTzxChecksum(String inputFile) throws Exception {
+		checkUpdateZxTzxChecksum(inputFile, null);
+	}
+
+	/**
+	 * Updates Tzx checksum if original file has good checksums.
+	 * @param inputFile
+	 * @param originalFile
+	 * @throws Exception
+	 */
+	public static void checkUpdateZxTzxChecksum(String inputFile, String originalFile) throws Exception {
+		System.out.print("Fixing ZX TZX checksums for \"" + inputFile + "\" ");
+		byte[] originalFileBytes = null;
+		if(originalFile != null) {
+			originalFileBytes = FileUtils.getFileBytes(originalFile);
+			System.out.println("With original file \"" + originalFile + "\"");
+		}
+		else {
+			System.out.println();
+		}
+		FileUtils.writeFileBytes(inputFile, checkUpdateZxTapChecksum(FileUtils.getFileBytes(inputFile), true, originalFileBytes));
+	}
+
+	////////////PRIVATE METHODS////////////////
 
 	private static int getGameBoyRomChecksum(byte[] fileBytes) {
 		return Utils.bytesToInt(fileBytes[Constants.GAMEBOY_ROM_CHECKSUM_LOCATION],
@@ -161,52 +299,6 @@ public class Checksum {
 	private static void updateGameBoyHeaderChecksum(int calculatedHeaderChecksum, byte[] fileBytes) {
 		byte[] bytes = Utils.intToByteArray(calculatedHeaderChecksum);
 		fileBytes[Constants.GAMEBOY_HEADER_CHECKSUM_LOCATION] = bytes[3];
-	}
-
-	public static void checkUpdateSnesChecksum(String inputFile) throws Exception {
-		System.out.println("Fixing SNES checksum for \"" + inputFile + "\".");
-		byte[] fileBytesRaw = FileUtils.getFileBytes(inputFile);
-		byte[] fileBytes = getNoSmcHeaderFixedLengthSnesRom(fileBytesRaw);
-		boolean isHiRom = isSnesRomHiRom(fileBytes);
-		byte[] internalHeader = getSnesInternalHeader(fileBytes, isHiRom);
-
-		if(isHiRom) {
-			System.out.println("Detected HIROM");
-		}
-		else {
-			System.out.println("Detected LOROM");
-		}
-
-		int origChecksum = getSnesRomChecksum(internalHeader);
-		int origChecksumNot = getSnesRomChecksumNot(internalHeader);
-		int calcCheck = calculateSnesRomChecksum(fileBytes, isHiRom);
-		int calcChecksumNot = calcCheck ^ Constants.MASK_16BIT;
-
-		System.out.println("ROM checksum           : " + Utils.getHexFilledLeft(origChecksum, Constants.HEXSIZE_16BIT_VALUE));
-		System.out.println("ROM checksum not       : " + Utils.getHexFilledLeft(origChecksumNot, Constants.HEXSIZE_16BIT_VALUE));
-		System.out.println("Calculated checksum    : " + Utils.getHexFilledLeft(calcCheck, Constants.HEXSIZE_16BIT_VALUE));
-		System.out.println("Calculated checksum not: " + Utils.getHexFilledLeft(calcChecksumNot, Constants.HEXSIZE_16BIT_VALUE));
-
-		if (calcCheck != origChecksum || origChecksumNot != calcChecksumNot) {
-			if(calcCheck != origChecksum) {
-				System.out.println("Updating checksum.");
-			}
-			if(origChecksumNot != calcChecksumNot) {
-				System.out.println("Updating checksumNot.");
-			}
-			updateSnesChecksum(internalHeader, calcCheck, calcChecksumNot);
-			int off = Constants.SNES_LOROM_HEADER_OFF;
-			if(isHiRom) {
-				off += Constants.SNES_HIROM_OFFSET;
-			}
-			if(fileBytesRaw.length % Constants.SNES_ROM_SIZE_1MBIT == Constants.SNES_SMC_HEADER_SIZE) {
-				off += Constants.SNES_SMC_HEADER_SIZE;
-			}
-			System.arraycopy(internalHeader, 0, fileBytesRaw, off, Constants.SNES_INT_HEADER_LEN);
-			FileUtils.writeFileBytes(inputFile, fileBytesRaw);
-		} else {
-			System.out.println("Checksum correct, not overwriting it.");
-		}
 	}
 
 	private static byte[] getSnesInternalHeader(byte[] fileBytes, boolean isHiRom) {
@@ -398,44 +490,6 @@ public class Checksum {
 			System.out.println("ROM NAME: \"" + new String(asciiName, StandardCharsets.US_ASCII) + "\"");
 		}
 		return res;
-	}
-
-	private static int getSnesRomChecksum(byte[] header) {
-		return Utils.bytesToInt(header[Constants.SNES_CHECKSUM_HEADER_OFF + 1], header[Constants.SNES_CHECKSUM_HEADER_OFF]) & Constants.MASK_16BIT;
-	}
-
-	public static void checkUpdateZxTapChecksum(String inputFile) throws Exception {
-		checkUpdateZxTapChecksum(inputFile, null);
-	}
-
-	public static void checkUpdateZxTapChecksum(String inputFile, String originalFile) throws Exception {
-		System.out.println("Fixing ZX TAP checksums for \"" + inputFile + "\" ");
-		byte[] originalFileBytes = null;
-		if(originalFile != null) {
-			originalFileBytes = FileUtils.getFileBytes(originalFile);
-			System.out.println("With original file \"" + originalFile + "\"");
-		}
-		else {
-			System.out.println();
-		}
-		FileUtils.writeFileBytes(inputFile, checkUpdateZxTapChecksum(FileUtils.getFileBytes(inputFile), false, originalFileBytes));
-	}
-
-	public static void checkUpdateZxTzxChecksum(String inputFile) throws Exception {
-		checkUpdateZxTzxChecksum(inputFile, null);
-	}
-
-	public static void checkUpdateZxTzxChecksum(String inputFile, String originalFile) throws Exception {
-		System.out.print("Fixing ZX TZX checksums for \"" + inputFile + "\" ");
-		byte[] originalFileBytes = null;
-		if(originalFile != null) {
-			originalFileBytes = FileUtils.getFileBytes(originalFile);
-			System.out.println("With original file \"" + originalFile + "\"");
-		}
-		else {
-			System.out.println();
-		}
-		FileUtils.writeFileBytes(inputFile, checkUpdateZxTapChecksum(FileUtils.getFileBytes(inputFile), true, originalFileBytes));
 	}
 
 	protected static class ZxTapDataBlock {
@@ -696,7 +750,9 @@ public class Checksum {
 		return res;
 	}
 
-
+	private static int getSnesRomChecksum(byte[] header) {
+		return Utils.bytesToInt(header[Constants.SNES_CHECKSUM_HEADER_OFF + 1], header[Constants.SNES_CHECKSUM_HEADER_OFF]) & Constants.MASK_16BIT;
+	}
 
 }
 

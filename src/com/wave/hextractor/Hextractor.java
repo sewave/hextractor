@@ -1,5 +1,14 @@
 package com.wave.hextractor;
 
+import com.wave.hextractor.object.HexViewer;
+import com.wave.hextractor.util.Checksum;
+import com.wave.hextractor.util.FileUtils;
+import com.wave.hextractor.util.Patcher;
+
+/**
+ * Main class that routes all the options.
+ * @author slcantero
+ */
 public class Hextractor {
 	private static final String HEADER = "HEXTRACTOR v0.9 (c) Wave 10/11/2017 \n"
 			+ " Type -? for help. / Escribe -? para ayuda";
@@ -54,6 +63,7 @@ public class Hextractor {
 	}
 
 	/**
+	 * Main program start.
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
@@ -124,30 +134,22 @@ public class Hextractor {
 				if (MODE_ASCII_TO_HEX.equals(mode)) {
 					FileUtils.insertAsciiAsHex(args[1], args[2], args[3]);
 				} else {
-					if (MODE_INTERLEAVE_FILES.equals(mode)) {
-						FileUtils.interleaveFiles(args[1], args[2], args[3]);
+					if (MODE_SEARCH_RELATIVE_8.equals(mode)) {
+						FileUtils.searchRelative8Bits(args[1], args[2], args[3]);
 					} else {
-						if (MODE_SEARCH_RELATIVE_8.equals(mode)) {
-							FileUtils.searchRelative8Bits(args[1], args[2], args[3]);
+						if (CREATE_IPS_PATCH.equals(mode)) {
+							Patcher.createIpsPatch(args[1], args[2], args[3]);
 						} else {
-							if (CREATE_IPS_PATCH.equals(mode)) {
-								Patcher.createIpsPatch(args[1], args[2], args[3]);
+							if (MODE_APPLY_IPS_PATCH.equals(mode)) {
+								Patcher.applyIpsPatch(args[1], args[2], args[3]);
 							} else {
-								if (MODE_APPLY_IPS_PATCH.equals(mode)) {
-									Patcher.applyIpsPatch(args[1], args[2], args[3]);
+								if (MODE_VERIFY_IPS_PATCH.equals(mode)) {
+									Patcher.validateIpsPatch(args[1], args[2], args[3]);
 								} else {
-									if (MODE_VERIFY_IPS_PATCH.equals(mode)) {
-										Patcher.validateIpsPatch(args[1], args[2], args[3]);
+									if (MODE_EXTRACT_HEX.equals(mode)) {
+										FileUtils.extractHexData(args[1], args[2], args[3]);
 									} else {
-										if (MODE_EXTRACT_HEX.equals(mode)) {
-											FileUtils.extractHexData(args[1], args[2], args[3]);
-										} else {
-											if (MODE_TRANSLATE_SIMILAR.equals(mode)) {
-												FileUtils.translateSimilar(args[1], args[2], args[3]);
-											} else {
-												printUsage();
-											}
-										}
+										printUsage();
 									}
 								}
 							}

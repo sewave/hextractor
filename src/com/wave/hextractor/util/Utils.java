@@ -1,4 +1,4 @@
-package com.wave.hextractor;
+package com.wave.hextractor.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,10 +17,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.wave.hextractor.pojo.OffsetEntry;
+
+/**
+ * Utility class.
+ * @author slcantero
+ */
 public class Utils {
 
+	/** The Constant INVALID_FILE_CHARACTERS. */
 	private static final List<String> INVALID_FILE_CHARACTERS = Arrays.asList(new String[]{"<", ">", ":", "\"", "\\", "/", "|", "?", "*"});
 
+	/**
+	 * Returns true if the file name is valid.
+	 *
+	 * @param fileName the file name
+	 * @return true, if is valid file name
+	 */
 	public static boolean isValidFileName(String fileName) {
 		boolean res = true;
 		if(fileName != null) {
@@ -33,6 +46,13 @@ public class Utils {
 		return res;
 	}
 
+	/**
+	 * Copy the file using streams.
+	 *
+	 * @param source the source
+	 * @param dest the dest
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static void copyFileUsingStream(String source, String dest) throws IOException {
 		InputStream is = null;
 		OutputStream os = null;
@@ -54,6 +74,13 @@ public class Utils {
 		}
 	}
 
+	/**
+	 * Creates an ascii file with the content.
+	 *
+	 * @param file the file
+	 * @param content the content
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static void createFile(String file, String content) throws IOException {
 		OutputStream os = null;
 		try {
@@ -64,15 +91,24 @@ public class Utils {
 		}
 	}
 
+	/**
+	 * Returns the path of the path + the file name.
+	 *
+	 * @param path the path
+	 * @param fileName the file name
+	 * @return the joined file name
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static String getJoinedFileName(File path, String fileName) throws IOException {
 		return path.getAbsolutePath() + Constants.FILE_SEPARATOR + fileName;
 	}
 
 	/**
-	 * Pads the string from the left up to size chars with '0'
+	 * Pads the string from the left up to size chars with '0'.
+	 *
 	 * @param text text to pad.
 	 * @param size size to pad to.
-	 * @return
+	 * @return the string
 	 */
 	public static String fillLeft(String text, int size) {
 		StringBuilder builder = new StringBuilder();
@@ -83,14 +119,33 @@ public class Utils {
 		return builder.toString();
 	}
 
+	/**
+	 * Returns true if the system property logLevel is set to DEBUG.
+	 *
+	 * @return true, if is debug
+	 */
 	public static boolean isDebug() {
 		return "DEBUG".equals(System.getProperty("logLevel"));
 	}
 
+	/**
+	 * Returns the Hex filled from the left with 0.</br>
+	 * And in upper case.
+	 *
+	 * @param number the number
+	 * @param size the size
+	 * @return the hex filled left
+	 */
 	public static String getHexFilledLeft(int number, int size) {
 		return Utils.fillLeft(Integer.toHexString(number), size).toUpperCase();
 	}
 
+	/**
+	 * Tranforms the data to a hex string.
+	 *
+	 * @param data the data
+	 * @return the string
+	 */
 	public static String toHexString(byte[] data) {
 		StringBuilder sb = new StringBuilder("[");
 		for(byte dataByte : data) {
@@ -100,6 +155,12 @@ public class Utils {
 		return sb.toString();
 	}
 
+	/**
+	 * Transforms the hex string to a byte [].
+	 *
+	 * @param s the s
+	 * @return the byte[]
+	 */
 	public static byte[] hexStringToByteArray(String s) {
 		int len = s.length();
 		byte[] data = new byte[len / 2];
@@ -110,14 +171,21 @@ public class Utils {
 		return data;
 	}
 
+	/**
+	 * Translates the hex string character to byte.
+	 *
+	 * @param s the s
+	 * @return the byte
+	 */
 	public static byte hexStringCharToByte(String s) {
 		return hexStringToByteArray(s)[0];
 	}
 
 	/**
-	 * Generates a byte array with the bytes of the int, from MSB to LSB
-	 * @param value
-	 * @return
+	 * Generates a byte array with the bytes of the int, from MSB to LSB.
+	 *
+	 * @param value the value
+	 * @return the byte[]
 	 */
 	public static final byte[] intToByteArray(int value) {
 		return new byte[] {
@@ -128,7 +196,8 @@ public class Utils {
 	}
 
 	/**
-	 * Converts two bytes to a int
+	 * Converts two bytes to a int.
+	 *
 	 * @param value1 MSB
 	 * @param value2 LSB
 	 * @return short v1 * 256 + v2
@@ -138,7 +207,8 @@ public class Utils {
 	}
 
 	/**
-	 * Converts two bytes to a int
+	 * Converts two bytes to a int.
+	 *
 	 * @param value1 MSB
 	 * @param value2 Med
 	 * @param value3 LSB
@@ -149,7 +219,8 @@ public class Utils {
 	}
 
 	/**
-	 * Converts two bytes to a int
+	 * Converts two bytes to a int.
+	 *
 	 * @param value1 MSB
 	 * @param value2 Med MSB
 	 * @param value3 MED LSB
@@ -160,6 +231,12 @@ public class Utils {
 		return (value1 << 16) & 0xFF000000 | (value2 << 8) & 0xFF0000 | (value3 & 0xFF00)| (value4 & 0xFF);
 	}
 
+	/**
+	 * Loads the input hex string into the b[].
+	 *
+	 * @param input the input
+	 * @param b the b
+	 */
 	public static void loadHex(String input, byte[] b) {
 		input = input.toUpperCase();
 		boolean incomment = false;
@@ -224,6 +301,13 @@ public class Utils {
 		}
 	}
 
+	/**
+	 * Gets the offsets of the string offsets.
+	 *
+	 * @param string the string
+	 * @return the offsets
+	 * @throws Exception the exception
+	 */
 	public static List<OffsetEntry> getOffsets(String string) throws Exception {
 		if(string.endsWith(Constants.OFF_EXTENSION)) {
 			string = FileUtils.getCleanOffsets(string);
@@ -247,6 +331,12 @@ public class Utils {
 		return offsets;
 	}
 
+	/**
+	 * Gets the lines cleaned (Only printable chars).
+	 *
+	 * @param lines the lines
+	 * @return the lines cleaned
+	 */
 	public static StringBuffer getLinesCleaned(String[] lines) {
 		StringBuffer cleanedLines = new StringBuffer();
 		for(String line : lines) {
@@ -260,6 +350,13 @@ public class Utils {
 		return cleanedLines;
 	}
 
+	/**
+	 * Returns true if the string has words from the dict.
+	 *
+	 * @param dict .
+	 * @param sentence .
+	 * @return true, if successful
+	 */
 	public static boolean stringHasWords(Collection<String> dict, String sentence) {
 		boolean hasWords = false;
 		sentence = getCleanedString(sentence);
@@ -272,12 +369,25 @@ public class Utils {
 		return hasWords;
 	}
 
+	/**
+	 * Cleans a string from multiple spaces, to lower case, </br>
+	 * and deletes the non digit characters.
+	 *
+	 * @param string the string
+	 * @return the cleaned string
+	 */
 	public static String getCleanedString(String string) {
 		return string.replaceAll(
 				Constants.REGEX_MULTI_SPACES, Constants.SPACE_STR).toLowerCase().replaceAll(
 						Constants.REGEX_NOT_LETTER_DIGIT, Constants.EMPTY);
 	}
 
+	/**
+	 * Returns true if all bytes are equal.
+	 *
+	 * @param entryData the entry data
+	 * @return true, if successful
+	 */
 	public static boolean allSameValue(byte[] entryData) {
 		boolean isEquals = true;
 		for(int i = 0; i < entryData.length; i++) {
@@ -290,10 +400,12 @@ public class Utils {
 	}
 
 	/**
-	 * Generates a hex string of at least length size, padded with zeroes on the left, uppercase.
-	 * @param value
-	 * @param length
-	 * @return
+	 * Generates a hex string of at least length size, padded with zeroes on</br>
+	 * the left, uppercase.
+	 *
+	 * @param value the value
+	 * @param length the length
+	 * @return the string
 	 */
 	public static String intToHexString(int value, int length) {
 		String num = Utils.fillLeft(Integer.toHexString(value), length).toUpperCase();
@@ -303,6 +415,12 @@ public class Utils {
 		return num;
 	}
 
+	/**
+	 * Translates an array of hex values to int values.
+	 *
+	 * @param hexValues the hex values
+	 * @return the int[]
+	 */
 	public static int[] hexStringListToIntList(String[] hexValues) {
 		int[] numbers = new int[hexValues.length];
 		for(int i= 0; i < hexValues.length; i++) {
@@ -311,6 +429,12 @@ public class Utils {
 		return numbers;
 	}
 
+	/**
+	 * Get the OffsetEntries of the string.
+	 *
+	 * @param entries the entries
+	 * @return the hex offsets
+	 */
 	public static List<OffsetEntry> getHexOffsets(String entries) {
 		List<OffsetEntry> entryList = new ArrayList<OffsetEntry>();
 		for(String entryStr : entries.replaceAll(Constants.SPACE_STR, Constants.EMPTY).split(Constants.OFFSET_STR_SEPARATOR)) {
@@ -337,6 +461,14 @@ public class Utils {
 		return entryList;
 	}
 
+	/**
+	 * Sorts the map by value.
+	 *
+	 * @param <K> the key type
+	 * @param <V> the value type
+	 * @param map the map
+	 * @return the map
+	 */
 	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
 		List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
 		Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
@@ -352,6 +484,13 @@ public class Utils {
 		return result;
 	}
 
+	/**
+	 * Transforms the list of entries to the format:</br>
+	 * (start-end-(endchar)+)*etc.
+	 *
+	 * @param offEntries the off entries
+	 * @return the string
+	 */
 	public static String toFileString(List<OffsetEntry> offEntries) {
 		StringBuffer entriesStr = new StringBuffer();
 		for(OffsetEntry entry : offEntries) {
@@ -363,6 +502,12 @@ public class Utils {
 		return entriesStr.toString();
 	}
 
+	/**
+	 * Gets the dict key.
+	 *
+	 * @param line the line
+	 * @return the dict key
+	 */
 	private static String getDictKey(String line) {
 		//;000000DE{text}#117#105
 		String res = null;
@@ -374,10 +519,22 @@ public class Utils {
 		return res;
 	}
 
+	/**
+	 * Checks if is dict value.
+	 *
+	 * @param line the line
+	 * @return true, if is dict value
+	 */
 	private static boolean isDictValue(String line) {
 		return !(line.startsWith(Constants.ADDR_STR) || line.startsWith(Constants.S_COMMENT_LINE) || line.startsWith(Constants.S_MAX_BYTES));
 	}
 
+	/**
+	 * Extracts the dictionary of the file Lines.
+	 *
+	 * @param transFileLines the trans file lines
+	 * @return the map
+	 */
 	public static Map<String, String> extractDictionary(String[] transFileLines) {
 		Map<String, String> dict = new HashMap<String, String>();
 		String currKey = null;
@@ -395,6 +552,14 @@ public class Utils {
 		return dict;
 	}
 
+	/**
+	 * Translates toTransLines if they are on the
+	 * dictionary.
+	 *
+	 * @param toTransLines the to trans lines
+	 * @param dictionary the dictionary
+	 * @return the string[]
+	 */
 	public static String[] translateDictionary(String[] toTransLines, Map<String, String> dictionary) {
 		String[] translatedLines = new String[toTransLines.length];
 		String currKey = null;
@@ -415,15 +580,22 @@ public class Utils {
 	}
 
 	/**
-	 * Devuelve true si key y value tienen la misma longitud
-	 * @param key
-	 * @param value
-	 * @return
+	 * Devuelve true si key y value tienen la misma longitud.
+	 *
+	 * @param key the key
+	 * @param value the value
+	 * @return true, if successful
 	 */
 	public static boolean checkLineLength(String key, String value) {
 		return getLineLength(key).equals(getLineLength(value));
 	}
 
+	/**
+	 * Gets the line length.
+	 *
+	 * @param value the value
+	 * @return the line length
+	 */
 	private static String getLineLength(String value) {
 		return value.substring(value.lastIndexOf(Constants.S_STR_NUM_CHARS));
 	}
