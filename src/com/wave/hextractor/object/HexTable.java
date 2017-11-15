@@ -1,3 +1,6 @@
+/*
+ *
+ */
 package com.wave.hextractor.object;
 
 import java.util.ArrayList;
@@ -17,9 +20,17 @@ import com.wave.hextractor.util.Utils;
  * @author slcantero
  */
 public class HexTable {
+
+	/** The Constant TABLE_KEY_A. */
 	private static final String TABLE_KEY_A = "A";
+
+	/** The Constant TABLE_KEY_LOWA. */
 	private static final String TABLE_KEY_LOWA = "a";
+
+	/** The Constant TABLE_KEY_ZERO. */
 	private static final String TABLE_KEY_ZERO = "0";
+
+	/** The Constant SPANISH_CHARS. */
 	private static final Map<String, String> SPANISH_CHARS = new HashMap<String, String>();
 	static {
 		SPANISH_CHARS.put("a", "á");
@@ -38,13 +49,17 @@ public class HexTable {
 		SPANISH_CHARS.put("N", "Ñ");
 	}
 
+	/** The table. */
 	private Map<Byte, String> table;
+
+	/** The reversed. */
 	private Map<String, Byte> reversed;
 
 	/**
 	 * Transforms the byte into a String.
-	 * @param aByte
-	 * @return
+	 *
+	 * @param aByte the a byte
+	 * @return the string
 	 */
 	public String toString(byte aByte) {
 		String res;
@@ -59,7 +74,8 @@ public class HexTable {
 
 	/**
 	 * Converts the table selection to a line description.
-	 * @return
+	 *
+	 * @return the string
 	 */
 	public String toSelectionString() {
 		StringBuffer res = new StringBuffer();
@@ -78,6 +94,11 @@ public class HexTable {
 		return res.toString();
 	}
 
+	/**
+	 * Load lines.
+	 *
+	 * @param tableLines the table lines
+	 */
 	private void loadLines(List<String> tableLines) {
 		table = new HashMap<Byte, String>();
 		reversed = new HashMap<String, Byte>();
@@ -110,9 +131,9 @@ public class HexTable {
 	}
 
 	/**
-	 * Based in a displacement, reconstruct full table from $20 to $7E (included)
-	 * @param displacement
-	 * @return
+	 * Based in a displacement, reconstruct full table from $20 to $7E (included).
+	 *
+	 * @param displacement the displacement
 	 */
 	public HexTable(int displacement) {
 		List<String> tableLines = new ArrayList<String>();
@@ -132,7 +153,8 @@ public class HexTable {
 
 	/**
 	 * Loads the table lines.
-	 * @param tableLines
+	 *
+	 * @param tableLines the table lines
 	 */
 	public HexTable(List<String> tableLines) {
 		loadLines(tableLines);
@@ -140,8 +162,9 @@ public class HexTable {
 
 	/**
 	 * Loads a table lines file.
-	 * @param tableFile
-	 * @throws Exception
+	 *
+	 * @param tableFile the table file
+	 * @throws Exception the exception
 	 */
 	public HexTable(String tableFile) throws Exception {
 		loadLines(Arrays.asList(FileUtils.getAsciiFile(tableFile).replaceAll(Constants.UTF_8_BOM_BE, Constants.EMPTY).replaceAll(Constants.UTF_8_BOM_LE, Constants.EMPTY).split(String.valueOf(Constants.NEWLINE))));
@@ -149,8 +172,9 @@ public class HexTable {
 
 	/**
 	 * Translates a hex string to ascii.
-	 * @param hexString
-	 * @return
+	 *
+	 * @param hexString the hex string
+	 * @return the string
 	 */
 	public String toAscii(byte[] hexString) {
 		StringBuffer sb = new StringBuffer();
@@ -162,9 +186,10 @@ public class HexTable {
 
 	/**
 	 * Translates to ascii entry to a hex string.
-	 * @param hexString
-	 * @param entry
-	 * @return
+	 *
+	 * @param hexString the hex string
+	 * @param entry the entry
+	 * @return the string
 	 */
 	public String toAscii(byte[] hexString, OffsetEntry entry) {
 		StringBuilder sb = new StringBuilder();
@@ -206,11 +231,12 @@ public class HexTable {
 	}
 
 	/**
-	 * Transforms the ascii string to hex byte[]
-	 * @param string
-	 * @param pointerOffsets
-	 * @param entry
-	 * @return
+	 * Transforms the ascii string to hex byte[].
+	 *
+	 * @param string the string
+	 * @param pointerOffsets the pointer offsets
+	 * @param entry the entry
+	 * @return the byte[]
 	 */
 	public byte[] toHex(String string, Map<Integer, Integer> pointerOffsets, OffsetEntry entry) {
 		int offset = 0;
@@ -374,21 +400,31 @@ public class HexTable {
 		return Arrays.copyOf(hex, maxsize);
 	}
 
+	/**
+	 * The Enum ENTRIES_STATUS.
+	 */
 	enum ENTRIES_STATUS {
+
+		/** The searching start of string. */
 		SEARCHING_START_OF_STRING,
+
+		/** The searching end of string. */
 		SEARCHING_END_OF_STRING,
+
+		/** The skipping chars. */
 		SKIPPING_CHARS,
 	};
 
 	/**
 	 * Get all entries from the file.
-	 * @param secondFileBytes
-	 * @param numMinChars
-	 * @param numIgnoredChars
-	 * @param endCharsList
-	 * @param dictFile
-	 * @return
-	 * @throws Exception
+	 *
+	 * @param secondFileBytes the second file bytes
+	 * @param numMinChars the num min chars
+	 * @param numIgnoredChars the num ignored chars
+	 * @param endCharsList the end chars list
+	 * @param dictFile the dict file
+	 * @return the all entries
+	 * @throws Exception the exception
 	 */
 	public String getAllEntries(byte[] secondFileBytes, int numMinChars, int numIgnoredChars,
 			List<String> endCharsList, String dictFile) throws Exception {
@@ -488,6 +524,13 @@ public class HexTable {
 		return word.toString();
 	}
 
+	/**
+	 * List contains from list.
+	 *
+	 * @param list1 the list 1
+	 * @param list2 the list 2
+	 * @return true, if successful
+	 */
 	private boolean listContainsFromList(List<String> list1, List<String> list2) {
 		boolean res = false;
 		for(String skippedChar : list2) {
@@ -501,7 +544,8 @@ public class HexTable {
 
 	/**
 	 * Transforms the table into ascii.
-	 * @return
+	 *
+	 * @return the string
 	 */
 	public String toAsciiTable() {
 		StringBuffer sb = new StringBuffer();
@@ -519,6 +563,9 @@ public class HexTable {
 
 	/**
 	 * Equals.
+	 *
+	 * @param obj the obj
+	 * @return true, if successful
 	 */
 	public boolean equals(Object obj) {
 		if(!(obj instanceof HexTable)) {

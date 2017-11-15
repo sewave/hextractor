@@ -10,6 +10,7 @@ import com.wave.hextractor.Hextractor;
  * The Class ProjectUtils.
  */
 public class ProjectUtils {
+
 	/** The Constant ECHO_OFF. */
 	private static final String ECHO_OFF = "@echo off";
 
@@ -410,4 +411,19 @@ public class ProjectUtils {
 		projectName = projectName.replaceAll("[^A-Za-z0-9]", "");
 		return projectName.toLowerCase();
 	}
+
+	/**
+	 * Gets the project name (based on the current directory).
+	 *
+	 * @return the project name
+	 */
+	public static final String getProjectName() {
+		try {
+			return new File(Constants.CURRENT_DIR).getCanonicalFile().getName();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Constants.EMPTY;
+		}
+	}
+
 }

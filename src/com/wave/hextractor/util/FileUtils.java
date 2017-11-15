@@ -25,7 +25,7 @@ import com.wave.hextractor.pojo.TableSearchResult;
 public class FileUtils {
 
 	/**
-	 * Getx the extension of a file, i.e.: file.ext => ext
+	 * Gets the extension of a file, i.e.: file.ext => ext
 	 * @param file file to look at.
 	 * @return the extension.
 	 */
@@ -95,9 +95,10 @@ public class FileUtils {
 	/**
 	 * Writes all the bytes to the filename.</br>
 	 * <b>Overwrites the file if exists.</b>
+	 *
 	 * @param filename file to write to.
 	 * @param b file bytes.
-	 * @throws Exception
+	 * @throws Exception the exception
 	 */
 	public static void writeFileBytes(String filename, byte[] b) throws Exception {
 		FileOutputStream stream = new FileOutputStream(filename);
@@ -111,9 +112,10 @@ public class FileUtils {
 	/**
 	 * Writes a string as UTF8 in the destination file.
 	 * <b>Overwrites the file if exists.</b>
+	 *
 	 * @param filename file to write.
 	 * @param ascii string containing the text.
-	 * @throws Exception
+	 * @throws Exception the exception
 	 */
 	public static void writeFileAscii(String filename, String ascii) throws Exception {
 		PrintWriter out = new PrintWriter(filename, Constants.UTF8_ENCODING);
@@ -147,10 +149,11 @@ public class FileUtils {
 	}
 
 	/**
+	 * Insert hex data.
 	 *
-	 * @param firstFile
-	 * @param secondFile
-	 * @throws Exception
+	 * @param firstFile the first file
+	 * @param secondFile the second file
+	 * @throws Exception the exception
 	 */
 	public static void insertHexData(String firstFile, String secondFile) throws Exception {
 		System.out.println("Inserting hex file \"" + firstFile + "\"\n to file \"" + secondFile + "\".");
@@ -160,11 +163,12 @@ public class FileUtils {
 	}
 
 	/**
+	 * Insert ascii as hex.
 	 *
-	 * @param firstFile
-	 * @param secondFile
-	 * @param thirdFile
-	 * @throws Exception
+	 * @param firstFile the first file
+	 * @param secondFile the second file
+	 * @param thirdFile the third file
+	 * @throws Exception the exception
 	 */
 	public static void insertAsciiAsHex(String firstFile, String secondFile, String thirdFile) throws Exception {
 		System.out.println("Inserting ascii file \"" + secondFile + "\"\n using table \"" + firstFile
@@ -223,12 +227,13 @@ public class FileUtils {
 	}
 
 	/**
-	 *Extracts the ascii from secondFile using table firstFile to thirdFile.
-	 * @param firstFile
-	 * @param secondFile
-	 * @param thirdFile
-	 * @param offsetsArg
-	 * @throws Exception
+	 * Extracts the ascii from secondFile using table firstFile to thirdFile.
+	 *
+	 * @param firstFile the first file
+	 * @param secondFile the second file
+	 * @param thirdFile the third file
+	 * @param offsetsArg the offsets arg
+	 * @throws Exception the exception
 	 */
 	public static void extractAsciiFile(String firstFile, String secondFile, String thirdFile,
 			String offsetsArg) throws Exception {
@@ -259,10 +264,11 @@ public class FileUtils {
 
 	/**
 	 * Generates a table file for the input string if found on the rom.
+	 *
 	 * @param firstFile .
 	 * @param outFilePrefix .
 	 * @param searchString .
-	 * @throws Exception
+	 * @throws Exception the exception
 	 */
 	public static void searchRelative8Bits(String firstFile, String outFilePrefix, String searchString) throws Exception {
 		System.out.println("Searching relative string \"" + searchString + "\"\n in \"" + firstFile+"\" "
@@ -281,10 +287,11 @@ public class FileUtils {
 
 	/**
 	 * Searches tables that meet the letter correlation for the target phrase.
-	 * @param fileBytes
-	 * @param searchString
+	 *
+	 * @param fileBytes the file bytes
+	 * @param searchString the search string
 	 * @return list of tables.
-	 * @throws Exception
+	 * @throws Exception the exception
 	 */
 	public static List<TableSearchResult> searchRelative8Bits(byte[] fileBytes, String searchString) throws Exception {
 		List<TableSearchResult> res = new ArrayList<TableSearchResult>();
@@ -355,6 +362,14 @@ public class FileUtils {
 		return res;
 	}
 
+	/**
+	 * Equivalent chars.
+	 *
+	 * @param displacement the displacement
+	 * @param searchBytes the search bytes
+	 * @param fileBytes the file bytes
+	 * @return true, if successful
+	 */
 	private static boolean equivalentChars(int displacement, byte[] searchBytes, byte[] fileBytes) {
 		boolean res = true;
 		for(int i = 0; i < searchBytes.length; i++) {
@@ -370,11 +385,12 @@ public class FileUtils {
 	/**
 	 * Searches all the strings on the rom for the given table</br>
 	 * for the default dictionary name (EngDict.txt).
-	 * @param tableFile
-	 * @param dataFile
-	 * @param numIgnoredChars
-	 * @param endChars
-	 * @throws Exception
+	 *
+	 * @param tableFile the table file
+	 * @param dataFile the data file
+	 * @param numIgnoredChars the num ignored chars
+	 * @param endChars the end chars
+	 * @throws Exception the exception
 	 */
 	public static void searchAllStrings(String tableFile, String dataFile,
 			int numIgnoredChars, String endChars) throws Exception {
@@ -383,11 +399,13 @@ public class FileUtils {
 
 	/**
 	 * Searches all the strings on the rom for the given table.
-	 * @param tableFile
-	 * @param dataFile
-	 * @param numIgnoredChars
-	 * @param endChars
-	 * @throws Exception
+	 *
+	 * @param tableFile the table file
+	 * @param dataFile the data file
+	 * @param numIgnoredChars the num ignored chars
+	 * @param endChars the end chars
+	 * @param dictFile the dict file
+	 * @throws Exception the exception
 	 */
 	public static void searchAllStrings(String tableFile, String dataFile,
 			int numIgnoredChars, String endChars, String dictFile) throws Exception {
@@ -461,20 +479,22 @@ public class FileUtils {
 
 	/**
 	 * Returns offsets as a unique line.
-	 * @param string
-	 * @return
-	 * @throws Exception
+	 *
+	 * @param string the string
+	 * @return the clean offsets
+	 * @throws Exception the exception
 	 */
 	public static String getCleanOffsets(String string) throws Exception {
 		return FileUtils.getAsciiFile(string).replaceAll(Constants.S_NEWLINE, Constants.EMPTY).replaceAll(Constants.S_CRETURN, Constants.EMPTY);
 	}
 
 	/**
-	 * Auto translates the text in 2 passes, 1 will
-	 * @param toTransFile
-	 * @param transFile
-	 * @param outFile
-	 * @throws Exception
+	 * Auto translates the text in 2 passes, 1 will.
+	 *
+	 * @param toTransFile the to trans file
+	 * @param transFile the trans file
+	 * @param outFile the out file
+	 * @throws Exception the exception
 	 */
 	public static void autoTranslateWithDictionary(String toTransFile, String transFile, String outFile) throws Exception {
 		//TODO???
@@ -482,8 +502,9 @@ public class FileUtils {
 
 	/**
 	 * Check if the line lengths are ok.
-	 * @param toCheckFile
-	 * @throws Exception
+	 *
+	 * @param toCheckFile the to check file
+	 * @throws Exception the exception
 	 */
 	public static void checkLineLength(String toCheckFile) throws Exception {
 		System.out.println("Checking file lines of \"" + toCheckFile);

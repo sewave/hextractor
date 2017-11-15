@@ -1,17 +1,21 @@
 package com.wave.hextractor;
 
-import com.wave.hextractor.object.HexViewer;
-import com.wave.hextractor.util.Checksum;
+import com.wave.hextractor.gui.HexViewer;
+import com.wave.hextractor.util.ChecksumUtils;
 import com.wave.hextractor.util.FileUtils;
-import com.wave.hextractor.util.Patcher;
+import com.wave.hextractor.util.IpsPatchUtils;
 
 /**
  * Main class that routes all the options.
  * @author slcantero
  */
 public class Hextractor {
+
+	/** The Constant HEADER. */
 	private static final String HEADER = "HEXTRACTOR v0.9 (c) Wave 10/11/2017 \n"
 			+ " Type -? for help. / Escribe -? para ayuda";
+
+	/** The Constant USAGE. */
 	private static final String USAGE = "EXTRACT ASCII FILE FROM HEX / EXTRAER ARCHIVO ASCII DE HEXADECIMAL \n"
 			+ "-a tableFile file scriptAsciiFile offsetsList (START-END-STRING_END_CHAR(1+))\n"
 			+ "INSERT ASCII AS HEX / INSERTAR ASCII COMO HEX\n" + "-h scriptAsciiFile tableFile targetFile \n"
@@ -37,34 +41,78 @@ public class Hextractor {
 			+ "APPLY IPS PATCH / APLICAR PARCHE IPS \n" + "-aip originalFile modifiedFile patchFile \n"
 			+ "CHECK LINE LENGTHS / VERIFICAR TAMAÑO LINEA \n" + "-cll extFile \n";
 
+	/** The Constant MODE_TRANSLATE_SIMILAR. */
 	public static final String MODE_TRANSLATE_SIMILAR = "-trs";
+
+	/** The Constant MODE_FIX_MEGADRIVE_CHECKSUM. */
 	public static final String MODE_FIX_MEGADRIVE_CHECKSUM = "-fcm";
+
+	/** The Constant MODE_FIX_GAMEBOY_CHECKSUM. */
 	public static final String MODE_FIX_GAMEBOY_CHECKSUM = "-fcg";
+
+	/** The Constant MODE_FIX_SNES_CHECKSUM. */
 	public static final String MODE_FIX_SNES_CHECKSUM = "-fcs";
+
+	/** The Constant MODE_FIX_ZXTAP_CHECKSUM. */
 	public static final String MODE_FIX_ZXTAP_CHECKSUM = "-fctap";
+
+	/** The Constant MODE_FIX_ZXTZX_CHECKSUM. */
 	public static final String MODE_FIX_ZXTZX_CHECKSUM = "-fctzx";
+
+	/** The Constant MODE_CLEAN_ASCII. */
 	public static final String MODE_CLEAN_ASCII = "-ca";
+
+	/** The Constant MODE_INSERT_HEX. */
 	public static final String MODE_INSERT_HEX = "-ih";
+
+	/** The Constant MODE_ASCII_TO_HEX. */
 	public static final String MODE_ASCII_TO_HEX = "-h";
+
+	/** The Constant MODE_EXTRACT_ASCII. */
 	public static final String MODE_EXTRACT_ASCII = "-a";
+
+	/** The Constant MODE_INTERLEAVE_FILES. */
 	public static final String MODE_INTERLEAVE_FILES = "-i";
+
+	/** The Constant MODE_SEARCH_RELATIVE_8. */
 	public static final String MODE_SEARCH_RELATIVE_8 = "-sr8";
+
+	/** The Constant MODE_SEARCH_ALL. */
 	public static final String MODE_SEARCH_ALL = "-sa";
+
+	/** The Constant MODE_CLEAN_EXTRACTED_FILE. */
 	public static final String MODE_CLEAN_EXTRACTED_FILE = "-cef";
+
+	/** The Constant CREATE_IPS_PATCH. */
 	public static final String CREATE_IPS_PATCH = "-cip";
+
+	/** The Constant MODE_VERIFY_IPS_PATCH. */
 	public static final String MODE_VERIFY_IPS_PATCH = "-vip";
+
+	/** The Constant MODE_APPLY_IPS_PATCH. */
 	public static final String MODE_APPLY_IPS_PATCH = "-aip";
+
+	/** The Constant MODE_EXTRACT_HEX. */
 	public static final String MODE_EXTRACT_HEX = "-eh";
+
+	/** The Constant MODE_HEX_VIEW. */
 	public static final String MODE_HEX_VIEW = "-hv";
+
+	/** The Constant MODE_CHECK_LINE_LENGTH. */
 	public static final String MODE_CHECK_LINE_LENGTH = "-cll";
 
+	/**
+	 * Prints the usage.
+	 */
 	private static void printUsage() {
 		System.out.println(USAGE);
 	}
 
 	/**
 	 * Main program start.
-	 * @param args
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		System.out.println(HEADER);
@@ -74,22 +122,22 @@ public class Hextractor {
 			switch (args.length) {
 			case 2:
 				if (MODE_FIX_MEGADRIVE_CHECKSUM.equals(mode)) {
-					Checksum.checkUpdateMegaDriveChecksum(args[1]);
+					ChecksumUtils.checkUpdateMegaDriveChecksum(args[1]);
 				} else {
 					if (MODE_FIX_GAMEBOY_CHECKSUM.equals(mode)) {
-						Checksum.checkUpdateGameBoyChecksum(args[1]);
+						ChecksumUtils.checkUpdateGameBoyChecksum(args[1]);
 					} else {
 						if (MODE_FIX_SNES_CHECKSUM.equals(mode)) {
-							Checksum.checkUpdateSnesChecksum(args[1]);
+							ChecksumUtils.checkUpdateSnesChecksum(args[1]);
 						} else {
 							if (MODE_HEX_VIEW.equals(mode)) {
 								HexViewer.view(args[1]);
 							} else {
 								if (MODE_FIX_ZXTAP_CHECKSUM.equals(mode)) {
-									Checksum.checkUpdateZxTapChecksum(args[1]);
+									ChecksumUtils.checkUpdateZxTapChecksum(args[1]);
 								} else {
 									if (MODE_FIX_ZXTZX_CHECKSUM.equals(mode)) {
-										Checksum.checkUpdateZxTzxChecksum(args[1]);
+										ChecksumUtils.checkUpdateZxTzxChecksum(args[1]);
 									} else {
 										if (MODE_CHECK_LINE_LENGTH.equals(mode)) {
 											FileUtils.checkLineLength(args[1]);
@@ -117,10 +165,10 @@ public class Hextractor {
 								HexViewer.view(args[1], args[2]);
 							} else {
 								if (MODE_FIX_ZXTAP_CHECKSUM.equals(mode)) {
-									Checksum.checkUpdateZxTapChecksum(args[1], args[2]);
+									ChecksumUtils.checkUpdateZxTapChecksum(args[1], args[2]);
 								} else {
 									if (MODE_FIX_ZXTZX_CHECKSUM.equals(mode)) {
-										Checksum.checkUpdateZxTzxChecksum(args[1], args[2]);
+										ChecksumUtils.checkUpdateZxTzxChecksum(args[1], args[2]);
 									} else {
 										printUsage();
 									}
@@ -138,13 +186,13 @@ public class Hextractor {
 						FileUtils.searchRelative8Bits(args[1], args[2], args[3]);
 					} else {
 						if (CREATE_IPS_PATCH.equals(mode)) {
-							Patcher.createIpsPatch(args[1], args[2], args[3]);
+							IpsPatchUtils.createIpsPatch(args[1], args[2], args[3]);
 						} else {
 							if (MODE_APPLY_IPS_PATCH.equals(mode)) {
-								Patcher.applyIpsPatch(args[1], args[2], args[3]);
+								IpsPatchUtils.applyIpsPatch(args[1], args[2], args[3]);
 							} else {
 								if (MODE_VERIFY_IPS_PATCH.equals(mode)) {
-									Patcher.validateIpsPatch(args[1], args[2], args[3]);
+									IpsPatchUtils.validateIpsPatch(args[1], args[2], args[3]);
 								} else {
 									if (MODE_EXTRACT_HEX.equals(mode)) {
 										FileUtils.extractHexData(args[1], args[2], args[3]);

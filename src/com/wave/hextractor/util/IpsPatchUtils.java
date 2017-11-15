@@ -9,7 +9,7 @@ import com.wave.hextractor.pojo.IpsPatchEntry;
 /**
  * The Class Patcher.
  */
-public class Patcher {
+public class IpsPatchUtils {
 
 	/**
 	 * Creates a IPS patch file patchFile from de differences between

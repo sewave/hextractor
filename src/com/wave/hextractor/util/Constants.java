@@ -10,6 +10,12 @@ import java.util.List;
  */
 public class Constants {
 
+	/** The Constant HEX_VALUE_SIZE. */
+	public static final int HEX_VALUE_SIZE =  3;
+
+	/** The Constant CURRENT_DIR. */
+	public static final String CURRENT_DIR = ".";
+
 	/** The Constant FILE_SEPARATOR. */
 	public static final String FILE_SEPARATOR = System.getProperty("file.separator");
 

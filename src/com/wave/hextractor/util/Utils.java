@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.wave.hextractor.object.HexTable;
 import com.wave.hextractor.pojo.OffsetEntry;
 
 /**
@@ -598,6 +599,48 @@ public class Utils {
 	 */
 	private static String getLineLength(String value) {
 		return value.substring(value.lastIndexOf(Constants.S_STR_NUM_CHARS));
+	}
+
+	/**
+	 * Gets the text area using the table.
+	 *
+	 * @param offset the offset
+	 * @param length the length
+	 * @param data
+	 * @param hexTable
+	 * @return the text area
+	 */
+	public static final String getTextArea(int offset, int length, byte[] data, HexTable hexTable) {
+		StringBuffer sb = new StringBuffer(length);
+		int end = offset + length;
+		if(end > data.length) {
+			end = data.length;
+		}
+		for(int i = offset; i < end; i++) {
+			sb.append(hexTable.toString(data[i]));
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Gets the hex area as string 00 01 02 etc.
+	 *
+	 * @param offset the offset
+	 * @param length the length
+	 * @param data the data.
+	 * @return the hex area
+	 */
+	public static final String getHexArea(int offset, int length, byte[] data) {
+		StringBuffer sb = new StringBuffer(length * Constants.HEX_VALUE_SIZE);
+		int end = offset + length;
+		if(end > data.length) {
+			end = data.length;
+		}
+		for(int i = offset; i < end; i++) {
+			sb.append(String.format(Constants.HEX_16_FORMAT, data[i]));
+			sb.append(Constants.SPACE_STR);
+		}
+		return sb.toString();
 	}
 
 }

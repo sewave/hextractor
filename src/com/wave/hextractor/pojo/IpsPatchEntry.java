@@ -8,21 +8,41 @@ import com.wave.hextractor.util.Utils;
  * @author slcantero
  */
 public class IpsPatchEntry {
+
+	/** The Constant IPS_OFFSET_SIZE. */
 	public static final int IPS_OFFSET_SIZE = 3;
+
+	/** The Constant IPS_DATA_SIZE. */
 	public static final int IPS_DATA_SIZE = 2;
+
+	/** The Constant IPS_RLE_DATA_SIZE. */
 	public static final int IPS_RLE_DATA_SIZE = 2;
+
+	/** The Constant IPS_RLE_DATA_BIN_SIZE. */
 	public static final int IPS_RLE_DATA_BIN_SIZE = 2;
+
+	/** The Constant IPS_RLE_MODE. */
 	public static final int IPS_RLE_MODE = 0;
+
+	/** The Constant IPS_CHUNK_MIN_SIZE. */
 	public static final int IPS_CHUNK_MIN_SIZE = IPS_OFFSET_SIZE + IPS_DATA_SIZE + 1;
 
+	/** The offset. */
 	int offset;
+
+	/** The size. */
 	int size;
+
+	/** The rle size. */
 	int rleSize;
+
+	/** The data. */
 	byte[] data;
 
 	/**
 	 * Get binary data size.
-	 * @return
+	 *
+	 * @return the bin size
 	 */
 	public int getBinSize() {
 		int binSize = IPS_OFFSET_SIZE + IPS_DATA_SIZE;
@@ -36,7 +56,8 @@ public class IpsPatchEntry {
 
 	/**
 	 * Converts the entry to byte[].
-	 * @return
+	 *
+	 * @return the byte[]
 	 */
 	public byte[] toBin() {
 		byte[] binEntry = new byte[getBinSize()];
@@ -71,6 +92,8 @@ public class IpsPatchEntry {
 
 	/**
 	 * toString().
+	 *
+	 * @return the string
 	 */
 	@Override
 	public String toString() {
@@ -90,10 +113,11 @@ public class IpsPatchEntry {
 	}
 
 	/**
-	 * IpsPatchEntry
-	 * @param offset
-	 * @param size
-	 * @param data
+	 * IpsPatchEntry.
+	 *
+	 * @param offset the offset
+	 * @param size the size
+	 * @param data the data
 	 */
 	public IpsPatchEntry(int offset, int size, byte[] data) {
 		super();
@@ -103,11 +127,12 @@ public class IpsPatchEntry {
 	}
 
 	/**
-	 * IpsPatchEntry
-	 * @param offset
-	 * @param size
-	 * @param rleSize
-	 * @param data
+	 * IpsPatchEntry.
+	 *
+	 * @param offset the offset
+	 * @param size the size
+	 * @param rleSize the rle size
+	 * @param data the data
 	 */
 	public IpsPatchEntry(int offset, int size, int rleSize, byte[] data) {
 		super();
@@ -119,7 +144,8 @@ public class IpsPatchEntry {
 
 	/**
 	 * Returns the rleSize.
-	 * @return
+	 *
+	 * @return the rle size
 	 */
 	public int getRleSize() {
 		return rleSize;
@@ -127,7 +153,8 @@ public class IpsPatchEntry {
 
 	/**
 	 * Set the rle size.
-	 * @param rleSize
+	 *
+	 * @param rleSize the new rle size
 	 */
 	public void setRleSize(int rleSize) {
 		this.rleSize = rleSize;
@@ -135,7 +162,8 @@ public class IpsPatchEntry {
 
 	/**
 	 * Get the data.
-	 * @return
+	 *
+	 * @return the data
 	 */
 	public byte[] getData() {
 		return data;
@@ -143,16 +171,18 @@ public class IpsPatchEntry {
 
 	/**
 	 * Set the data.
-	 * @param data
+	 *
+	 * @param data the new data
 	 */
 	public void setData(byte[] data) {
 		this.data = data;
 	}
 
 	/**
-	 * IpsPatchEntry
-	 * @param offset
-	 * @param size
+	 * IpsPatchEntry.
+	 *
+	 * @param offset the offset
+	 * @param size the size
 	 */
 	public IpsPatchEntry(int offset, int size) {
 		this.offset = offset;
@@ -160,8 +190,9 @@ public class IpsPatchEntry {
 	}
 
 	/**
-	 * IpsPatchEntry
-	 * @param offset
+	 * IpsPatchEntry.
+	 *
+	 * @param offset the offset
 	 */
 	public IpsPatchEntry(int offset) {
 		this.offset = offset;
@@ -169,7 +200,8 @@ public class IpsPatchEntry {
 
 	/**
 	 * Get offset.
-	 * @return
+	 *
+	 * @return the offset
 	 */
 	public int getOffset() {
 		return offset;
@@ -177,7 +209,8 @@ public class IpsPatchEntry {
 
 	/**
 	 * Set offset.
-	 * @param offset
+	 *
+	 * @param offset the new offset
 	 */
 	public void setOffset(int offset) {
 		this.offset = offset;
@@ -185,7 +218,8 @@ public class IpsPatchEntry {
 
 	/**
 	 * Get size.
-	 * @return
+	 *
+	 * @return the size
 	 */
 	public int getSize() {
 		return size;
@@ -193,7 +227,8 @@ public class IpsPatchEntry {
 
 	/**
 	 * Set size.
-	 * @param size
+	 *
+	 * @param size the new size
 	 */
 	public void setSize(int size) {
 		this.size = size;
