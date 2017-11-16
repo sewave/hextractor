@@ -35,6 +35,7 @@ import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -116,9 +117,6 @@ public class HexViewer extends JFrame implements ActionListener {
 	/** The Constant DEC_STARTS. */
 	private static final String DEC_STARTS = "d";
 
-	/** The Constant RB_NAME. */
-	private static final String RB_NAME= "app";
-
 	/** The Constant DEFAULT_TABLE. */
 	private static final String DEFAULT_TABLE = "ascii.tbl";
 
@@ -142,6 +140,9 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The Constant REGEXP_OFFSET_ENTRIES. */
 	private static final String REGEXP_OFFSET_ENTRIES = "[0-9A-Fa-f]{2}(-[0-9A-Fa-f]{2})*";
+
+	/** The Constant DIMENSION_0_0. */
+	private static final Dimension DIMENSION_0_0 = new Dimension(0,0);
 
 	/** The other entry. */
 	private SimpleEntry<String, String> otherEntry;
@@ -240,10 +241,10 @@ public class HexViewer extends JFrame implements ActionListener {
 	private JMenu helpMenu;
 
 	/** The about menu item. */
-	private JMenuItem aboutMenuItem;
+	private JMenuItem about;
 
 	/** The help item. */
-	private JMenuItem helpItem;
+	private JMenuItem help;
 
 	/** The tools menu. */
 	private JMenu toolsMenu;
@@ -341,8 +342,14 @@ public class HexViewer extends JFrame implements ActionListener {
 	/** The visible rows. */
 	private int visibleRows = MAX_COLS_AND_ROWS;
 
-	/** The half width mode. */
-	private boolean halfWidthMode = false;
+	/** The view menu. */
+	private JMenu viewMenu;
+
+	/** The view 16 cols menu item. */
+	private JCheckBoxMenuItem view16Cols;
+
+	/** The view 16 rows menu item. */
+	private JCheckBoxMenuItem view16Rows;
 
 	/**
 	 * Gets the offset block.
@@ -561,7 +568,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			try {
 				minMaxLength = Integer.parseInt(valor);
 			} catch (NumberFormatException e1) {
-				JOptionPane.showMessageDialog(helpItem, rb.getString(KeyConstants.KEY_OFFSET_SPLIT_CANCEL),
+				JOptionPane.showMessageDialog(help, rb.getString(KeyConstants.KEY_OFFSET_SPLIT_CANCEL),
 						rb.getString(KeyConstants.KEY_OFFSET_SPLIT_CANCEL_TITLE), JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
@@ -647,17 +654,18 @@ public class HexViewer extends JFrame implements ActionListener {
 		secondRow.setLayout(new FlowLayout(FlowLayout.LEADING));
 		add(firstRow);
 		add(secondRow);
-		offsetsTextArea = new JTextArea(visibleRows, Constants.HEX_ADDR_SIZE);
-		offsetsTextArea.setLineWrap(Boolean.TRUE);
+		offsetsTextArea = new JTextArea(visibleRows, Constants.HEX_ADDR_SIZE + HEX_STARTS.length() + Constants.SPACE_STR.length());
+		offsetsTextArea.setPreferredSize(DIMENSION_0_0);
+		offsetsTextArea.setLineWrap(true);
 		offsetsTextArea.setBackground(Color.BLACK);
 		offsetsTextArea.setForeground(Color.WHITE);
 		offsetsTextArea.setEditable(false);
 		offsetsTextArea.setDisabledTextColor(Color.WHITE);
 		offsetsTextArea.setEnabled(false);
 		firstRow.add(offsetsTextArea);
-		offsetsTextArea.setText(getVisibleOffsets(offset, visibleRows));
+		offsetsTextArea.setText(getVisibleOffsets(offset, visibleColumns, visibleRows));
 		hexTextArea = new JTextArea(visibleRows, visibleColumns * Constants.HEX_VALUE_SIZE);
-		hexTextArea.setLineWrap(Boolean.TRUE);
+		hexTextArea.setLineWrap(true);
 		hexTextArea.setBackground(Color.BLACK);
 		hexTextArea.setForeground(Color.WHITE);
 		hexTextArea.setEditable(false);
@@ -744,26 +752,38 @@ public class HexViewer extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Change visible mode.
-	 *
-	 * @param sixTeenColumnsMode the six teen columns mode
+	 * Change view mode.
 	 */
-	private void changeVisibleMode() {
-		halfWidthMode ^= true;
-		if(halfWidthMode) {
+	private void changeViewMode() {
+		if(view16Cols.getState()) {
 			visibleColumns = MIN_COLS_AND_ROWS;
 		}
 		else {
 			visibleColumns = MAX_COLS_AND_ROWS;
 		}
-		setVisible(false);
+		int oldVisibleRows = visibleRows;
+		if(view16Rows.getState()) {
+			visibleRows = MIN_COLS_AND_ROWS;
+		}
+		else {
+			visibleRows = MAX_COLS_AND_ROWS;
+		}
+		if(oldVisibleRows > visibleRows) {
+			vsb.setPreferredSize(new Dimension((int) vsb.getPreferredSize().getWidth(), (int) vsb.getPreferredSize().getHeight() / 2));
+		}
+		if(oldVisibleRows < visibleRows) {
+			vsb.setPreferredSize(new Dimension((int) vsb.getPreferredSize().getWidth(), (int) vsb.getPreferredSize().getHeight() * 2));
+		}
 		hexTextArea.setColumns(visibleColumns * Constants.HEX_VALUE_SIZE);
 		hexTextArea.setRows(visibleRows);
+		hexTextArea.setPreferredSize(DIMENSION_0_0);
 		asciiTextArea.setColumns(visibleColumns);
 		asciiTextArea.setRows(visibleRows);
+		asciiTextArea.setPreferredSize(DIMENSION_0_0);
+		offsetsTextArea.setPreferredSize(DIMENSION_0_0);
+		offsetsTextArea.setRows(visibleRows);
 		pack();
 		refreshAll();
-		setVisible(true);
 	}
 
 	/**
@@ -967,11 +987,6 @@ public class HexViewer extends JFrame implements ActionListener {
 				case KeyEvent.VK_PAGE_UP:
 					offset -= getOffsetBlock();
 					break;
-				case KeyEvent.VK_M:
-					if ((keyEvent.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
-						changeVisibleMode();
-					}
-					break;
 				case KeyEvent.VK_END:
 					if ((keyEvent.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
 						offset = (fileBytes.length - getViewSize());
@@ -1030,14 +1045,15 @@ public class HexViewer extends JFrame implements ActionListener {
 	 * Gets the visible offsets.
 	 *
 	 * @param offset the starting offset
+	 * @param columns num of columns
+	 * @param rows num of rows
 	 * @return the visible offsets
 	 */
-	private static final String getVisibleOffsets(int offset, int offsetUnit) {
-		StringBuffer sb = new StringBuffer((Constants.HEX_ADDR_SIZE + HEX_STARTS.length()) * offsetUnit);
-		for(int i = 0; i < offsetUnit; i++) {
+	private static final String getVisibleOffsets(int offset, int columns, int rows) {
+		StringBuffer sb = new StringBuffer((Constants.HEX_ADDR_SIZE + HEX_STARTS.length() + Constants.SPACE_STR.length()) * rows);
+		for(int i = 0; i < rows; i++) {
 			sb.append(HEX_STARTS);
-			sb.append(Utils.intToHexString(offset + i * offsetUnit, Constants.HEX_ADDR_SIZE));
-			sb.append(Constants.SPACE_STR);
+			sb.append(Utils.intToHexString(offset + i * columns, Constants.HEX_ADDR_SIZE));
 			sb.append(Constants.SPACE_STR);
 		}
 		return sb.toString();
@@ -1063,7 +1079,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 		asciiTextArea.setText(Utils.getTextArea(offset, getViewSize(), fileBytes, hexTable));
 		hexTextArea.setText(Utils.getHexArea(offset, getViewSize(), fileBytes));
-		offsetsTextArea.setText(getVisibleOffsets(offset, visibleColumns));
+		offsetsTextArea.setText(getVisibleOffsets(offset, visibleColumns, visibleRows));
 		vsb.setMinimum(0);
 		vsb.setMaximum(fileBytes.length - getViewSize());
 		vsb.setUnitIncrement(visibleColumns);
@@ -1090,6 +1106,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		offsetMenu = new JMenu(rb.getString(KeyConstants.KEY_OFFSETMENU));
 		toolsMenu = new JMenu(rb.getString(KeyConstants.KEY_TOOLS_MENU));
 		helpMenu = new JMenu(rb.getString(KeyConstants.KEY_HELP_MENU));
+		viewMenu = new JMenu(rb.getString(KeyConstants.KEY_VIEW_MENU));
 
 		//Items
 		exit =  new JMenuItem(rb.getString(KeyConstants.KEY_EXIT_MENUITEM));
@@ -1097,8 +1114,8 @@ public class HexViewer extends JFrame implements ActionListener {
 		newProject = new JMenuItem(rb.getString(KeyConstants.KEY_NEW_PROJECT_MENUITEM));
 		openTable = new JMenuItem(rb.getString(KeyConstants.KEY_OPEN_TABLE_MENUITEM));
 		saveTable = new JMenuItem(rb.getString(KeyConstants.KEY_SAVE_TABLE_MENUITEM));
-		aboutMenuItem = new JMenuItem(rb.getString(KeyConstants.KEY_ABOUT_MENUITEM));
-		helpItem = new JMenuItem(rb.getString(KeyConstants.KEY_HELP_MENUITEM));
+		about = new JMenuItem(rb.getString(KeyConstants.KEY_ABOUT_MENUITEM));
+		help = new JMenuItem(rb.getString(KeyConstants.KEY_HELP_MENUITEM));
 		goTo = new JMenuItem(rb.getString(KeyConstants.KEY_GOTO_MENUITEM));
 		searchRelative = new JMenuItem(rb.getString(KeyConstants.KEY_SEARCH_RELATIVE_MENUITEM));
 		find = new JMenuItem(rb.getString(KeyConstants.KEY_FIND_MENUITEM));
@@ -1107,6 +1124,8 @@ public class HexViewer extends JFrame implements ActionListener {
 		nextOffset = new JMenuItem(rb.getString(KeyConstants.KEY_NEXT_RANGE_MENUITEM));
 		prevOffset = new JMenuItem(rb.getString(KeyConstants.KEY_PREV_TANGE_MENUITEM));
 		clearOffsets = new JMenuItem(rb.getString(KeyConstants.KEY_CLEAN_OFFSETS));
+		view16Cols = new JCheckBoxMenuItem(rb.getString(KeyConstants.KEY_16COLS_MENUITEM));
+		view16Rows = new JCheckBoxMenuItem(rb.getString(KeyConstants.KEY_16ROWS_MENUITEM));
 
 		tableFilter = new SimpleFilter(EXTENSION_TABLE, rb.getString(KeyConstants.KEY_FILTER_TABLE));
 		offsetFileFilter = new SimpleFilter(EXTENSION_OFFSET, rb.getString(KeyConstants.KEY_FILTER_OFFSET));
@@ -1128,13 +1147,18 @@ public class HexViewer extends JFrame implements ActionListener {
 		toolsMenu.add(goTo);
 		toolsMenu.add(searchRelative);
 		toolsMenu.add(find);
-		helpMenu.add(helpItem);
-		helpMenu.add(aboutMenuItem);
+
+		viewMenu.add(view16Cols);
+		viewMenu.add(view16Rows);
+
+		helpMenu.add(help);
+		helpMenu.add(about);
 
 		menuBar.add(fileMenu);
 		menuBar.add(tableMenu);
 		menuBar.add(offsetMenu);
 		menuBar.add(toolsMenu);
+		menuBar.add(viewMenu);
 		menuBar.add(helpMenu);
 
 		//Actions
@@ -1197,25 +1221,42 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
+
 	/**
 	 * Sets the actions.
 	 */
 	private void setActions() {
-		helpItem.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_HELP_MENUITEM)) {
+		view16Cols.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_16COLS_MENUITEM)) {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 251407879942401227L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				changeViewMode();
+			}
+		});
+		view16Rows.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_16ROWS_MENUITEM)) {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 251407879942401225L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				changeViewMode();
+			}
+		});
+		help.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_HELP_MENUITEM)) {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 251407879942401229L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(helpItem, rb.getString(KeyConstants.KEY_HELP_DESC),
+				JOptionPane.showMessageDialog(help, rb.getString(KeyConstants.KEY_HELP_DESC),
 						rb.getString(KeyConstants.KEY_HELP_MENUITEM), JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
-		aboutMenuItem.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_ABOUT_MENUITEM)) {
+		about.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_ABOUT_MENUITEM)) {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 251407879942401229L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(aboutMenuItem, rb.getString(KeyConstants.KEY_ABOUT_DESC) ,
+				JOptionPane.showMessageDialog(about, rb.getString(KeyConstants.KEY_ABOUT_DESC) ,
 						rb.getString(KeyConstants.KEY_ABOUT_MENUITEM), JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
@@ -1268,7 +1309,6 @@ public class HexViewer extends JFrame implements ActionListener {
 				}
 			}
 		});
-
 		newProject.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_NEW_PROJECT_MENUITEM)) {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 251417879942401219L;
@@ -1277,7 +1317,6 @@ public class HexViewer extends JFrame implements ActionListener {
 				createProjectWindow();
 			}
 		});
-
 		goTo.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_GOTO_MENUITEM)) {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 251407879942401217L;
@@ -1309,7 +1348,7 @@ public class HexViewer extends JFrame implements ActionListener {
 					try {
 						List<TableSearchResult> results = FileUtils.searchRelative8Bits(fileBytes, searchString);
 						if(results.isEmpty()) {
-							JOptionPane.showMessageDialog(helpItem, rb.getString(KeyConstants.KEY_NO_RESULTS_DESC),
+							JOptionPane.showMessageDialog(help, rb.getString(KeyConstants.KEY_NO_RESULTS_DESC),
 									rb.getString(KeyConstants.KEY_NO_RESULTS_TITLE), JOptionPane.INFORMATION_MESSAGE);
 						}
 						else {
@@ -1325,7 +1364,6 @@ public class HexViewer extends JFrame implements ActionListener {
 				}
 			}
 		});
-
 		find.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_FIND_MENUITEM)) {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 251407879942401219L;
@@ -1337,7 +1375,7 @@ public class HexViewer extends JFrame implements ActionListener {
 					try {
 						List<Integer> results = FileUtils.findString(fileBytes, hexTable, searchString, true);
 						if(results.isEmpty()) {
-							JOptionPane.showMessageDialog(helpItem, rb.getString(KeyConstants.KEY_NO_RESULTS_DESC),
+							JOptionPane.showMessageDialog(help, rb.getString(KeyConstants.KEY_NO_RESULTS_DESC),
 									rb.getString(KeyConstants.KEY_NO_RESULTS_TITLE), JOptionPane.INFORMATION_MESSAGE);
 						}
 						else {
@@ -1470,11 +1508,9 @@ public class HexViewer extends JFrame implements ActionListener {
 				}
 			}
 		});
-
 		newPrjWinCreateButton = new JButton(rb.getString(KeyConstants.KEY_NEW_PRJ_CREA_BUT));
 		newPrjWinCancelButton = new JButton(rb.getString(KeyConstants.KEY_NEW_PRJ_CLOSE_BUT));
 		newPrjWinSearchFileButton = new JButton(rb.getString(KeyConstants.KEY_FIND_MENUITEM));
-
 		newPrjWinSearchFileButton.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_FIND_MENUITEM)) {
 			/** serialVersionUID */
 			private static final long serialVersionUID = -1221167224372368937L;
@@ -1531,7 +1567,6 @@ public class HexViewer extends JFrame implements ActionListener {
 			}
 		});
 		newPrjWinCancelButton.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_NEW_PRJ_CLOSE_BUT)) {
-
 			private static final long serialVersionUID = -1221167224371368937L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1697,7 +1732,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		rb = ResourceBundle.getBundle(RB_NAME, Locale.getDefault());
+		rb = ResourceBundle.getBundle(Constants.RB_NAME, Locale.getDefault());
 	}
 
 	/**

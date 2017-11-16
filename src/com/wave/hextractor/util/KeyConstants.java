@@ -1,5 +1,6 @@
 package com.wave.hextractor.util;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class KeyConstants.
  */
@@ -214,5 +215,20 @@ public class KeyConstants {
 
 	/** The Constant KEY_CONFIRM_FILE_OVERWRITE_ACTION. */
 	public static final String KEY_CONFIRM_FILE_OVERWRITE_ACTION = "confirmReplaceFileAction";
+
+	/** The Constant KEY_VIEW_MENU. */
+	public static final String KEY_VIEW_MENU = "viewMenu";
+
+	/** The Constant KEY_16COLS_MENUITEM. */
+	public static final String KEY_16COLS_MENUITEM = "16ColsMenuItem";
+
+	/** The Constant KEY_16ROWS_MENUITEM. */
+	public static final String KEY_16ROWS_MENUITEM = "16RowsMenuItem";
+
+	/** The Constant KEY_CONSOLE_HEADER. */
+	public static final String KEY_CONSOLE_HEADER = "appConsoleHeader";
+
+	/** The Constant KEY_CONSOLE_HELP. */
+	public static final String KEY_CONSOLE_HELP = "appConsoleHelp";
 
 }

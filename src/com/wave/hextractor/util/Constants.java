@@ -9,6 +9,8 @@ import java.util.List;
  * @author slcantero
  */
 public class Constants {
+	/** The Constant RB_NAME. */
+	public static final String RB_NAME= "app";
 
 	/** The Constant HEX_VALUE_SIZE. */
 	public static final int HEX_VALUE_SIZE =  3;
