@@ -21,17 +21,15 @@ Herramienta con diferentes modos para ayudar a traducir juegos utilizando tablas
 #### FIX ZX TAP CHECKSUM / REPARAR CHECKSUM ZX TAP  
 -fctap tap originalTap  
 #### FIX ZX TZX OR CPC CDT CHECKSUM / REPARAR CHECKSUM ZX TZX O CPC CDT  
--fctap tzx/cdt   
+-fctzx tzx/cdt   
 #### FIX ZX TZX OR CPC CDT CHECKSUM / REPARAR CHECKSUM ZX TZX O CPC CDT  
--fctap tzx/cdt originalTzx/Cdt  
+-fctzx tzx/cdt originalTzx/Cdt  
 #### CLEAN EXTRACTED TEXT FILE / LIMPIAR FICHERO DE TEXTO EXTRAIDO  
 -ca file fileCleaned  
 #### SEARCH ALL STRINGS / BUSCAR TODAS LAS CADENAS  
 -sa table file maxIgnoredUnknownChars lineEndChars dictFile (optional)  
 #### CLEAN EXTRACTED FILE / LIMPIAR ARCHIVO EXTRACCION  
 -cef extractFile fileOut  
-#### TRANSLATE SIMILAR / TRADUCIR SIMILAR  
--trs toTransFile transFile outputFile  
 #### FIND RELATIVE 8 bits / BUSCAR RELATIVO 8 bits  
 -sr8 file baseTable word  
 #### Hex Viewer / Visor Hexadecimal  
