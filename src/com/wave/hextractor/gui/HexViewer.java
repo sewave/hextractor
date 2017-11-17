@@ -144,6 +144,18 @@ public class HexViewer extends JFrame implements ActionListener {
 	/** The Constant DIMENSION_0_0. */
 	private static final Dimension DIMENSION_0_0 = new Dimension(0,0);
 
+	/** The blue painter. */
+	private static final HighlightPainter BLUE_PAINTER = new DefaultHighlighter.DefaultHighlightPainter(Color.BLUE);
+
+	/** The light gray painter. */
+	private static final HighlightPainter LGRAY_PAINTER = new DefaultHighlighter.DefaultHighlightPainter(Color.LIGHT_GRAY);
+
+	/** The yellow painter. */
+	private static final HighlightPainter YELLOW_PAINTER = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
+
+	/** The orange painter. */
+	private static final HighlightPainter ORANGE_PAINTER = new DefaultHighlighter.DefaultHighlightPainter(Color.ORANGE);
+
 	/** The other entry. */
 	private SimpleEntry<String, String> otherEntry;
 
@@ -324,18 +336,6 @@ public class HexViewer extends JFrame implements ActionListener {
 	/** The new project window cancel button. */
 	private JButton newPrjWinCancelButton;
 
-	/** The blue painter. */
-	private HighlightPainter bluePainter = new DefaultHighlighter.DefaultHighlightPainter(Color.BLUE);
-
-	/** The light gray painter. */
-	private HighlightPainter lightGrayPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.LIGHT_GRAY);
-
-	/** The yellow painter. */
-	private HighlightPainter yellowPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
-
-	/** The orange painter. */
-	private HighlightPainter orangePainter = new DefaultHighlighter.DefaultHighlightPainter(Color.ORANGE);
-
 	/** The Constant OFFSET_UNIT. */
 	private int visibleColumns = MAX_COLS_AND_ROWS;
 
@@ -407,24 +407,24 @@ public class HexViewer extends JFrame implements ActionListener {
 		highlighterHex.removeAllHighlights();
 		try {
 			highlighterHex.addHighlight(hexTextArea.getCaretPosition(),
-					hexTextArea.getCaretPosition() + Constants.HEX_VALUE_SIZE, bluePainter);
+					hexTextArea.getCaretPosition() + Constants.HEX_VALUE_SIZE, BLUE_PAINTER);
 		} catch (BadLocationException e1) {
 		}
 		Highlighter highlighterAscii = asciiTextArea.getHighlighter();
 		highlighterAscii.removeAllHighlights();
 		try {
 			highlighterAscii.addHighlight(asciiTextArea.getCaretPosition(), asciiTextArea.getCaretPosition() + 1,
-					bluePainter);
+					BLUE_PAINTER);
 			for (OffsetEntry entry : offEntries) {
-				drawOffsetEntry(entry, highlighterAscii, lightGrayPainter, orangePainter);
+				drawOffsetEntry(entry, highlighterAscii, LGRAY_PAINTER, ORANGE_PAINTER);
 			}
 			if (currEntry.getStart() > 0 && currEntry.getStart() - offset >= 0) {
 				highlighterAscii.addHighlight(currEntry.getStart() - offset, currEntry.getStart() - offset + 1,
-						yellowPainter);
+						YELLOW_PAINTER);
 			}
 			if (currEntry.getEnd() > 0 && currEntry.getEnd() - offset >= 0) {
 				highlighterAscii.addHighlight(currEntry.getEnd() - offset, currEntry.getEnd() - offset + 1,
-						orangePainter);
+						ORANGE_PAINTER);
 			}
 		} catch (BadLocationException e1) {
 		}
@@ -939,7 +939,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		});
 		new FileDrop(this, new FileDrop.Listener() {
 			public void filesDropped(java.io.File[] files) {
-				if(files != null) {
+				if(files != null && files.length > 0) {
+					requestFocus();
+					requestFocusInWindow();
 					for(File file : files) {
 						if(file.getAbsolutePath().endsWith(EXTENSION_TABLE)) {
 							reloadTableFile(file);
