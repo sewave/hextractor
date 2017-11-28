@@ -318,6 +318,9 @@ public class Constants {
 	/** The Constant REGEX_NOT_LETTER_DIGIT. */
 	public static final String REGEX_NOT_LETTER_DIGIT = "[^a-zA-z1-9'\\s]";
 
+	/** The Constant REGEX_DICTIONARY_CHARS. */
+	public static final String REGEX_DICTIONARY_CHARS = "(\\{|\\})";
+
 	/** The Constant COMMENT_SIZE_MADDR_START. */
 	public static final int COMMENT_SIZE_MADDR_START = 1;
 

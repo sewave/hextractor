@@ -343,6 +343,7 @@ public class Utils {
 		for(String line : lines) {
 			line = line.replaceAll(Constants.REGEX_CLEAN_TEXT, Constants.SPACE_STR);
 			line = line.replaceAll(Constants.REGEX_CLEAN_SPACES, Constants.SPACE_STR);
+			line = line.replaceAll(Constants.REGEX_DICTIONARY_CHARS, Constants.EMPTY);
 			line = line.trim();
 			if(line.length() > 0) {
 				cleanedLines.append(line).append(Constants.S_NEWLINE);
