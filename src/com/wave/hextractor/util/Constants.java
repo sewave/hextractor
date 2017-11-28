@@ -42,6 +42,12 @@ public class Constants {
 	/** The Constant MIN_SEARCH_WORD_LENGTH. */
 	public static final int MIN_SEARCH_WORD_LENGTH = 4;
 
+	/** The Constant MIN_SEARCH_WORDS. */
+	public static final int MIN_SEARCH_WORDS = 6;
+
+	/** The Constant MAX_SEARCH_WORDS. */
+	public static final int MAX_SEARCH_WORDS = 12;
+
 	/** The Constant MIN_PRINTABLE_CHAR. */
 	public static final int MIN_PRINTABLE_CHAR = 0x20;
 
@@ -240,6 +246,18 @@ public class Constants {
 	/** The Constant S_COMMENT_LINE. */
 	public static final String S_COMMENT_LINE = String.valueOf(COMMENT_LINE);
 
+	/** The Constant CODEWORD_START. */
+	public static final char CODEWORD_START = '{';
+
+	/** The Constant CODEWORD_END. */
+	public static final char CODEWORD_END = '}';
+
+	/** The Constant S_CODEWORD_START. */
+	public static final String S_CODEWORD_START = String.valueOf(CODEWORD_START);
+
+	/** The Constant S_CODEWORD_END. */
+	public static final String S_CODEWORD_END = String.valueOf(CODEWORD_END);
+
 	/** The Constant TABLE_SEPARATOR. */
 	public static final String TABLE_SEPARATOR = "=";
 
@@ -322,25 +340,25 @@ public class Constants {
 					ADDR_STR,
 					S_MAX_BYTES,
 					String.valueOf(Constants.STR_NUM_CHARS),
-					S_COMMENT_LINE});
+					S_COMMENT_LINE,S_CODEWORD_START,S_CODEWORD_END});
 
 	/** The Constant DEFAULT_DICT. */
 	public static final String DEFAULT_DICT = "EngDict.txt";
 
 	/** The Constant EXTENSIONS_MEGADRIVE. */
-	public static final List<String> EXTENSIONS_MEGADRIVE = Arrays.asList(new String[]{"smd", "gen", "bin", "md", "32x"});
+	public static final List<String> EXTENSIONS_MEGADRIVE = Arrays.asList("smd", "gen", "bin", "md", "32x");
 
 	/** The Constant EXTENSIONS_SNES. */
-	public static final List<String> EXTENSIONS_SNES = Arrays.asList(new String[]{"sfc", "smc"});
+	public static final List<String> EXTENSIONS_SNES = Arrays.asList("sfc", "smc");
 
 	/** The Constant EXTENSIONS_GB. */
-	public static final List<String> EXTENSIONS_GB = Arrays.asList(new String[]{"gb", "gbc"});
+	public static final List<String> EXTENSIONS_GB = Arrays.asList("gb", "gbc");
 
 	/** The Constant EXTENSIONS_TAP. */
-	public static final List<String> EXTENSIONS_TAP = Arrays.asList(new String[]{"tap"});
+	public static final List<String> EXTENSIONS_TAP = Arrays.asList("tap");
 
 	/** The Constant EXTENSIONS_TZX_CDT. */
-	public static final List<String> EXTENSIONS_TZX_CDT = Arrays.asList(new String[]{"tzx", "cdt"});
+	public static final List<String> EXTENSIONS_TZX_CDT = Arrays.asList("tzx", "cdt");
 
 	/** The Constant FILE_TYPE_OTHER. */
 	public static final String FILE_TYPE_OTHER =  "0";

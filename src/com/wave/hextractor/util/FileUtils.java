@@ -339,7 +339,7 @@ public class FileUtils {
 			throw new Exception("Minimal word length / Longitud minima de palabra : " + Constants.MIN_SEARCH_WORD_LENGTH);
 		}
 		for(int i = 0; i < fileBytes.length - wordLength; i++) {
-			String word = hexTable.toAscii(Arrays.copyOfRange(fileBytes, i, i + wordLength));
+			String word = hexTable.toAscii(Arrays.copyOfRange(fileBytes, i, i + wordLength), true);
 			if(ignoreCase) {
 				word = word.toUpperCase();
 			}
@@ -486,18 +486,6 @@ public class FileUtils {
 	 */
 	public static String getCleanOffsets(String string) throws Exception {
 		return FileUtils.getAsciiFile(string).replaceAll(Constants.S_NEWLINE, Constants.EMPTY).replaceAll(Constants.S_CRETURN, Constants.EMPTY);
-	}
-
-	/**
-	 * Auto translates the text in 2 passes, 1 will.
-	 *
-	 * @param toTransFile the to trans file
-	 * @param transFile the trans file
-	 * @param outFile the out file
-	 * @throws Exception the exception
-	 */
-	public static void autoTranslateWithDictionary(String toTransFile, String transFile, String outFile) throws Exception {
-		//TODO???
 	}
 
 	/**

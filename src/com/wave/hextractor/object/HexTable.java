@@ -61,9 +61,9 @@ public class HexTable {
 	 * @param aByte the a byte
 	 * @return the string
 	 */
-	public String toString(byte aByte) {
-		String res;
-		if(table.containsKey(aByte)) {
+	public String toString(byte aByte, boolean expand) {
+		String res = table.get(Byte.valueOf(aByte));
+		if(res != null && (res.length() == 1 || expand)) {
 			res = table.get(Byte.valueOf(aByte));
 		}
 		else {
@@ -103,10 +103,7 @@ public class HexTable {
 		table = new HashMap<Byte, String>();
 		reversed = new HashMap<String, Byte>();
 		for(String s : tableLines) {
-			if(!s.contains(Constants.TABLE_SEPARATOR + Constants.SPACE_STR)) {
-				s = s.replaceAll(Constants.SPACE_STR, Constants.EMPTY);
-			}
-			if(s.length() >= 4) {
+			if(s.length() >= 4 && s.contains(Constants.TABLE_SEPARATOR)) {
 				boolean isEquals = s.contains(Constants.TABLE_SEPARATOR + Constants.TABLE_SEPARATOR);
 				String tablechar;
 				String[] items = s.split(Constants.TABLE_SEPARATOR);
@@ -114,18 +111,17 @@ public class HexTable {
 					tablechar = Constants.TABLE_SEPARATOR;
 				}
 				else {
-					tablechar = items[1].substring(0, 1);
+					tablechar = items[1];
 				}
 				if(Constants.RESERVED_CHARS.contains(tablechar)) {
-					if(Utils.isDebug()) {
-						System.out.println("WARNING - Table char \"" + tablechar + "\" will not be used beacause it is reserved.");
-					}
+					System.out.println("WARNING - Table char \"" + tablechar + "\" will not be used beacause it is reserved.");
 				}
 				else {
-					Byte tableCode = Utils.hexStringCharToByte(items[0].toUpperCase());
-					table.put(tableCode, tablechar);
-					reversed.put(tablechar, tableCode);
+					addToTable(Utils.hexStringCharToByte(items[0].toUpperCase().trim()), tablechar);
 				}
+			}
+			else {
+				System.out.println("ERROR - Line not valid: '" + s + "'");
 			}
 		}
 	}
@@ -161,6 +157,12 @@ public class HexTable {
 	}
 
 	/**
+	 * Empty table.
+	 */
+	public HexTable() {
+	}
+
+	/**
 	 * Loads a table lines file.
 	 *
 	 * @param tableFile the table file
@@ -176,12 +178,23 @@ public class HexTable {
 	 * @param hexString the hex string
 	 * @return the string
 	 */
-	public String toAscii(byte[] hexString) {
+	public String toAscii(byte[] hexString, boolean expand) {
 		StringBuffer sb = new StringBuffer();
 		for(byte b : hexString) {
-			sb.append(toString(b));
+			sb.append(toString(b, expand));
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * Adds the to table.
+	 *
+	 * @param entry the entry
+	 * @param theChar the the char
+	 */
+	public void addToTable(Byte entry, String theChar) {
+		table.put(entry, theChar);
+		reversed.put(theChar, entry);
 	}
 
 	/**
@@ -203,7 +216,15 @@ public class HexTable {
 			Byte hex = Byte.valueOf(hexString[i]);
 			bytesreaded++;
 			if(table.containsKey(hex)) {
-				line.append(table.get(hex));
+				String value = table.get(hex);
+				if(value.length() > 1) {
+					line.append(Constants.S_CODEWORD_START);
+					line.append(value);
+					line.append(Constants.S_CODEWORD_END);
+				}
+				else {
+					line.append(value);
+				}
 			}
 			if(!table.containsKey(hex) || i == entry.end) {
 				String hexStr = String.format(Constants.HEX_16_FORMAT, hexString[i]);
@@ -364,6 +385,28 @@ public class HexTable {
 					break;
 
 				case Constants.NEWLINE:
+					break;
+				case Constants.CODEWORD_START:
+					int k = i;
+					//Search CODEWORD_END if not end, space char
+					boolean foundCodeWord = false;
+					while(!foundCodeWord && k < string.length() - 1) {
+						k++;
+						foundCodeWord = string.substring(k, k+1).equals(Constants.S_CODEWORD_END);
+					}
+					byte codeWordValue = hexSpace;
+					if(foundCodeWord) {
+						//Get Key/value
+						String key = string.substring(i + 1, k);
+						if(reversed.containsKey(key)) {
+							codeWordValue = reversed.get(key);
+						}
+						else {
+							System.out.println("WARNING!!! CODE WORD NOT IN TABLE: " + key);
+						}
+						i = k;
+					}
+					hex[offset++] = codeWordValue;
 					break;
 				default:
 					String nextString = String.valueOf(next);

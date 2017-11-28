@@ -617,7 +617,7 @@ public class Utils {
 			end = data.length;
 		}
 		for(int i = offset; i < end; i++) {
-			sb.append(hexTable.toString(data[i]));
+			sb.append(hexTable.toString(data[i], false));
 		}
 		return sb.toString();
 	}
