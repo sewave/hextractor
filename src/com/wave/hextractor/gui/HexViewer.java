@@ -398,11 +398,7 @@ public class HexViewer extends JFrame implements ActionListener {
 	 * Refresh selection.
 	 */
 	private void refreshSelection() {
-		if (hexTextArea.getText().length() > asciiTextArea.getCaretPosition() * Constants.HEX_VALUE_SIZE) {
-			hexTextArea.setCaretPosition(asciiTextArea.getCaretPosition() * Constants.HEX_VALUE_SIZE);
-		} else {
-			hexTextArea.setCaretPosition(hexTextArea.getText().length());
-		}
+		hexTextArea.setCaretPosition(asciiTextArea.getCaretPosition() * Constants.HEX_VALUE_SIZE);
 		Highlighter highlighterHex = hexTextArea.getHighlighter();
 		highlighterHex.removeAllHighlights();
 		try {
@@ -755,6 +751,8 @@ public class HexViewer extends JFrame implements ActionListener {
 	 * Change view mode.
 	 */
 	private void changeViewMode() {
+		hexTextArea.setCaretPosition(0);
+		asciiTextArea.setCaretPosition(0);
 		if(view16Cols.getState()) {
 			visibleColumns = MIN_COLS_AND_ROWS;
 		}
@@ -989,6 +987,64 @@ public class HexViewer extends JFrame implements ActionListener {
 				case KeyEvent.VK_PAGE_UP:
 					offset -= getOffsetBlock();
 					break;
+				case KeyEvent.VK_LEFT:
+					if(asciiTextArea.getCaretPosition() > 0) {
+						asciiTextArea.setCaretPosition(asciiTextArea.getCaretPosition() - 1);
+					}
+					else {
+						offset -= visibleColumns;
+						if(offset > 0) {
+							asciiTextArea.setCaretPosition(asciiTextArea.getCaretPosition() + visibleColumns - 1);
+						}
+					}
+					break;
+				case KeyEvent.VK_UP:
+					if(asciiTextArea.getCaretPosition() > 0) {
+						int carUpPos = asciiTextArea.getCaretPosition() - visibleColumns;
+						if(carUpPos < 0) {
+							carUpPos += visibleColumns;
+							offset -= visibleColumns;
+							if(offset < 0) {
+								offset = 0;
+								carUpPos = 0;
+							}
+						}
+						asciiTextArea.setCaretPosition(carUpPos);
+					}
+					else {
+						offset -= visibleColumns;
+					}
+					break;
+				case KeyEvent.VK_DOWN:
+					if(asciiTextArea.getCaretPosition() < getViewSize()) {
+						int carDownPos = asciiTextArea.getCaretPosition() + visibleColumns;
+						if(carDownPos >= getViewSize()) {
+							carDownPos -= visibleColumns;
+							offset += visibleColumns;
+							if(offset > fileBytes.length - getViewSize()) {
+								offset = fileBytes.length - getViewSize();
+								carDownPos = getViewSize() - 1;
+							}
+						}
+						asciiTextArea.setCaretPosition(carDownPos);
+					}
+					else {
+						offset += visibleColumns;
+					}
+					break;
+				case KeyEvent.VK_RIGHT:
+					int carRightPos = asciiTextArea.getCaretPosition() + 1;
+					if(carRightPos >= getViewSize()) {
+						offset += visibleColumns;
+						if(offset > fileBytes.length - getViewSize()) {
+							carRightPos = getViewSize() - 1;
+						}
+						else {
+							carRightPos -= visibleColumns;
+						}
+					}
+					asciiTextArea.setCaretPosition(carRightPos);
+					break;
 				case KeyEvent.VK_END:
 					if ((keyEvent.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
 						offset = (fileBytes.length - getViewSize());
@@ -1079,8 +1135,14 @@ public class HexViewer extends JFrame implements ActionListener {
 		if(offset < 0) {
 			offset = 0;
 		}
-		asciiTextArea.setText(Utils.getTextArea(offset, getViewSize(), fileBytes, hexTable));
+		int pos = asciiTextArea.getCaretPosition();
+		if(getViewSize() != asciiTextArea.getText().length()) {
+			pos = 0;
+			asciiTextArea.setCaretPosition(0);
+			hexTextArea.setCaretPosition(0);
+		}
 		hexTextArea.setText(Utils.getHexArea(offset, getViewSize(), fileBytes));
+		asciiTextArea.setText(Utils.getTextArea(offset, getViewSize(), fileBytes, hexTable));
 		offsetsTextArea.setText(getVisibleOffsets(offset, visibleColumns, visibleRows));
 		vsb.setMinimum(0);
 		vsb.setMaximum(fileBytes.length - getViewSize());
@@ -1089,6 +1151,8 @@ public class HexViewer extends JFrame implements ActionListener {
 		vsb.setValue(offset);
 		refreshTitle();
 		refreshSelection();
+		asciiTextArea.setCaretPosition(pos);
+		hexTextArea.setCaretPosition(pos * Constants.HEX_VALUE_SIZE);
 		asciiTextArea.repaint();
 		hexTextArea.repaint();
 		offsetsTextArea.repaint();

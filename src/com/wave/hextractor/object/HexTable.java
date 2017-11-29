@@ -111,7 +111,7 @@ public class HexTable {
 					tablechar = Constants.TABLE_SEPARATOR;
 				}
 				else {
-					tablechar = items[1];
+					tablechar = items[1].replaceAll(Constants.S_NEWLINE, Constants.EMPTY).replaceAll(Constants.S_CRETURN, Constants.EMPTY);
 				}
 				if(Constants.RESERVED_CHARS.contains(tablechar)) {
 					System.out.println("WARNING - Table char \"" + tablechar + "\" will not be used beacause it is reserved.");
