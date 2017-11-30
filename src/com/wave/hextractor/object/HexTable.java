@@ -262,7 +262,7 @@ public class HexTable {
 	public byte[] toHex(String string, Map<Integer, Integer> pointerOffsets, OffsetEntry entry) {
 		int offset = 0;
 		int offsetStart = 0;
-		byte[] hex = new byte[string.length()];
+		byte[] hex = new byte[string.length() * 16];
 		int maxsize = 0;
 		boolean end = false;
 		char next;
@@ -333,8 +333,6 @@ public class HexTable {
 										Utils.fillLeft(String.valueOf(length), 4) +
 										")!!!");
 								System.out.println(string.substring(stringStart, i));
-								//Para no superar la longitud máxima
-								hex = Arrays.copyOf(hex, length);
 							}
 							else {
 								if(offset - offsetStart < length-1) {
@@ -390,7 +388,7 @@ public class HexTable {
 					int k = i;
 					//Search CODEWORD_END if not end, space char
 					boolean foundCodeWord = false;
-					while(!foundCodeWord && k < string.length() - 1) {
+					while(!foundCodeWord && k < string.length() - 2) {
 						k++;
 						foundCodeWord = string.substring(k, k+1).equals(Constants.S_CODEWORD_END);
 					}
