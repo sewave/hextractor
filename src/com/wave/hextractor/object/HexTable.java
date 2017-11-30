@@ -402,7 +402,7 @@ public class HexTable {
 							codeWordValue = reversed.get(key);
 						}
 						else {
-							System.out.println("WARNING!!! CODE WORD NOT IN TABLE: " + key);
+							System.out.println("WARNING!!! CODE WORD NOT IN TABLE: '" + key + "'");
 						}
 						i = k;
 					}
@@ -415,7 +415,7 @@ public class HexTable {
 						value = reversed.get(nextString);
 					}
 					else {
-						System.out.println("WARNING!!! CHARACTER NOT IN TABLE: " + nextString);
+						System.out.println("WARNING!!! CHARACTER NOT IN TABLE: '" + nextString + "'");
 						System.out.println(string.substring(stringStart, i));
 					}
 					hex[offset++] = value;
