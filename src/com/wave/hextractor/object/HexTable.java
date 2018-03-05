@@ -235,7 +235,7 @@ public class HexTable {
 					String originalLine = line.toString();
 					String numChars = Utils.fillLeft(String.valueOf(originalLine.length()), Constants.LEN_NUM_CHARS);
 					String numCharsHex = Utils.fillLeft(String.valueOf(bytesreaded - bytesreadedStart), Constants.LEN_NUM_CHARS);
-					sb.append(Constants.COMMENT_LINE).append(Utils.fillLeft(Integer.toHexString(bytesreadedStart), Constants.HEX_ADDR_SIZE).toUpperCase());
+					sb.append(Constants.COMMENT_LINE).append(Utils.fillLeft(Integer.toHexString(entry.start + bytesreadedStart), Constants.HEX_ADDR_SIZE).toUpperCase());
 					sb.append(Constants.ORG_STR_OPEN).append(originalLine).append(Constants.ORG_STR_CLOSE);
 					sb.append(Constants.STR_NUM_CHARS).append(numChars).append(Constants.STR_NUM_CHARS).append(numCharsHex);
 					sb.append(Constants.NEWLINE);

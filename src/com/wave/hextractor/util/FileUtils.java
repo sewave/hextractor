@@ -308,7 +308,7 @@ public class FileUtils {
 				tr.setHexTable(ht);
 				tr.setOffset(i);
 				tr.setWord(searchString);
-				if(!res.contains(ht)) {
+				if(!res.contains(tr)) {
 					res.add(tr);
 				}
 				i += wordLength - 1;
@@ -433,6 +433,17 @@ public class FileUtils {
 	 */
 	public static void cleanExtractedFile(String extractFile, String extractFileArgs) throws Exception {
 		System.out.println("Getting offsets from \"" + extractFile + "\"\n to \"" + extractFileArgs+"\"");
+		FileUtils.writeFileAscii(extractFileArgs, cleanExtractedFile(extractFile));
+	}
+	
+	/**
+	 * Extracts all the offsets of a given extraction file, useful after cleaning invalid entries of
+	 * search all strings.
+	 * @param extractFile file to search.
+	 * @throws Exception io error.
+	 */	
+	public static String cleanExtractedFile(String extractFile) throws Exception {
+		System.out.println("Getting offsets from \"" + extractFile);
 		StringBuilder fileArgs = new StringBuilder();
 		String[] lines = FileUtils.getAsciiFile(extractFile).split(Constants.S_NEWLINE);
 		for(String line : lines) {
@@ -451,7 +462,7 @@ public class FileUtils {
 			}
 			fileArgs.append(entry.toEntryString());
 		}
-		FileUtils.writeFileAscii(extractFileArgs, fileArgs.toString());
+		return fileArgs.toString();
 	}
 
 	/**
@@ -480,12 +491,23 @@ public class FileUtils {
 	/**
 	 * Returns offsets as a unique line.
 	 *
-	 * @param string the string
+	 * @param fileName the file
 	 * @return the clean offsets
 	 * @throws Exception the exception
 	 */
-	public static String getCleanOffsets(String string) throws Exception {
-		return FileUtils.getAsciiFile(string).replaceAll(Constants.S_NEWLINE, Constants.EMPTY).replaceAll(Constants.S_CRETURN, Constants.EMPTY);
+	public static String getCleanOffsets(String fileName) throws Exception {
+		return getCleanOffsetsString(FileUtils.getAsciiFile(fileName));
+	}
+	
+	/**
+	 * Returns offsets as a unique line from a string.
+	 *
+	 * @param fileName the string
+	 * @return the clean offsets
+	 * @throws Exception the exception
+	 */
+	public static String getCleanOffsetsString(String string) throws Exception {
+		return string.replaceAll(Constants.S_NEWLINE, Constants.EMPTY).replaceAll(Constants.S_CRETURN, Constants.EMPTY);
 	}
 
 	/**

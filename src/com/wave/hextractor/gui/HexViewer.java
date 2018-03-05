@@ -128,6 +128,9 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The Constant EXTENSION_OFFSET. */
 	private static final String EXTENSION_OFFSET = ".off";
+	
+	/** The Constant EXTENSION_EXTRACTION. */
+	private static final String EXTENSION_EXTRACTION = ".ext";
 
 	/** The Constant SEARCH_RES_DIMENSION. */
 	private static final Dimension SEARCH_RES_DIMENSION = new Dimension(600, 200);
@@ -919,6 +922,8 @@ public class HexViewer extends JFrame implements ActionListener {
 				if(evt.getClickCount() == 1 && tsr != null) {
 					if(SwingUtilities.isLeftMouseButton(evt)) {
 						offset = tsr.getOffset();
+						asciiTextArea.setCaretPosition(0);
+						hexTextArea.setCaretPosition(0);
 						refreshAll();
 					}
 					if(SwingUtilities.isRightMouseButton(evt)) {
@@ -926,7 +931,7 @@ public class HexViewer extends JFrame implements ActionListener {
 								rb.getString(KeyConstants.KEY_SEARCH_RESULT_TABLE),
 								rb.getString(KeyConstants.KEY_SEARCH_RESULT_TABLE_TITLE),
 								JOptionPane.YES_NO_OPTION);
-						if(selectedOption == JOptionPane.YES_OPTION){
+						if(selectedOption == JOptionPane.YES_OPTION) {
 							offset = tsr.getOffset();
 							hexTable = tsr.getHexTable();
 							refreshAll();
@@ -947,7 +952,11 @@ public class HexViewer extends JFrame implements ActionListener {
 							if(file.getAbsolutePath().endsWith(EXTENSION_OFFSET)) {
 								reloadOffsetsFile(file);
 							} else {
-								reloadHexFile(file);
+								if(file.getAbsolutePath().endsWith(EXTENSION_EXTRACTION)) {
+									reloadExtAsOffsetsFile(file);
+								} else {
+									reloadHexFile(file);
+								}
 							}
 						}
 					}
@@ -1287,7 +1296,6 @@ public class HexViewer extends JFrame implements ActionListener {
 		}
 	}
 
-
 	/**
 	 * Sets the actions.
 	 */
@@ -1408,7 +1416,6 @@ public class HexViewer extends JFrame implements ActionListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
 				String searchString = JOptionPane.showInputDialog(rb.getString(KeyConstants.KEY_SEARCH_RELATIVE));
 				if(searchString != null && searchString.length() > 0) {
 					try {
@@ -1758,6 +1765,21 @@ public class HexViewer extends JFrame implements ActionListener {
 		offsetFile = selectedFile;
 		try {
 			offEntries = Utils.getOffsets(FileUtils.getCleanOffsets(offsetFile.getAbsolutePath()));
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		refreshAll();
+	}
+	
+	/**
+	 * Reload ext as offsets file.
+	 *
+	 * @param selectedFile the selected file
+	 */
+	private void reloadExtAsOffsetsFile(File selectedFile) {
+		offsetFile = selectedFile;
+		try {
+			offEntries = Utils.getOffsets(FileUtils.getCleanOffsetsString(FileUtils.cleanExtractedFile(selectedFile.getAbsolutePath())));
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
