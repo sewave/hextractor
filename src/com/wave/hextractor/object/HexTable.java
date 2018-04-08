@@ -57,19 +57,35 @@ public class HexTable {
 
 	/**
 	 * Transforms the byte into a String.
-	 *
-	 * @param aByte the a byte
-	 * @return the string
+	 * @param aByte
+	 * @param expand
+	 * @param decodeUnknown
+	 * @return
 	 */
-	public String toString(byte aByte, boolean expand) {
+	public String toString(byte aByte, boolean expand, boolean decodeUnknown) {
 		String res = table.get(Byte.valueOf(aByte));
 		if(res != null && (res.length() == 1 || expand)) {
 			res = table.get(Byte.valueOf(aByte));
 		}
 		else {
-			res = Constants.HEX_VIEWER_UNKNOWN_CHAR;
+			if(decodeUnknown) {
+				res = Constants.HEX_CHAR + Utils.intToHexString(aByte, 2) + Constants.HEX_CHAR;
+			}
+			else {
+				res = Constants.HEX_VIEWER_UNKNOWN_CHAR;
+			}
 		}
 		return res;
+	}
+	
+	/**
+	 * Transforms the byte into a String.
+	 *
+	 * @param aByte the a byte
+	 * @return the string
+	 */
+	public String toString(byte aByte, boolean expand) {
+		return toString(aByte, expand, false);
 	}
 
 	/**
@@ -174,9 +190,24 @@ public class HexTable {
 
 	/**
 	 * Translates a hex string to ascii.
-	 *
-	 * @param hexString the hex string
-	 * @return the string
+	 * @param hexString
+	 * @param expand
+	 * @param decodeUnknown
+	 * @return
+	 */
+	public String toAscii(byte[] hexString, boolean expand, boolean decodeUnknown) {
+		StringBuffer sb = new StringBuffer();
+		for(byte b : hexString) {
+			sb.append(toString(b, expand, decodeUnknown));
+		}
+		return sb.toString();
+	}
+	
+	/**
+	 * Translates a hex string to ascii.
+	 * @param hexString
+	 * @param expand
+	 * @return
 	 */
 	public String toAscii(byte[] hexString, boolean expand) {
 		StringBuffer sb = new StringBuffer();
@@ -184,6 +215,34 @@ public class HexTable {
 			sb.append(toString(b, expand));
 		}
 		return sb.toString();
+	}
+	
+	/**
+	 * Simple string to hex using table.
+	 * @param aString
+	 * @return
+	 */
+	public byte[] toHex(String aString) {
+		byte[] res = new byte[aString.length()];
+		byte hexSpace;
+		if(reversed.containsKey(Constants.SPACE_STR)) {
+			hexSpace = reversed.get(Constants.SPACE_STR);
+		}
+		else {
+			hexSpace = 0;
+		}
+		int i = 0;
+		for(char c : aString.toCharArray()) {
+			Byte b = reversed.get(String.valueOf(c));
+			if(b == null) {
+				res[i] = hexSpace;
+			}
+			else {
+				res[i] = b;
+			}
+			i++;
+		}
+		return res;
 	}
 
 	/**

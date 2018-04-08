@@ -371,6 +371,7 @@ public class ProjectUtils {
 		Utils.copyFileUsingStream(FILE_README, Utils.getJoinedFileName(projectFolder, name + FILE_README));
 		if(projectFile != null) {
 			Utils.copyFileUsingStream(projectFile.getAbsolutePath(), Utils.getJoinedFileName(projectFolder, projectFile.getName()));
+			Utils.copyFileUsingStream(projectFile.getAbsolutePath(), Utils.getJoinedFileName(projectFolder, TR_FILENAME_PREFIX + projectFile.getName()));
 		}
 	}
 

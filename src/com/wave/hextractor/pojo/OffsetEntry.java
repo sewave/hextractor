@@ -1,6 +1,7 @@
 package com.wave.hextractor.pojo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.wave.hextractor.util.Constants;
@@ -203,7 +204,7 @@ public class OffsetEntry implements Comparable<OffsetEntry> {
 		sb.append(Utils.intToHexString(end, Constants.HEX_ADDR_SIZE));
 		return sb.toString();
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
@@ -254,6 +255,25 @@ public class OffsetEntry implements Comparable<OffsetEntry> {
 		//Como iteramos sobre ella, es mejor actualizarla al final
 		offEntries.clear();
 		offEntries.addAll(result);
+	}
+	
+	/**
+	 * Gets the offset length.
+	 *
+	 * @return the length
+	 */
+	public int getLength() {
+		return end - start;
+	}
+
+	/**
+	 * Creates a offset entry from a hex range (FF as ending char)
+	 * @param string
+	 * @return
+	 */
+	public static OffsetEntry fromHexRange(String string) {
+		int[] numbers = Utils.hexStringListToIntList(string.split(Constants.OFFSET_LENGTH_SEPARATOR));
+		return new OffsetEntry(numbers[0], numbers[1], Arrays.asList("FF"));
 	}
 
 }

@@ -69,6 +69,12 @@ public class Hextractor {
 
 	/** The Constant MODE_CHECK_LINE_LENGTH. */
 	public static final String MODE_CHECK_LINE_LENGTH = "-cll";
+	
+	/** The Constant MODE_EXTRACT_ASCII_3_4. */
+	public static final String MODE_EXTRACT_ASCII_3_4 = "-a34";
+	
+	/** The Constant MODE_INSERT_ASCII_4_3. */
+	public static final String MODE_INSERT_ASCII_4_3 = "-h43";
 
 	/**
 	 * Prints the usage.
@@ -167,7 +173,11 @@ public class Hextractor {
 									if (MODE_EXTRACT_HEX.equals(mode)) {
 										FileUtils.extractHexData(args[1], args[2], args[3]);
 									} else {
-										printUsage(rb);
+										if (MODE_INSERT_ASCII_4_3.equals(mode)) {
+											FileUtils.insertHex4To3Data(args[1], args[2], args[3]);
+										} else {
+											printUsage(rb);
+										}
 									}
 								}
 							}
@@ -182,7 +192,11 @@ public class Hextractor {
 					if (MODE_SEARCH_ALL.equals(mode)) {
 						FileUtils.searchAllStrings(args[1], args[2], Integer.parseInt(args[3]), args[4]);
 					} else {
-						printUsage(rb);
+						if (MODE_EXTRACT_ASCII_3_4.equals(mode)) {
+							FileUtils.extractAscii3To4Data(args[1], args[2], args[3], args[4]);
+						} else {
+							printUsage(rb);
+						}
 					}
 				}
 				break;

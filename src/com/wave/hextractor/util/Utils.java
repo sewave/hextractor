@@ -643,5 +643,92 @@ public class Utils {
 		}
 		return sb.toString();
 	}
+	
+	/**
+	 * Removes comment lines and joins nonaddress lines togheter
+	 * @param asciiFile
+	 * @return
+	 */
+	public static String[] removeCommentsAndJoin(String asciiFile) {
+		StringBuilder sb = new StringBuilder();
+		for(String line : asciiFile.split(Constants.S_NEWLINE)) {
+			if(!line.contains(Constants.S_COMMENT_LINE)) {
+				if(line.contains(Constants.ADDR_STR)) {
+					sb.append(line).append(Constants.S_NEWLINE);
+				}
+				else {
+					sb.append(line);
+				}
+			}
+		}
+		return sb.toString().split(Constants.S_NEWLINE);
+	}
+
+	/**
+	 * Compresses 4 6 bit bytes to 3 8 bit bytes
+	 * @param bytes
+	 * @return
+	 */
+	public static byte[] getCompressed4To3Data(byte[] bytes) {
+		byte[] res = new byte[bytes.length];
+		int j = 0;
+		int i = 0;
+		for(i = 0; i <= bytes.length - 4; i += 4) {
+			res[j++] = (byte) ((bytes[i] << 2) & 0xFF | (bytes[i + 1]>> 4) & 0xFF);
+			res[j++] = (byte) (((bytes[i + 1] << 4) & 0xFF) | (bytes[i + 2] >> 2) & 0xFF);
+			res[j++] = (byte) ((bytes[i + 3]  | ((bytes[i + 2] & 0x3) << 6) & 0xFF) & 0xFF);
+		}
+		//Copy leftovers
+		switch(bytes.length % 4) {
+			case 1:
+				//No debería poder pasar nunca
+				res[j++] = bytes[i];
+				break;
+			case 2:
+				//2->1
+				res[j++] = (byte) ((bytes[i] << 2) & 0xFF | (bytes[i + 1]>> 4) & 0xFF);
+				break;
+			case 3:
+				//3->2
+				res[j++] = (byte) ((bytes[i] << 2) & 0xFF | (bytes[i + 1]>> 4) & 0xFF);
+				res[j++] = (byte) (((bytes[i + 1] << 4) & 0xFF) | (bytes[i + 2] >> 2) & 0xFF);
+			default:
+			case 0:
+			break;
+		}
+		return Arrays.copyOfRange(res,  0,  j);
+	}
+	
+	/**
+	 * Expands 3 bytes to 4 6 bits bytes
+	 * @param bytes
+	 * @return expanded data
+	 */
+	public static byte[] getExpanded3To4Data(byte[] bytes) {
+		byte[] res = new byte[bytes.length * 2];
+		int j = 0;
+		int i = 0;
+		for(i = 0; i <= bytes.length - 3; i += 3) {
+			res[j++] = (byte) ((bytes[i] >> 2) & 0x3F);
+			res[j++] = (byte) ((((bytes[i] & 0x3) << 4) | ((bytes[i + 1] & 0xFF) >> 4)) & 0x3F);
+			res[j++] = (byte) ((((bytes[i+2] & 0xFF) >> 6) | ((bytes[i + 1] & 0xFF) << 2)) & 0x3F);
+			res[j++] = (byte) (bytes[i + 2] & 0x3F);
+		}
+		switch(bytes.length % 3) {
+			case 1:
+				res[j++] = (byte) ((bytes[i] >> 2) & 0x3F);
+				res[j++] = (byte) (((bytes[i] & 0x03) << 4) & 0x30);
+				break;
+			case 2:
+				res[j++] = (byte) ((bytes[i] >> 2) & 0x3F);
+				res[j++] = (byte) ((((bytes[i] & 0x3) << 4) & 0x30 | ((bytes[i + 1] >> 4) & 0x0F)) & 0x3F);
+				res[j++] = (byte) ((bytes[i + 1] << 2) & 0x3F);
+				break;
+			default:
+			case 0:
+			break;
+		}
+		return Arrays.copyOfRange(res,  0,  j);
+	}
 
 }

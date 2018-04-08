@@ -53,6 +53,64 @@ public class FileUtils {
 		input = input.replace(String.valueOf(Constants.CRETURN), String.valueOf(Constants.NEWLINE));
 		return input;
 	}
+	
+	/**
+	 * Extracts Ascii data on packed 3 bytes to 4 characters</br>
+	 * using the entries.
+	 * @param inputFile .
+	 * @param outputFile .
+	 * @param entries .
+	 * @throws Exception .
+	 */
+	public static void extractAscii3To4Data(String table, String inputFile, String outputFile, String entries) throws Exception {
+		System.out.println("Extracting ascii 3 to 4 from \"" + inputFile + "\"\n to \"" + outputFile + "\""
+				+ "\n using \"" + entries + "\" and table: \"" + table + "\"");
+		StringBuilder dataString = new StringBuilder();
+		byte[] inputFileBytes = getFileBytes(inputFile);
+		HexTable hexTable = new HexTable(table);
+		for(OffsetEntry entry : Utils.getOffsets(entries)) {
+			byte[] origData = Arrays.copyOfRange(inputFileBytes, entry.getStart(), entry.getEnd() + 1);
+			byte[] expData = Utils.getExpanded3To4Data(origData);
+			byte[] compData = Utils.getCompressed4To3Data(expData);
+			if(Utils.isDebug()) {
+				System.out.println("Original data     " + entry.getHexTarget() + " - " + Utils.getHexArea(0, origData.length, origData));
+				System.out.println("Expanded data     " + entry.getHexTarget() + " - " + Utils.getHexArea(0, expData.length, expData));
+				System.out.println("Recompressed data " + entry.getHexTarget() + " - " + Utils.getHexArea(0, compData.length, compData));
+			}
+			if(!Arrays.equals(origData, compData)) {
+				System.out.println("ERROR! RECOMPRESSED DATA IS DIFFERENT!!!");
+			}
+			String line = hexTable.toAscii(expData, false, true);
+			dataString.append(Constants.COMMENT_LINE);
+			dataString.append(line);
+			dataString.append(Constants.S_NEWLINE);
+			dataString.append(line);
+			dataString.append(entry.getHexTarget());
+			dataString.append(Constants.S_NEWLINE);
+		}
+		writeFileAscii(outputFile, dataString.toString());
+	}
+	
+	/**
+	 * Inserts ascii as hex from a 4 to 3 data.
+	 * @param table
+	 * @param inputFile
+	 * @param outputFile
+	 * @throws Exception
+	 */
+	public static void insertHex4To3Data(String table, String inputFile, String outputFile) throws Exception {
+		System.out.println("Inserting ascii as hex 4 to 3 from \"" + inputFile + "\"\n to \"" + outputFile + "\""
+				+ "\n using table: \"" + table + "\"");
+		byte[] outFileBytes = getFileBytes(outputFile);
+		HexTable hexTable = new HexTable(table);
+		for(String entry : Utils.removeCommentsAndJoin(getAsciiFile(inputFile))) {
+			String[] entryDataAndOffset = entry.split(Constants.ADDR_STR);
+			OffsetEntry offEntry = OffsetEntry.fromHexRange(entryDataAndOffset[1]);
+			byte[] compData = Utils.getCompressed4To3Data(hexTable.toHex(entryDataAndOffset[0]));
+			System.arraycopy(compData, 0, outFileBytes, offEntry.getStart(), compData.length);
+		}
+		writeFileBytes(outputFile, outFileBytes);
+	}
 
 	/**
 	 * Gets a file as a byte[].
