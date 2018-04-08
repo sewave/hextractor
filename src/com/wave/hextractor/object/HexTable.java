@@ -210,11 +210,7 @@ public class HexTable {
 	 * @return
 	 */
 	public String toAscii(byte[] hexString, boolean expand) {
-		StringBuffer sb = new StringBuffer();
-		for(byte b : hexString) {
-			sb.append(toString(b, expand));
-		}
-		return sb.toString();
+		return toAscii(hexString, expand, false);
 	}
 	
 	/**
