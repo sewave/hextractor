@@ -4,8 +4,12 @@ Herramienta con diferentes modos para ayudar a traducir juegos/ficheros utilizan
 #### Type -? for help. / Escribe -? para ayuda  
 #### EXTRACT ASCII FILE FROM HEX / EXTRAER ARCHIVO ASCII DE HEXADECIMAL  
 -a tableFile file scriptAsciiFile offsetsList or file (START-END-STRING_END_CHAR(1+))  
+#### EXTRACT ASCII FILE FROM HEX TURNING 3 8 BIT BYTES INTO 4 6 BIT BYTES / EXTRAER ARCHIVO ASCII DE HEXADECIMAL TRANSFORMANDO 3 BYTES DE 8 BITS EN 4 BYTES DE 6 BITS
+-a34 tableFile file scriptAsciiFile offsetsList or file (START-END-STRING_END_CHAR(1+))  
 #### INSERT ASCII AS HEX / INSERTAR ASCII COMO HEX  
 -h scriptAsciiFile tableFile targetFile  
+#### INSERT ASCII AS HEX TURNING 4 6 BIT BYTES INTO 3 8 BIT BYTES / INSERTAR ASCII COMO HEX TRANSFORMANDO 4 BYTES DE 6 BITS EN 3 BYTES DE 8 BITS
+-h34 tableFile file scriptAsciiFile offsetsList or file (START-END-STRING_END_CHAR(1+))  
 #### INSERT DIRECT HEX VALUES / INSERTAR HEXADECIMAL DIRECTO  
 -ih scriptHexFile targetFile  
 #### EXTRACT DIRECT HEX VALUES / EXTRAER HEXADECIMAL  

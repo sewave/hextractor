@@ -1,6 +1,8 @@
 package com.wave.hextractor.gui;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -9,8 +11,8 @@ import javax.swing.filechooser.FileFilter;
  */
 public class SimpleFilter extends FileFilter {
 
-	/** The ext. */
-	String ext;
+	/** The exts. */
+	List<String> exts;
 
 	/** The message. */
 	String message;
@@ -22,7 +24,18 @@ public class SimpleFilter extends FileFilter {
 	 * @param message the message
 	 */
 	public SimpleFilter(String ext, String message) {
-		this.ext = ext;
+		this.exts = Arrays.asList(ext);
+		this.message = message;
+	}
+
+	/**
+	 * Instantiates a new simple filter.
+	 *
+	 * @param asList the as list
+	 * @param string the string
+	 */
+	public SimpleFilter(List<String> exts, String message) {
+		this.exts = exts;
 		this.message = message;
 	}
 
@@ -31,7 +44,11 @@ public class SimpleFilter extends FileFilter {
 	 */
 	@Override
 	public boolean accept(File selectedFile) {
-		return selectedFile.getName().endsWith(ext) || selectedFile.isDirectory();
+		boolean isValid = selectedFile.isDirectory();
+		for(String ext : exts) {
+			isValid |= selectedFile.getName().endsWith(ext);
+		}
+		return isValid;
 	}
 
 	/* (non-Javadoc)

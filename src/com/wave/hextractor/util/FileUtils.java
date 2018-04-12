@@ -297,13 +297,26 @@ public class FileUtils {
 			String offsetsArg) throws Exception {
 		System.out.println("Extracting ascii file from \"" + secondFile + "\"\n using table \"" + firstFile
 				+ "\"\n to file \"" + thirdFile + "\".");
-		HexTable hexTable = new HexTable(firstFile);
+		extractAsciiFile(new HexTable(firstFile), FileUtils.getFileBytes(secondFile), thirdFile, offsetsArg, true);
+	}
+	
+	/**
+	 * Extracts the ascii file.
+	 * @param hexTable
+	 * @param fileBytes
+	 * @param outFile
+	 * @param offsetsArg
+	 * @throws Exception
+	 */
+	public static void extractAsciiFile(HexTable hexTable, byte[] fileBytes, String outFile,
+			String offsetsArg, boolean showExtractions) throws Exception {
 		StringBuffer fileOut = new StringBuffer();
-		byte[] secondFileBytes = FileUtils.getFileBytes(secondFile);
-		for (OffsetEntry entry : Utils.getOffsets(offsetsArg)) {
-			fileOut.append(hexTable.toAscii(secondFileBytes, entry));
+		if(offsetsArg != null && offsetsArg.length() > 0) {
+			for (OffsetEntry entry : Utils.getOffsets(offsetsArg)) {
+				fileOut.append(hexTable.toAscii(fileBytes, entry, showExtractions));
+			}
 		}
-		FileUtils.writeFileAscii(thirdFile, fileOut.toString());
+		FileUtils.writeFileAscii(outFile, fileOut.toString());
 	}
 
 	/**
@@ -468,18 +481,35 @@ public class FileUtils {
 	public static void searchAllStrings(String tableFile, String dataFile,
 			int numIgnoredChars, String endChars, String dictFile) throws Exception {
 		String extractFile = dataFile + Constants.EXTRACT_EXTENSION;
-		System.out.println(
-				"Extracting all strings from \"" + dataFile + "\"\n to \"" + extractFile + "\" and \"" + extractFile
+		System.out.println("Extracting all strings from \"" + dataFile + "\"\n to \"" 
+				+ extractFile + "\" and \"" + extractFile
 				+ Constants.OFFSET_EXTENSION + "\" \n " + "using \"" + tableFile + "\" \n numIgnoredChars: "
 				+ numIgnoredChars + "\n endChars: " + endChars + "\n dictionary: " + dictFile);
-		HexTable hexTable = new HexTable(tableFile);
-		byte[] secondFileBytes = FileUtils.getFileBytes(dataFile);
-		List<String> endCharsList = Arrays.asList(
-				endChars.toUpperCase().replaceAll(Constants.SPACE_STR, Constants.EMPTY).split(Constants.OFFSET_CHAR_SEPARATOR));
-		String offsets = hexTable.getAllEntries(secondFileBytes, Constants.MIN_NUM_CHARS_WORD, numIgnoredChars, endCharsList, dictFile);
-		System.out.println("Extracted offsets: \n " + offsets);
-		FileUtils.writeFileAscii(extractFile + Constants.OFFSET_EXTENSION, offsets);
-		extractAsciiFile(tableFile, dataFile, extractFile, offsets);
+		searchAllStrings(new HexTable(tableFile), FileUtils.getFileBytes(dataFile), 
+				numIgnoredChars, endChars, dictFile, dataFile + Constants.EXTRACT_EXTENSION);
+	}
+	
+	/**
+	 * Searches all the strings on the rom for the given table.
+	 * @param hexTable
+	 * @param fileBytes
+	 * @param numIgnoredChars
+	 * @param endChars
+	 * @param dictFile
+	 * @param extractFile
+	 * @throws Exception
+	 */
+	public static boolean searchAllStrings(HexTable hexTable, byte[] fileBytes,
+			int numIgnoredChars, String endChars, String dictFile, String extractFile) throws Exception {
+		boolean res = false;
+		String entries = hexTable.getAllEntries(fileBytes, Constants.MIN_NUM_CHARS_WORD, numIgnoredChars, 
+				Arrays.asList(endChars.toUpperCase().replaceAll(Constants.SPACE_STR, Constants.EMPTY).split(
+						Constants.OFFSET_CHAR_SEPARATOR)), dictFile);
+		if(entries != null && entries.length() > 0) {
+			extractAsciiFile(hexTable, fileBytes, extractFile, entries, false);
+			res = true;
+		}
+		return res;
 	}
 
 	/**

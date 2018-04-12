@@ -54,6 +54,9 @@ public class HexTable {
 
 	/** The reversed. */
 	private Map<String, Byte> reversed;
+	
+	/** The searchPercentCompleted. */
+	private float searchPercent = 0;
 
 	/**
 	 * Transforms the byte into a String.
@@ -130,7 +133,7 @@ public class HexTable {
 					tablechar = items[1].replaceAll(Constants.S_NEWLINE, Constants.EMPTY).replaceAll(Constants.S_CRETURN, Constants.EMPTY);
 				}
 				if(Constants.RESERVED_CHARS.contains(tablechar)) {
-					System.out.println("WARNING - Table char \"" + tablechar + "\" will not be used beacause it is reserved.");
+					System.out.println("WARNING - Table char \"" + tablechar + "\" will not be used because it is reserved.");
 				}
 				else {
 					addToTable(Utils.hexStringCharToByte(items[0].toUpperCase().trim()), tablechar);
@@ -251,7 +254,8 @@ public class HexTable {
 		table.put(entry, theChar);
 		reversed.put(theChar, entry);
 	}
-
+	
+	
 	/**
 	 * Translates to ascii entry to a hex string.
 	 *
@@ -260,12 +264,26 @@ public class HexTable {
 	 * @return the string
 	 */
 	public String toAscii(byte[] hexString, OffsetEntry entry) {
+		return toAscii(hexString, entry, true);
+	}
+
+	/**
+	 * Translates to ascii entry to a hex string.
+	 *
+	 * @param hexString the hex string
+	 * @param entry the entry
+	 * @param showExtracting shows current extraction
+	 * @return the string
+	 */
+	public String toAscii(byte[] hexString, OffsetEntry entry, boolean showExtracting) {
 		StringBuilder sb = new StringBuilder();
 		int bytesreaded = 0;
 		int bytesreadedStart = 0;
 		StringBuilder line = new StringBuilder();
-		System.out.println("Extracting [" + Utils.fillLeft(Integer.toHexString(entry.start), Constants.HEX_ADDR_SIZE).toUpperCase() + ":" +
-				Utils.fillLeft(Integer.toHexString(entry.end), Constants.HEX_ADDR_SIZE).toUpperCase() + "]");
+		if(showExtracting) {
+			System.out.println("Extracting [" + Utils.fillLeft(Integer.toHexString(entry.start), Constants.HEX_ADDR_SIZE).toUpperCase() + ":" +
+					Utils.fillLeft(Integer.toHexString(entry.end), Constants.HEX_ADDR_SIZE).toUpperCase() + "]");
+		}
 		sb.append(entry.toString()).append(Constants.NEWLINE);
 		for(int i = entry.start; i <= entry.end; i++) {
 			Byte hex = Byte.valueOf(hexString[i]);
@@ -302,7 +320,9 @@ public class HexTable {
 			}
 		}
 		sb.append(String.valueOf(Constants.MAX_BYTES) + bytesreaded).append(Constants.NEWLINE);
-		System.out.println("TOTAL BYTES TO ASCII: " + bytesreaded);
+		if(showExtracting) {
+			System.out.println("TOTAL BYTES TO ASCII: " + bytesreaded);
+		}
 		return sb.toString();
 	}
 
@@ -524,6 +544,7 @@ public class HexTable {
 	 */
 	public String getAllEntries(byte[] secondFileBytes, int numMinChars, int numIgnoredChars,
 			List<String> endCharsList, String dictFile) throws Exception {
+		searchPercent = 0;
 		List<OffsetEntry> offsetEntryList = new ArrayList<>();
 		HashSet<String> dict = new HashSet<>(Arrays.asList(FileUtils.getAsciiFile(dictFile).split(Constants.S_NEWLINE)));
 		int entryStart = 0;
@@ -533,7 +554,13 @@ public class HexTable {
 		String dataChar = null;
 		List<String> skippedChars = new ArrayList<>();
 		ENTRIES_STATUS status = ENTRIES_STATUS.SEARCHING_START_OF_STRING;
-		for(int i = 0; i < secondFileBytes.length - numMinChars; i++) {
+		long lastTime = System.currentTimeMillis();
+		for(int i = 0; i < secondFileBytes.length - numMinChars && !Thread.currentThread().isInterrupted(); i++) {
+			searchPercent = (i * 100f) / secondFileBytes.length;
+			if(System.currentTimeMillis() - lastTime > 1000) {
+				lastTime = System.currentTimeMillis();
+				System.out.println(searchPercent + "% completed.");
+			}
 			Byte readedByteObj = Byte.valueOf(secondFileBytes[i]);
 			String dataCharHex = String.format(Constants.HEX_16_FORMAT, readedByteObj);
 			if(table.containsKey(readedByteObj)) {
@@ -669,6 +696,14 @@ public class HexTable {
 		}
 		HexTable objHt = (HexTable) obj;
 		return table.equals(objHt.table);
+	}
+
+	/**
+	 * Current search completition percent.
+	 * @return
+	 */
+	public float getSearchPercent() {
+		return searchPercent;
 	}
 
 }

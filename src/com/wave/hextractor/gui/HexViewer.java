@@ -47,6 +47,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -104,7 +105,22 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The Constant NEW_PROJECT_GRID_VGAP. */
 	private static final int NEW_PROJECT_GRID_VGAP = 10;
-
+	
+	/** The Constant SEARCH_ALL_GRID_ROWS. */
+	private static final int SEARCH_ALL_GRID_ROWS = 4;
+	
+	/** The Constant SEARCH_ALL_GRID_COLS. */
+	private static final int SEARCH_ALL_GRID_COLS = 2;
+	
+	/** The Constant SEARCH_ALL_GRID_HGAP. */
+	private static final int SEARCH_ALL_GRID_HGAP = 10;
+	
+	/** The Constant SEARCH_ALL_GRID_VGAP. */
+	private static final int SEARCH_ALL_GRID_VGAP = 10;
+	
+	/** The Constant SEARCH_ALL_END_CHARS_LENGTH. */
+	private static final int SEARCH_ALL_END_CHARS_LENGTH = 40;
+	
 	/** The Constant MAX_COLS_AND_ROWS. */
 	private static final int MAX_COLS_AND_ROWS = 32;
 
@@ -159,6 +175,18 @@ public class HexViewer extends JFrame implements ActionListener {
 	/** The orange painter. */
 	private static final HighlightPainter ORANGE_PAINTER = new DefaultHighlighter.DefaultHighlightPainter(Color.ORANGE);
 
+	/** The Constant SEARCH_ALL_DEFAULT_CHARS_INDEX. */
+	private static final int SEARCH_ALL_DEFAULT_CHARS_INDEX = 4;
+	
+	/** The Constant SEARCH_ALL_DEFAULT_END_CHARS. */
+	private static final String SEARCH_ALL_DEFAULT_END_CHARS = "FF";
+	
+	/** The Constant SEARCH_ALL_MIN_PROGRESS. */
+	private static final int SEARCH_ALL_MIN_PROGRESS = 0;
+	
+	/** The Constant SEARCH_ALL_MAX_PROGRESS. */
+	private static final int SEARCH_ALL_MAX_PROGRESS = 100;
+	
 	/** The other entry. */
 	private SimpleEntry<String, String> otherEntry;
 
@@ -269,6 +297,9 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The search relative. */
 	private JMenuItem searchRelative;
+	
+	/** The search all. */
+	private JMenuItem searchAll;
 
 	/** The clear offsets. */
 	private JMenuItem clearOffsets;
@@ -353,7 +384,37 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The view 16 rows menu item. */
 	private JCheckBoxMenuItem view16Rows;
-
+	
+	/** The search all strings window. */
+	private JFrame searchAllStringsWin;
+	
+	/** The search all win skip chars label. */
+	private JLabel searchAllWinSkipCharsLabel;
+	
+	/** The search all win skip chars opt. */
+	private JComboBox<Integer> searchAllWinSkipCharsOpt;
+	
+	/** The search all win end chars label. */
+	private JLabel searchAllWinEndCharsLabel;
+	
+	/** The search all win end chars input. */
+	private JTextField searchAllWinEndCharsInput;
+	
+	/** The search all win search button. */
+	private JButton searchAllWinSearchButton;
+	
+	/** The search all win cancel button. */
+	private JButton searchAllWinCancelButton;
+	
+	/** The search all win progress bar. */
+	private JProgressBar searchAllWinProgressBar;
+	
+	/** The search all thread. */
+	private Thread searchAllThread = null;
+	
+	/** The search all thread error. */
+	private boolean searchAllThreadError = false;
+	
 	/**
 	 * Gets the offset block.
 	 *
@@ -695,6 +756,59 @@ public class HexViewer extends JFrame implements ActionListener {
 		resultsWindow.add(listScroller);
 		resultsWindow.pack();
 		resultsWindow.setResizable(Boolean.FALSE);
+		createNewPrjWin();
+		vsb = new JScrollBar();
+		firstRow.add(vsb);
+		offsetLabel = new JLabel(rb.getString(KeyConstants.KEY_OFFSET_LABEL));
+		secondRow.add(offsetLabel);
+		offsetLabelValue = new JTextField(Utils.intToHexString(offset, Constants.HEX_ADDR_SIZE), Constants.HEX_ADDR_SIZE);
+		offsetLabelValue.setEnabled(false);
+		secondRow.add(offsetLabelValue);
+		offsetLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		offsetLabelValue.setAlignmentX(Component.LEFT_ALIGNMENT);
+		offEntries = new ArrayList<OffsetEntry>();
+		currEntry = new OffsetEntry();
+		currEntry.start = -1;
+		currEntry.end = -1;
+		createSearchAllWin();
+		setResizable(Boolean.FALSE);
+		addAllListeners();
+		pack();
+		vsb.setPreferredSize(new Dimension((int) vsb.getPreferredSize().getWidth(), (int) (getSize().getHeight() * 0.85)));
+		setVisible(true);
+		refreshAll();
+	}
+
+	/**
+	 * createSearchAllWin.
+	 */
+	private void createSearchAllWin() {
+		searchAllStringsWin = new JFrame(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_TITLE));
+		searchAllStringsWin.setLayout(new GridLayout(SEARCH_ALL_GRID_ROWS, SEARCH_ALL_GRID_COLS, SEARCH_ALL_GRID_HGAP, SEARCH_ALL_GRID_VGAP));
+		searchAllWinSkipCharsLabel = new JLabel(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_SKIP_CHARS_LABEL), SwingConstants.LEFT);
+		searchAllWinEndCharsLabel = new JLabel(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_END_CHARS_LABEL), SwingConstants.LEFT);
+		searchAllWinEndCharsInput = new JTextField(SEARCH_ALL_END_CHARS_LENGTH);
+		searchAllWinSkipCharsOpt = new JComboBox<Integer>();
+		for(int i = 0; i <= 16; i++) {
+			searchAllWinSkipCharsOpt.addItem(i);
+		}
+		searchAllWinProgressBar = new JProgressBar(SEARCH_ALL_MIN_PROGRESS, SEARCH_ALL_MAX_PROGRESS);
+		searchAllStringsWin.add(searchAllWinSkipCharsLabel);
+		searchAllStringsWin.add(searchAllWinSkipCharsOpt);
+		searchAllStringsWin.add(searchAllWinEndCharsLabel);
+		searchAllStringsWin.add(searchAllWinEndCharsInput);
+		searchAllStringsWin.add(searchAllWinSearchButton);
+		searchAllStringsWin.add(searchAllWinCancelButton);
+		searchAllStringsWin.add(searchAllWinProgressBar);
+		searchAllStringsWin.add(new JLabel());
+		searchAllStringsWin.pack();
+		searchAllStringsWin.setResizable(Boolean.FALSE);
+	}
+
+	/**
+	 * createNewPrjWin.
+	 */
+	private void createNewPrjWin() {
 		newPrjWin = new JFrame(rb.getString(KeyConstants.KEY_NEW_PRJ_TITLE));
 		newPrjWin.setLayout(new GridLayout(NEW_PROJECT_GRID_ROWS, NEW_PROJECT_GRID_COLS, NEW_PROJECT_GRID_HGAP, NEW_PROJECT_GRID_VGAP));
 		newPrjWinNameLabel = new JLabel(rb.getString(KeyConstants.KEY_NEW_PRJ_NAME), SwingConstants.LEFT);
@@ -729,25 +843,6 @@ public class HexViewer extends JFrame implements ActionListener {
 		newPrjWin.add(newPrjWinCancelButton);
 		newPrjWin.pack();
 		newPrjWin.setResizable(Boolean.FALSE);
-		vsb = new JScrollBar();
-		firstRow.add(vsb);
-		offsetLabel = new JLabel(rb.getString(KeyConstants.KEY_OFFSET_LABEL));
-		secondRow.add(offsetLabel);
-		offsetLabelValue = new JTextField(Utils.intToHexString(offset, Constants.HEX_ADDR_SIZE), Constants.HEX_ADDR_SIZE);
-		offsetLabelValue.setEnabled(false);
-		secondRow.add(offsetLabelValue);
-		offsetLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		offsetLabelValue.setAlignmentX(Component.LEFT_ALIGNMENT);
-		offEntries = new ArrayList<OffsetEntry>();
-		currEntry = new OffsetEntry();
-		currEntry.start = -1;
-		currEntry.end = -1;
-		setResizable(Boolean.FALSE);
-		addAllListeners();
-		pack();
-		vsb.setPreferredSize(new Dimension((int) vsb.getPreferredSize().getWidth(), (int) (getSize().getHeight() * 0.85)));
-		setVisible(true);
-		refreshAll();
 	}
 
 	/**
@@ -1193,6 +1288,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		help = new JMenuItem(rb.getString(KeyConstants.KEY_HELP_MENUITEM));
 		goTo = new JMenuItem(rb.getString(KeyConstants.KEY_GOTO_MENUITEM));
 		searchRelative = new JMenuItem(rb.getString(KeyConstants.KEY_SEARCH_RELATIVE_MENUITEM));
+		searchAll = new JMenuItem(rb.getString(KeyConstants.KEY_SEARCH_ALL_MENUITEM));
 		find = new JMenuItem(rb.getString(KeyConstants.KEY_FIND_MENUITEM));
 		openOffsets = new JMenuItem(rb.getString(KeyConstants.KEY_OPEN_OFFSETS_MENUITEM));
 		saveOffsets = new JMenuItem(rb.getString(KeyConstants.KEY_SAVE_OFFSETS_MENUITEM));
@@ -1203,7 +1299,8 @@ public class HexViewer extends JFrame implements ActionListener {
 		view16Rows = new JCheckBoxMenuItem(rb.getString(KeyConstants.KEY_16ROWS_MENUITEM));
 
 		tableFilter = new SimpleFilter(EXTENSION_TABLE, rb.getString(KeyConstants.KEY_FILTER_TABLE));
-		offsetFileFilter = new SimpleFilter(EXTENSION_OFFSET, rb.getString(KeyConstants.KEY_FILTER_OFFSET));
+		offsetFileFilter = new SimpleFilter(Arrays.asList(EXTENSION_OFFSET, EXTENSION_EXTRACTION), 
+				rb.getString(KeyConstants.KEY_FILTER_OFFSET));
 
 		//Setup menu
 		fileMenu.add(openFile);
@@ -1222,6 +1319,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		toolsMenu.add(goTo);
 		toolsMenu.add(searchRelative);
 		toolsMenu.add(find);
+		toolsMenu.add(searchAll);
 
 		viewMenu.add(view16Cols);
 		viewMenu.add(view16Rows);
@@ -1247,6 +1345,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		openTable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK));
 		saveTable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
 		searchRelative.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK));
+		searchAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK));
 		find.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
 		openOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
 		saveOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
@@ -1388,7 +1487,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			private static final long serialVersionUID = 251417879942401219L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				createProjectWindow();
+				showProjectWindow();
 			}
 		});
 		goTo.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_GOTO_MENUITEM)) {
@@ -1408,6 +1507,14 @@ public class HexViewer extends JFrame implements ActionListener {
 					}
 					refreshAll();
 				}
+			}
+		});
+		searchAll.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_SEARCH_ALL_MENUITEM)) {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 251407879942401219L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showSearchAllWindow();
 			}
 		});
 		searchRelative.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_SEARCH_RELATIVE_MENUITEM)) {
@@ -1540,7 +1647,12 @@ public class HexViewer extends JFrame implements ActionListener {
 				fileChooser.setFileFilter(offsetFileFilter);
 				int result = fileChooser.showOpenDialog(openOffsets);
 				if (result == JFileChooser.APPROVE_OPTION) {
-					reloadOffsetsFile(fileChooser.getSelectedFile());
+					if(fileChooser.getSelectedFile().getName().endsWith(EXTENSION_OFFSET)) {
+						reloadOffsetsFile(fileChooser.getSelectedFile());
+					}
+					else {
+						reloadExtAsOffsetsFile(fileChooser.getSelectedFile());
+					}
 				}
 			}
 		});
@@ -1581,6 +1693,14 @@ public class HexViewer extends JFrame implements ActionListener {
 				}
 			}
 		});
+		setActionsNewPrjWin();
+		setActionsAllStringsWin();
+	}
+
+	/**
+	 * setActionsNewPrjWin.
+	 */
+	private void setActionsNewPrjWin() {
 		newPrjWinCreateButton = new JButton(rb.getString(KeyConstants.KEY_NEW_PRJ_CREA_BUT));
 		newPrjWinCancelButton = new JButton(rb.getString(KeyConstants.KEY_NEW_PRJ_CLOSE_BUT));
 		newPrjWinSearchFileButton = new JButton(rb.getString(KeyConstants.KEY_FIND_MENUITEM));
@@ -1644,6 +1764,128 @@ public class HexViewer extends JFrame implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				newPrjWin.setVisible(false);
+			}
+		});
+	}
+
+	/**
+	 * Sets the actions all strings win.
+	 */
+	protected void setActionsAllStringsWin() {
+		searchAllWinSearchButton = new JButton(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_SEARCH_BUTTON));
+		searchAllWinCancelButton = new JButton(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_CANCEL_BUTTON));
+		searchAllWinCancelButton.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_CANCEL_BUTTON)) {
+			private static final long serialVersionUID = -1221167224371368933L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(searchAllThread != null) {
+					searchAllThread.interrupt();
+					searchAllThreadError = true;
+				}
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						searchAllWinProgressBar.setValue(0);
+						enableSearchAllWindow();
+					}
+				});
+				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
+		searchAllWinSearchButton.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_SEARCH_BUTTON)) {
+			private static final long serialVersionUID = -1221167224371368933L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						disableSearchAllWindow();
+						searchAllWinProgressBar.setValue(SEARCH_ALL_MIN_PROGRESS);
+					}
+				});
+				if(searchAllWinEndCharsInput.getText() != null && searchAllWinEndCharsInput.getText().length() > 0 && 
+						searchAllWinEndCharsInput.getText().matches(REGEXP_OFFSET_ENTRIES)) {
+					Thread searchAll = new Thread(new Runnable() {
+				         public void run() {
+				        	 searchAllThreadAction();
+				         }});
+					searchAll.start();
+				}
+				else {
+					JOptionPane.showMessageDialog(asciiTextArea.getParent(),
+							rb.getString(KeyConstants.KEY_ALERT_INVALID_ENDCHARS),
+							rb.getString(KeyConstants.KEY_ALERT_INVALID_ENDCHARS_TITLE), JOptionPane.ERROR_MESSAGE);
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							enableSearchAllWindow();
+							searchAllWinProgressBar.setValue(SEARCH_ALL_MIN_PROGRESS);
+						}
+					});
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Search all thread action.
+	 */
+	private void searchAllThreadAction() {
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		final String extractFile = hexFile.getName() + Constants.EXTRACT_EXTENSION;
+		searchAllThreadError = false;
+		searchAllThread = new Thread(new Runnable() {
+	         public void run() {
+	        	try {
+	        		File file = new File(Constants.DEFAULT_DICT);
+	        		if(!file.exists()) {
+	        			file = new File(Constants.PARENT_DIR + Constants.DEFAULT_DICT);
+	        		}
+	        		if(file.exists()) {
+	        			FileUtils.searchAllStrings(hexTable, fileBytes, searchAllWinSkipCharsOpt.getSelectedIndex(),
+	        					searchAllWinEndCharsInput.getText(), file.getAbsolutePath(), extractFile);
+	        		}
+	        		else {
+	        			searchAllThreadError = true;
+	        		}
+				} catch (Exception e) {
+					searchAllThreadError = true;
+					e.printStackTrace();
+				}
+	         }
+	    });
+		if(searchAllThread != null) {
+			searchAllThread.start();
+			synchronized (searchAllThread) {
+				while (searchAllThread != null && 
+						searchAllThread.isAlive() && 
+						!searchAllThread.isInterrupted()) {
+					try {
+						searchAllThread.wait(50);
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								searchAllWinProgressBar.setValue((int) hexTable.getSearchPercent());
+							}
+						});
+						Thread.sleep(50);
+					} catch (InterruptedException e1) {
+						searchAllThreadError = true;
+						e1.printStackTrace();
+					}
+				}
+			}
+		}
+	    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	    if(searchAllThreadError) {
+	    	JOptionPane.showMessageDialog(searchAllStringsWin, rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_ERROR),
+					rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_ERROR), JOptionPane.INFORMATION_MESSAGE);
+	    }
+	    else {
+			JOptionPane.showMessageDialog(searchAllStringsWin, rb.getString(KeyConstants.KEY_SEARCHED_ALL_DESC) + extractFile,
+					rb.getString(KeyConstants.KEY_SEARCHED_ALL_TITLE), JOptionPane.INFORMATION_MESSAGE);
+			searchAllStringsWin.setVisible(false);
+	    }
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				enableSearchAllWindow();
+				searchAllWinProgressBar.setValue(SEARCH_ALL_MIN_PROGRESS);
 			}
 		});
 	}
@@ -1733,12 +1975,54 @@ public class HexViewer extends JFrame implements ActionListener {
 	/**
 	 * Creates the project window.
 	 */
-	private void createProjectWindow() {
+	private void showProjectWindow() {
 		cleanProjectWindow();
 		enableProjectWindow();
 		newPrjWin.pack();
 		newPrjWin.setLocationRelativeTo(this);
 		newPrjWin.setVisible(true);
+	}
+	
+	/**
+	 * Enable search all window.
+	 */
+	private void enableSearchAllWindow() {
+		searchAllThread = null;
+		searchAllWinSkipCharsOpt.setEnabled(true);
+		searchAllWinEndCharsInput.setEnabled(true);
+		searchAllWinSearchButton.setEnabled(true);
+		searchAllWinCancelButton.setEnabled(false);
+	}
+
+	/**
+	 * Clean search all window.
+	 */
+	private void cleanSearchAllWindow() {
+		//Valores por defecto
+		searchAllWinSkipCharsOpt.setSelectedIndex(SEARCH_ALL_DEFAULT_CHARS_INDEX);
+		searchAllWinEndCharsInput.setText(SEARCH_ALL_DEFAULT_END_CHARS);
+		searchAllWinProgressBar.setValue(SEARCH_ALL_MIN_PROGRESS);
+	}
+
+	/**
+	 * Disable search all window.
+	 */
+	private void disableSearchAllWindow() {
+		searchAllWinSkipCharsOpt.setEnabled(false);
+		searchAllWinEndCharsInput.setEnabled(false);
+		searchAllWinSearchButton.setEnabled(false);
+		searchAllWinCancelButton.setEnabled(true);
+	}
+
+	/**
+	 * Show search all window.
+	 */
+	private void showSearchAllWindow() {
+		enableSearchAllWindow();
+		cleanSearchAllWindow();
+		searchAllStringsWin.pack();
+		searchAllStringsWin.setLocationRelativeTo(this);
+		searchAllStringsWin.setVisible(true);
 	}
 
 	/**
@@ -1779,7 +2063,8 @@ public class HexViewer extends JFrame implements ActionListener {
 	private void reloadExtAsOffsetsFile(File selectedFile) {
 		offsetFile = selectedFile;
 		try {
-			offEntries = Utils.getOffsets(FileUtils.getCleanOffsetsString(FileUtils.cleanExtractedFile(selectedFile.getAbsolutePath())));
+			offEntries = Utils.getOffsets(FileUtils.getCleanOffsetsString(
+					FileUtils.cleanExtractedFile(selectedFile.getAbsolutePath())));
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}

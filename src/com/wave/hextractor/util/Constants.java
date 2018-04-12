@@ -20,6 +20,9 @@ public class Constants {
 
 	/** The Constant FILE_SEPARATOR. */
 	public static final String FILE_SEPARATOR = System.getProperty("file.separator");
+	
+	/** The Constant PARENT_DIR. */
+	public static final String PARENT_DIR = ".." + FILE_SEPARATOR;
 
 	/** The Constant CHR_DOT. */
 	public static final char CHR_DOT = '.';

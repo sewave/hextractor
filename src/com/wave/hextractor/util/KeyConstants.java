@@ -1,6 +1,5 @@
 package com.wave.hextractor.util;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class KeyConstants.
  */
@@ -62,6 +61,9 @@ public class KeyConstants {
 
 	/** The Constant KEY_SEARCH_RELATIVE_MENUITEM. */
 	public static final String KEY_SEARCH_RELATIVE_MENUITEM = "searchRelativeMenuItem";
+	
+	/** The Constant KEY_SEARCH_ALL_MENUITEM. */
+	public static final String KEY_SEARCH_ALL_MENUITEM = "searchAllMenuItem";
 
 	/** The Constant KEY_OFFSET_INPUT. */
 	public static final String KEY_OFFSET_INPUT = "offsetInput";
@@ -155,6 +157,33 @@ public class KeyConstants {
 
 	/** The Constant KEY_NO_RESULTS_TITLE. */
 	public static final String KEY_NO_RESULTS_TITLE = "noResultsTitle";
+	
+	/** The Constant KEY_SEARCHED_ALL_DESC. */
+	public static final String KEY_SEARCHED_ALL_DESC = "searchedAllDesc";
+
+	/** The Constant KEY_SEARCHED_ALL_TITLE. */
+	public static final String KEY_SEARCHED_ALL_TITLE = "searchedAllTitle";
+	
+	/** The Constant KEY_SEARCH_ALL_WIN_TITLE. */
+	public static final String KEY_SEARCH_ALL_WIN_TITLE = "searchAllWinTitle";
+	
+	/** The Constant KEY_SEARCH_ALL_WIN_SKIP_CHARS_LABEL. */
+	public static final String KEY_SEARCH_ALL_WIN_SKIP_CHARS_LABEL = "searchAllWinSkipCharsLabel";
+	
+	/** The Constant KEY_SEARCH_ALL_WIN_END_CHARS_LABEL. */
+	public static final String KEY_SEARCH_ALL_WIN_END_CHARS_LABEL = "searchAllWinEndCharsLabel";
+	
+	/** The Constant KEY_SEARCH_ALL_WIN_DICTIONARY_LABEL. */
+	public static final String KEY_SEARCH_ALL_WIN_DICTIONARY_LABEL = "searchAllWinDictionaryLabel";
+	
+	/** The Constant KEY_SEARCH_ALL_WIN_SEARCH_BUTTON. */
+	public static final String KEY_SEARCH_ALL_WIN_SEARCH_BUTTON = "searchAllWinSearchButton";
+	
+	/** The Constant KEY_SEARCH_ALL_WIN_CANCEL_BUTTON. */
+	public static final String KEY_SEARCH_ALL_WIN_CANCEL_BUTTON = "searchAllWinCancelButton";
+	
+	/** The Constant KEY_SEARCH_ALL_WIN_ERROR. */
+	public static final String KEY_SEARCH_ALL_WIN_ERROR = "searchAllWinError";
 
 	/** The Constant KEY_CLEAN_OFFSETS. */
 	public static final String KEY_CLEAN_OFFSETS = "clearOffsets";

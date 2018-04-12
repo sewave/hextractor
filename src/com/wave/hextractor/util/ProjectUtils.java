@@ -23,26 +23,20 @@ public class ProjectUtils {
 	/** The Constant EXCUTEHEXVIEWER_FILE. */
 	private static final String EXCUTEHEXVIEWER_FILE = "0.hexviewer.bat";
 
-	/** The Constant SEARCHALL_FILE. */
-	private static final String SEARCHALL_FILE = "1.searchAll.bat";
-
-	/** The Constant CLEANEXTRACTED_FILE. */
-	private static final String CLEANEXTRACTED_FILE = "2.cleanAutoExtract.bat";
-
 	/** The Constant EXTRACTHEX_FILE. */
-	private static final String EXTRACTHEX_FILE = "3.extractHex.bat";
+	private static final String EXTRACTHEX_FILE = "2.extractHex.bat";
 
 	/** The Constant ORIGINALSCRIPT_FILE. */
-	private static final String ORIGINALSCRIPT_FILE = "4.originalScript.bat";
+	private static final String ORIGINALSCRIPT_FILE = "1.originalScript.bat";
 
 	/** The Constant CLEAN_FILE. */
-	private static final String CLEAN_FILE = "5.clean.bat";
+	private static final String CLEAN_FILE = "4.clean.bat";
 
 	/** The Constant INSERT_FILE. */
-	private static final String INSERT_FILE = "6.insert.bat";
+	private static final String INSERT_FILE = "3.insert.bat";
 
 	/** The Constant CREATEPATCH_FILE. */
-	private static final String CREATEPATCH_FILE = "7.createPatch.bat";
+	private static final String CREATEPATCH_FILE = "5.createPatch.bat";
 
 	/** The Constant HEX_EXTENSION. */
 	private static final String HEX_EXTENSION = ".hex";
@@ -112,8 +106,6 @@ public class ProjectUtils {
 		String transfileName = TR_FILENAME_PREFIX + fileName;
 		copyBaseFiles(projectFolder, name, projectFile);
 		Utils.createFile(Utils.getJoinedFileName(projectFolder, EXCUTEHEXVIEWER_FILE), createHexviewerFile(name, fileName));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, SEARCHALL_FILE), createSearchAllFile(name, fileName));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, CLEANEXTRACTED_FILE), createCleanExtractedFile(fileName));
 		Utils.createFile(Utils.getJoinedFileName(projectFolder, EXTRACTHEX_FILE), createExtractHexFile(name, fileName, transfileName));
 		Utils.createFile(Utils.getJoinedFileName(projectFolder, ORIGINALSCRIPT_FILE), createOriginalScriptFile(name, fileName));
 		Utils.createFile(Utils.getJoinedFileName(projectFolder, CLEAN_FILE), createCleanFile(name));
@@ -291,24 +283,6 @@ public class ProjectUtils {
 	}
 
 	/**
-	 * Creates the search all file.
-	 *
-	 * @param name the name
-	 * @param fileName the file name
-	 * @return the string
-	 */
-	private static final String createSearchAllFile(String name, String fileName) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + SEARCHALL_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(getTfileName(fileName)).append(Constants.NEWLINE);
-		fileContent.append(getScriptName(name)).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-sa "+SCRIPTNAME_VAR+".tbl "+TFILENAMENAME_VAR+" 4 FF \"..\\EngDict.txt\"").append(Constants.NEWLINE);
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	/**
 	 * Creates the hex file.
 	 *
 	 * @param name the name
@@ -320,22 +294,6 @@ public class ProjectUtils {
 		fileContent.append(";Traducciones Wave " + YEAR).append(Constants.NEWLINE);
 		fileContent.append(";54 72 61 64 75 63 63 69 6F 6E 65 73 20 57 61 76 65 20 3");
 		fileContent.append(YEAR.substring(0, 1) + " 3" + YEAR.substring(1, 2) + " 3" + YEAR.substring(2, 3) + " 3" + YEAR.substring(3, 4) + "@000000E0:000000F5").append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	/**
-	 * Creates the clean extracted file.
-	 *
-	 * @param fileName the file name
-	 * @return the string
-	 */
-	private static final String createCleanExtractedFile(String fileName) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + CLEANEXTRACTED_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(getTfileName(fileName)).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-cef "+ TFILENAMENAME_VAR +".ext "+ TFILENAMENAME_VAR +".ext.off").append(Constants.NEWLINE);
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
 		return fileContent.toString();
 	}
 
