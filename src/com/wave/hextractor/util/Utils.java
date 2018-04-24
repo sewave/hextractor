@@ -363,7 +363,7 @@ public class Utils {
 		boolean hasWords = false;
 		sentence = getCleanedString(sentence);
 		for(String word: sentence.toLowerCase().split(Constants.SPACE_STR)) {
-			if(word != null && word.trim().length() > 2 && dict.contains(word)) {
+			if(word != null && word.trim().length() > 3 && dict.contains(word)) {
 				hasWords = true;
 				break;
 			}
