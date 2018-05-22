@@ -300,6 +300,9 @@ public class HexViewer extends JFrame implements ActionListener {
 	
 	/** The search all. */
 	private JMenuItem searchAll;
+	
+	/** The extract. */
+	private JMenuItem extract;
 
 	/** The clear offsets. */
 	private JMenuItem clearOffsets;
@@ -333,6 +336,12 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The offset file filter. */
 	private SimpleFilter offsetFileFilter;
+	
+	/** The offset only file filter. */
+	private SimpleFilter offsetOnlyFileFilter;
+	
+	/** The ext only file filter. */
+	private SimpleFilter extOnlyFileFilter;
 
 	/** The results window. */
 	private JFrame resultsWindow;
@@ -1289,6 +1298,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		goTo = new JMenuItem(rb.getString(KeyConstants.KEY_GOTO_MENUITEM));
 		searchRelative = new JMenuItem(rb.getString(KeyConstants.KEY_SEARCH_RELATIVE_MENUITEM));
 		searchAll = new JMenuItem(rb.getString(KeyConstants.KEY_SEARCH_ALL_MENUITEM));
+		extract = new JMenuItem(rb.getString(KeyConstants.KEY_EXTRACT_MENUITEM));
 		find = new JMenuItem(rb.getString(KeyConstants.KEY_FIND_MENUITEM));
 		openOffsets = new JMenuItem(rb.getString(KeyConstants.KEY_OPEN_OFFSETS_MENUITEM));
 		saveOffsets = new JMenuItem(rb.getString(KeyConstants.KEY_SAVE_OFFSETS_MENUITEM));
@@ -1301,6 +1311,12 @@ public class HexViewer extends JFrame implements ActionListener {
 		tableFilter = new SimpleFilter(EXTENSION_TABLE, rb.getString(KeyConstants.KEY_FILTER_TABLE));
 		offsetFileFilter = new SimpleFilter(Arrays.asList(EXTENSION_OFFSET, EXTENSION_EXTRACTION), 
 				rb.getString(KeyConstants.KEY_FILTER_OFFSET));
+		
+		offsetOnlyFileFilter = new SimpleFilter(Arrays.asList(EXTENSION_OFFSET), 
+				rb.getString(KeyConstants.KEY_FILTER_OFFSET_ONLY));
+		
+		extOnlyFileFilter = new SimpleFilter(Arrays.asList(EXTENSION_EXTRACTION), 
+				rb.getString(KeyConstants.KEY_FILTER_EXT_ONLY));
 
 		//Setup menu
 		fileMenu.add(openFile);
@@ -1312,6 +1328,7 @@ public class HexViewer extends JFrame implements ActionListener {
 
 		offsetMenu.add(openOffsets);
 		offsetMenu.add(saveOffsets);
+		offsetMenu.add(extract);
 		offsetMenu.add(nextOffset);
 		offsetMenu.add(prevOffset);
 		offsetMenu.add(clearOffsets);
@@ -1346,6 +1363,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		saveTable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
 		searchRelative.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK));
 		searchAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK));
+		extract.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_DOWN_MASK));
 		find.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
 		openOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
 		saveOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
@@ -1431,6 +1449,38 @@ public class HexViewer extends JFrame implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(about, rb.getString(KeyConstants.KEY_ABOUT_DESC) ,
 						rb.getString(KeyConstants.KEY_ABOUT_MENUITEM), JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		extract.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_EXTRACT_MENUITEM)) {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 251407879942401215L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String outFileName = tableFile.getName().replaceAll(FileUtils.getFileExtension(tableFile.getName()),
+						Constants.EXTRACT_EXTENSION_NODOT);
+				JFileChooser fileChooser = new JFileChooser();
+				File selectedFile = new File(outFileName);
+				fileChooser.setSelectedFile(selectedFile);
+				File parent = selectedFile.getParentFile();
+				if(parent == null) {
+					parent = hexFile.getParentFile();
+				}
+				if(parent == null) {
+					parent = tableFile.getParentFile();
+				}
+				fileChooser.setCurrentDirectory(parent);
+				fileChooser.setFileFilter(extOnlyFileFilter);
+				fileChooser.setApproveButtonText(rb.getString(KeyConstants.KEY_SAVE_BUTTON));
+				if (fileChooser.showSaveDialog(saveOffsets) == JFileChooser.APPROVE_OPTION &&
+						confirmSelectedFile(fileChooser.getSelectedFile())) {
+					try {
+						FileUtils.extractAsciiFile(hexTable, fileBytes, fileChooser.getSelectedFile().getAbsolutePath(),
+								offEntries, false);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+				refreshAll();
 			}
 		});
 		nextOffset.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_NEXT_RANGE_MENUITEM)) {
@@ -1663,8 +1713,16 @@ public class HexViewer extends JFrame implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setSelectedFile(offsetFile);
-				File parent = offsetFile.getParentFile();
+				File selectedFile;
+				if(offsetFile.getAbsolutePath().endsWith(Constants.EXTRACT_EXTENSION)) {
+					selectedFile = new File(FileUtils.getFilePath(offsetFile) + File.separator +  
+							tableFile.getName().replaceAll(Constants.TBL_EXTENSION_REGEX,
+							Constants.OFFSET_EXTENSION));					
+				} else {
+					selectedFile = offsetFile;
+				}
+				fileChooser.setSelectedFile(selectedFile);
+				File parent = selectedFile.getParentFile();
 				if(parent == null) {
 					parent = hexFile.getParentFile();
 				}
@@ -1672,25 +1730,22 @@ public class HexViewer extends JFrame implements ActionListener {
 					parent = tableFile.getParentFile();
 				}
 				fileChooser.setCurrentDirectory(parent);
-				fileChooser.setFileFilter(offsetFileFilter);
+				fileChooser.setFileFilter(offsetOnlyFileFilter);
 				fileChooser.setApproveButtonText(rb.getString(KeyConstants.KEY_SAVE_BUTTON));
-				int result = fileChooser.showSaveDialog(saveOffsets);
-				if (result == JFileChooser.APPROVE_OPTION) {
-					boolean accepted = confirmSelectedFile(fileChooser.getSelectedFile());
-					if(accepted) {
-						offsetFile = fileChooser.getSelectedFile();
-						if(!offsetFile.getAbsolutePath().endsWith(EXTENSION_OFFSET)) {
-							offsetFile = new File(offsetFile.getAbsolutePath() + EXTENSION_OFFSET);
-						}
-						try {
-							Collections.sort(offEntries);
-							FileUtils.writeFileAscii(offsetFile.getAbsolutePath(), Utils.toFileString(offEntries));
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						}
+				if (fileChooser.showSaveDialog(saveOffsets) == JFileChooser.APPROVE_OPTION &&
+						confirmSelectedFile(fileChooser.getSelectedFile())) {
+					offsetFile = fileChooser.getSelectedFile();
+					if(!offsetFile.getAbsolutePath().endsWith(EXTENSION_OFFSET)) {
+						offsetFile = new File(offsetFile.getAbsolutePath() + EXTENSION_OFFSET);
 					}
-					refreshAll();
+					try {
+						Collections.sort(offEntries);
+						FileUtils.writeFileAscii(offsetFile.getAbsolutePath(), Utils.toFileString(offEntries));
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
 				}
+				refreshAll();
 			}
 		});
 		setActionsNewPrjWin();
@@ -1978,6 +2033,12 @@ public class HexViewer extends JFrame implements ActionListener {
 	private void showProjectWindow() {
 		cleanProjectWindow();
 		enableProjectWindow();
+		if(hexFile != null) {
+			newPrjWinFileInput.setText(hexFile.getName());
+			selectProjectFileType(hexFile);
+			newPrjWinNameInput.setText(ProjectUtils.getProjectName(hexFile.getName()));
+			projectFile = hexFile;
+		}
 		newPrjWin.pack();
 		newPrjWin.setLocationRelativeTo(this);
 		newPrjWin.setVisible(true);

@@ -127,7 +127,7 @@ public class HexTable {
 				String tablechar;
 				String[] items = s.split(Constants.TABLE_SEPARATOR);
 				if(isEquals) {
-					tablechar = Constants.TABLE_SEPARATOR;
+					tablechar = s.substring(s.indexOf(Constants.TABLE_SEPARATOR) + 1);
 				}
 				else {
 					tablechar = items[1].replaceAll(Constants.S_NEWLINE, Constants.EMPTY).replaceAll(Constants.S_CRETURN, Constants.EMPTY);

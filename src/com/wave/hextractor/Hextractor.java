@@ -75,6 +75,9 @@ public class Hextractor {
 	
 	/** The Constant MODE_INSERT_ASCII_4_3. */
 	public static final String MODE_INSERT_ASCII_4_3 = "-h43";
+	
+	/** The Constant MODE_SEPARATE_CHAR_LENGTH. */
+	public static final String MODE_SEPARATE_CHAR_LENGTH = "-scl";
 
 	/**
 	 * Prints the usage.
@@ -176,7 +179,11 @@ public class Hextractor {
 										if (MODE_INSERT_ASCII_4_3.equals(mode)) {
 											FileUtils.insertHex4To3Data(args[1], args[2], args[3]);
 										} else {
-											printUsage(rb);
+											if (MODE_SEPARATE_CHAR_LENGTH.equals(mode)) {
+												FileUtils.separateCharLength(args[1], args[2], args[3]);
+											} else {
+												printUsage(rb);
+											}
 										}
 									}
 								}

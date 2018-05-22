@@ -64,6 +64,15 @@ public class KeyConstants {
 	
 	/** The Constant KEY_SEARCH_ALL_MENUITEM. */
 	public static final String KEY_SEARCH_ALL_MENUITEM = "searchAllMenuItem";
+	
+	/** The Constant KEY_EXTRACT_MENUITEM. */
+	public static final String KEY_EXTRACT_MENUITEM = "extractMenuItem";
+	
+	/** The Constant KEY_EXTRACT_RESULT_TITLE. */
+	public static final String KEY_EXTRACT_RESULT_TITLE = "extractResultTitle";
+	
+	/** The Constant KEY_EXTRACT_RESULT_DESC. */
+	public static final String KEY_EXTRACT_RESULT_DESC = "extractResultDesc";
 
 	/** The Constant KEY_OFFSET_INPUT. */
 	public static final String KEY_OFFSET_INPUT = "offsetInput";
@@ -91,6 +100,12 @@ public class KeyConstants {
 
 	/** The Constant KEY_FILTER_OFFSET. */
 	public static final String KEY_FILTER_OFFSET = "filterOffset";
+	
+	/** The Constant KEY_FILTER_OFFSET_ONLY. */
+	public static final String KEY_FILTER_OFFSET_ONLY = "filterOffsetOnly";
+	
+	/** The Constant KEY_FILTER_EXT_ONLY. */
+	public static final String KEY_FILTER_EXT_ONLY = "filterExtOnly";
 
 	/** The Constant KEY_SAVE_BUTTON. */
 	public static final String KEY_SAVE_BUTTON = "saveButton";

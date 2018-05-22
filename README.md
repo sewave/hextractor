@@ -46,3 +46,5 @@ Herramienta con diferentes modos para ayudar a traducir juegos/ficheros utilizan
 -aip originalFile modifiedFile patchFile  
 #### CHECK LINE LENGTHS / VERIFICAR TAMAÑO LINEA  
 -cll extFile
+#### SEPARATE BY FIRST CHAR LENGTH / SEPARAR POR TAMAÑO DEL PRIMER CARACTER
+-scl file tableFile outFile

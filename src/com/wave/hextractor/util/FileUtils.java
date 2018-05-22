@@ -30,12 +30,41 @@ public class FileUtils {
 	 * @return the extension.
 	 */
 	public static String getFileExtension(File file) {
+		return getFileExtension(file.getName());
+	}
+	
+	/**
+	 * Gets the extension of a file, i.e.: file.ext => ext
+	 * @param file file to look at.
+	 * @return the extension.
+	 */
+	public static String getFileExtension(String fileName) {
 		String extension = Constants.EMPTY;
-		int i = file.getName().lastIndexOf(Constants.CHR_DOT);
+		int i = fileName.lastIndexOf(Constants.CHR_DOT);
 		if (i > 0) {
-			extension = file.getName().substring(i + 1);
+			extension = fileName.substring(i + 1);
 		}
 		return extension;
+	}
+	
+	/**
+	 * Gets the file path without separator.
+	 *
+	 * @param file the file
+	 * @return the file path
+	 */
+	public static String getFilePath(File file) {
+		return getFilePath(file.getAbsolutePath());
+	}
+
+	/**
+	 * Gets the file path without separator.
+	 *
+	 * @param absolutePath the absolute path
+	 * @return the file path
+	 */
+	public static String getFilePath(String absolutePath) {
+		return absolutePath.substring(0, absolutePath.lastIndexOf(File.separator));
 	}
 
 	/**
@@ -308,11 +337,26 @@ public class FileUtils {
 	 * @param offsetsArg
 	 * @throws Exception
 	 */
+	public static void extractAsciiFile(HexTable hexTable, byte[] fileBytes, String outFile, String offsetsArg,
+			boolean showExtractions) throws Exception {
+		if (offsetsArg != null && offsetsArg.length() > 0) {
+			extractAsciiFile(hexTable, fileBytes, outFile, Utils.getOffsets(offsetsArg), showExtractions);
+		}
+	}
+	
+	/**
+	 * Extracts the ascii file.
+	 * @param hexTable
+	 * @param fileBytes
+	 * @param outFile
+	 * @param offsetsArg
+	 * @throws Exception
+	 */
 	public static void extractAsciiFile(HexTable hexTable, byte[] fileBytes, String outFile,
-			String offsetsArg, boolean showExtractions) throws Exception {
+			List<OffsetEntry> offsets, boolean showExtractions) throws Exception {
 		StringBuffer fileOut = new StringBuffer();
-		if(offsetsArg != null && offsetsArg.length() > 0) {
-			for (OffsetEntry entry : Utils.getOffsets(offsetsArg)) {
+		if(offsets != null && !offsets.isEmpty()) {
+			for (OffsetEntry entry : offsets) {
 				fileOut.append(hexTable.toAscii(fileBytes, entry, showExtractions));
 			}
 		}
@@ -620,6 +664,52 @@ public class FileUtils {
 				System.out.println(e.getValue());
 			}
 		}
+	}
+
+	/**
+	 * Separates the string based on the table entry of the first character, 
+	 * adds newline after the desired chars.
+	 * @param file inFile
+	 * @param table table file
+	 * @param outFile output file
+	 * @throws Exception 
+	 */
+	public static void separateCharLength(String file, String table, String outFile) throws Exception {
+		System.out.println("Separatign string from \"" + file + "\"\n to \"" + outFile + "\""
+				+ "\n using table: \"" + table + "\"");
+		FileUtils.writeFileAscii(outFile, separateCharLength(FileUtils.getAsciiFile(file), 
+				new HexTable(table)));
+	}
+	
+	/**
+	 * Separates the string based on the table entry of the first character, 
+	 * adds newline after the desired chars.
+	 *
+	 * @param text the text
+	 * @param table the table
+	 * @return the string
+	 */
+	public static String separateCharLength(String text, HexTable table) {
+		StringBuilder res = new StringBuilder();
+		int length = text.length();
+		for(int i = 0; i < length;) {
+			String lenChar = text.substring(i, i + 1);
+			int strLen = table.toHex(lenChar)[0];
+			if(strLen == 0) {
+				res.append(lenChar);
+				i++;
+			}
+			else {
+				int endLength = i + 1 + strLen;
+				if(endLength > length) {
+					endLength = length;
+				}
+				res.append(Constants.S_NEWLINE).append(lenChar).append(Constants.S_NEWLINE);
+				res.append(text.substring(i + 1, endLength));
+				i += strLen + 1;
+			}
+		}
+		return res.toString();
 	}
 
 }

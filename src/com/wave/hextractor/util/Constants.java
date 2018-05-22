@@ -275,10 +275,16 @@ public class Constants {
 
 	/** The Constant EXTRACT_EXTENSION. */
 	public static final String EXTRACT_EXTENSION = ".ext";
+	
+	/** The Constant EXTRACT_EXTENSION_NODOT. */
+	public static final String EXTRACT_EXTENSION_NODOT = "ext";
 
 	/** The Constant OFFSET_EXTENSION. */
 	public static final String OFFSET_EXTENSION = ".off";
-
+	
+	/** The Constant TBL_EXTENSION_REGEX. */
+	public static final String TBL_EXTENSION_REGEX = "[.]tbl";
+	
 	/** The Constant PAD_CHAR. */
 	public static final byte PAD_CHAR = 0;
 
