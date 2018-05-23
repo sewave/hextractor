@@ -130,8 +130,10 @@ public class HexTable {
 					tablechar = s.substring(s.indexOf(Constants.TABLE_SEPARATOR) + 1);
 				}
 				else {
-					tablechar = items[1].replaceAll(Constants.S_NEWLINE, Constants.EMPTY).replaceAll(Constants.S_CRETURN, Constants.EMPTY);
+					tablechar = items[1];
 				}
+				//Eliminamos saltos de linea
+				tablechar = tablechar.replaceAll(Constants.S_NEWLINE, Constants.EMPTY).replaceAll(Constants.S_CRETURN, Constants.EMPTY);
 				if(Constants.RESERVED_CHARS.contains(tablechar)) {
 					System.out.println("WARNING - Table char \"" + tablechar + "\" will not be used because it is reserved.");
 				}
