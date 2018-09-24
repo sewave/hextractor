@@ -3,6 +3,9 @@
  */
 package com.wave.hextractor.object;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +22,10 @@ import com.wave.hextractor.util.Utils;
  * Class for the table operations.
  * @author slcantero
  */
-public class HexTable {
+public class HexTable implements Serializable {
+
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = -2128637206318658102L;
 
 	/** The Constant TABLE_KEY_A. */
 	private static final String TABLE_KEY_A = "A";
@@ -31,7 +37,7 @@ public class HexTable {
 	private static final String TABLE_KEY_ZERO = "0";
 
 	/** The Constant SPANISH_CHARS. */
-	private static final Map<String, String> SPANISH_CHARS = new HashMap<String, String>();
+	private static final Map<String, String> SPANISH_CHARS = new HashMap<>();
 	static {
 		SPANISH_CHARS.put("a", "á");
 		SPANISH_CHARS.put("e", "é");
@@ -54,7 +60,7 @@ public class HexTable {
 
 	/** The reversed. */
 	private Map<String, Byte> reversed;
-	
+
 	/** The searchPercentCompleted. */
 	private float searchPercent = 0;
 
@@ -80,7 +86,7 @@ public class HexTable {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * Transforms the byte into a String.
 	 *
@@ -97,7 +103,7 @@ public class HexTable {
 	 * @return the string
 	 */
 	public String toSelectionString() {
-		StringBuffer res = new StringBuffer();
+		StringBuilder res = new StringBuilder();
 		if(reversed.containsKey(TABLE_KEY_A)) {
 			res.append(TABLE_KEY_A).append(Constants.OFFSET_LENGTH_SEPARATOR).append(Constants.SPACE_STR);
 			res.append(Utils.intToHexString(reversed.get(TABLE_KEY_A), Constants.HEXSIZE_8BIT_VALUE)).append(Constants.SPACE_STR);
@@ -119,8 +125,8 @@ public class HexTable {
 	 * @param tableLines the table lines
 	 */
 	private void loadLines(List<String> tableLines) {
-		table = new HashMap<Byte, String>();
-		reversed = new HashMap<String, Byte>();
+		table = new HashMap<>();
+		reversed = new HashMap<>();
 		for(String s : tableLines) {
 			if(s.length() >= 4 && s.contains(Constants.TABLE_SEPARATOR)) {
 				boolean isEquals = s.contains(Constants.TABLE_SEPARATOR + Constants.TABLE_SEPARATOR);
@@ -135,14 +141,14 @@ public class HexTable {
 				//Eliminamos saltos de linea
 				tablechar = tablechar.replaceAll(Constants.S_NEWLINE, Constants.EMPTY).replaceAll(Constants.S_CRETURN, Constants.EMPTY);
 				if(Constants.RESERVED_CHARS.contains(tablechar)) {
-					System.out.println("WARNING - Table char \"" + tablechar + "\" will not be used because it is reserved.");
+					Utils.log("WARNING - Table char \"" + tablechar + "\" will not be used because it is reserved.");
 				}
 				else {
 					addToTable(Utils.hexStringCharToByte(items[0].toUpperCase().trim()), tablechar);
 				}
 			}
 			else {
-				System.out.println("ERROR - Line not valid: '" + s + "'");
+				Utils.log("ERROR - Line not valid: '" + s + "'");
 			}
 		}
 	}
@@ -153,9 +159,9 @@ public class HexTable {
 	 * @param displacement the displacement
 	 */
 	public HexTable(int displacement) {
-		List<String> tableLines = new ArrayList<String>();
-		StringBuffer sb = new StringBuffer();
-		byte currChar = (byte) ((Constants.MIN_PRINTABLE_CHAR - displacement) & Constants.MASK_8BIT);
+		List<String> tableLines = new ArrayList<>();
+		StringBuilder sb = new StringBuilder();
+		byte currChar = (byte) (Constants.MIN_PRINTABLE_CHAR - displacement & Constants.MASK_8BIT);
 		for(int i = Constants.MIN_PRINTABLE_CHAR; i <= Constants.MAX_PRINTABLE_CHAR; i++) {
 			sb.setLength(0);
 			sb.append(String.format(Constants.HEX_16_FORMAT, currChar));
@@ -187,9 +193,9 @@ public class HexTable {
 	 * Loads a table lines file.
 	 *
 	 * @param tableFile the table file
-	 * @throws Exception the exception
+	 * @throws FileNotFoundException the exception
 	 */
-	public HexTable(String tableFile) throws Exception {
+	public HexTable(String tableFile) throws FileNotFoundException {
 		loadLines(Arrays.asList(FileUtils.getAsciiFile(tableFile).replaceAll(Constants.UTF_8_BOM_BE, Constants.EMPTY).replaceAll(Constants.UTF_8_BOM_LE, Constants.EMPTY).split(String.valueOf(Constants.NEWLINE))));
 	}
 
@@ -201,13 +207,13 @@ public class HexTable {
 	 * @return
 	 */
 	public String toAscii(byte[] hexString, boolean expand, boolean decodeUnknown) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for(byte b : hexString) {
 			sb.append(toString(b, expand, decodeUnknown));
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Translates a hex string to ascii.
 	 * @param hexString
@@ -217,7 +223,7 @@ public class HexTable {
 	public String toAscii(byte[] hexString, boolean expand) {
 		return toAscii(hexString, expand, false);
 	}
-	
+
 	/**
 	 * Simple string to hex using table.
 	 * @param aString
@@ -256,8 +262,8 @@ public class HexTable {
 		table.put(entry, theChar);
 		reversed.put(theChar, entry);
 	}
-	
-	
+
+
 	/**
 	 * Translates to ascii entry to a hex string.
 	 *
@@ -283,11 +289,11 @@ public class HexTable {
 		int bytesreadedStart = 0;
 		StringBuilder line = new StringBuilder();
 		if(showExtracting) {
-			System.out.println("Extracting [" + Utils.fillLeft(Integer.toHexString(entry.start), Constants.HEX_ADDR_SIZE).toUpperCase() + ":" +
-					Utils.fillLeft(Integer.toHexString(entry.end), Constants.HEX_ADDR_SIZE).toUpperCase() + "]");
+			Utils.log("Extracting [" + Utils.fillLeft(Integer.toHexString(entry.getStart()), Constants.HEX_ADDR_SIZE).toUpperCase() + ":" +
+					Utils.fillLeft(Integer.toHexString(entry.getEnd()), Constants.HEX_ADDR_SIZE).toUpperCase() + "]");
 		}
 		sb.append(entry.toString()).append(Constants.NEWLINE);
-		for(int i = entry.start; i <= entry.end; i++) {
+		for(int i = entry.getStart(); i <= entry.getEnd(); i++) {
 			Byte hex = Byte.valueOf(hexString[i]);
 			bytesreaded++;
 			if(table.containsKey(hex)) {
@@ -301,16 +307,16 @@ public class HexTable {
 					line.append(value);
 				}
 			}
-			if(!table.containsKey(hex) || i == entry.end) {
+			if(!table.containsKey(hex) || i == entry.getEnd()) {
 				String hexStr = String.format(Constants.HEX_16_FORMAT, hexString[i]);
 				if(!table.containsKey(hex)) {
 					line.append(Constants.HEX_CHAR).append(hexStr).append(Constants.HEX_CHAR);
 				}
-				if(entry.endChars.contains(hexStr) || i == entry.end) {
+				if(entry.getEndChars().contains(hexStr) || i == entry.getEnd()) {
 					String originalLine = line.toString();
 					String numChars = Utils.fillLeft(String.valueOf(originalLine.length()), Constants.LEN_NUM_CHARS);
 					String numCharsHex = Utils.fillLeft(String.valueOf(bytesreaded - bytesreadedStart), Constants.LEN_NUM_CHARS);
-					sb.append(Constants.COMMENT_LINE).append(Utils.fillLeft(Integer.toHexString(entry.start + bytesreadedStart), Constants.HEX_ADDR_SIZE).toUpperCase());
+					sb.append(Constants.COMMENT_LINE).append(Utils.fillLeft(Integer.toHexString(entry.getStart() + bytesreadedStart), Constants.HEX_ADDR_SIZE).toUpperCase());
 					sb.append(Constants.ORG_STR_OPEN).append(originalLine).append(Constants.ORG_STR_CLOSE);
 					sb.append(Constants.STR_NUM_CHARS).append(numChars).append(Constants.STR_NUM_CHARS).append(numCharsHex);
 					sb.append(Constants.NEWLINE);
@@ -323,7 +329,7 @@ public class HexTable {
 		}
 		sb.append(String.valueOf(Constants.MAX_BYTES) + bytesreaded).append(Constants.NEWLINE);
 		if(showExtracting) {
-			System.out.println("TOTAL BYTES TO ASCII: " + bytesreaded);
+			Utils.log("TOTAL BYTES TO ASCII: " + bytesreaded);
 		}
 		return sb.toString();
 	}
@@ -376,18 +382,18 @@ public class HexTable {
 						if(j < 0) {
 							j = 0;
 						}
-						System.out.println("ERROR! HEX CHAR NOT CLOSED AT: " + i + " -> " + string.substring(j, i+1));
+						Utils.log("ERROR! HEX CHAR NOT CLOSED AT: " + i + " -> " + string.substring(j, i+1));
 					}
-					if(entry.endChars.contains(hexchar)) {
+					if(entry.getEndChars().contains(hexchar)) {
 						char nextchar = string.substring(i+1, i+2).charAt(0);
 						while(Constants.ADDR_CHAR == nextchar) {
 							i++;
 							String hexTo = string.substring(i+1, i+1+8);
-							System.out.println("INSERTING OFFSET " +
+							Utils.log("INSERTING OFFSET " +
 									Utils.fillLeft(Integer.toHexString(offsetStart), Constants.HEX_ADDR_SIZE) + " TO " + hexTo);
 							int addrTo = Integer.parseInt(hexTo, Constants.HEX_RADIX);
 							if(pointerOffsets.containsKey(addrTo)) {
-								System.out.println("ERROR!!! DUPLICATED OFFSET ENTRY");
+								Utils.log("ERROR!!! DUPLICATED OFFSET ENTRY");
 							}
 							pointerOffsets.put(addrTo, offsetStart);
 							i+=8;
@@ -403,27 +409,27 @@ public class HexTable {
 								j++;
 								testEnd = string.substring(j, j+1).charAt(0);
 							}
-							int length = Integer.valueOf(string.substring(i+1, j));
+							int length = Integer.parseInt(string.substring(i+1, j));
 							if(offset - offsetStart > length-1) {
-								System.out.println("ERROR!!! STRING TOO LARGE (" +
+								Utils.log("ERROR!!! STRING TOO LARGE (" +
 										Utils.fillLeft(String.valueOf(offset - offsetStart+1), 4) + " - " +
 										Utils.fillLeft(String.valueOf(length), 4) +
 										")!!!");
-								System.out.println(string.substring(stringStart, i));
+								Utils.log(string.substring(stringStart, i));
 							}
 							else {
 								if(offset - offsetStart < length-1) {
-									System.out.println("WARNING!!! STRING TOO SMALL (" +
+									Utils.log("WARNING!!! STRING TOO SMALL (" +
 											Utils.fillLeft(String.valueOf(offset - offsetStart+1), 4) + " - " +
 											Utils.fillLeft(String.valueOf(length), 4) + ")!!!");
-									System.out.println(string.substring(stringStart, i));
+									Utils.log(string.substring(stringStart, i));
 									while(offset - offsetStart < length-1) {
 										hex[offset++] = hexSpace;
 									}
 								}
 							}
-							i+=(j-i)-1;
-							stringStart = i+2;
+							i += j - i - 1;
+							stringStart = i + 2;
 						}
 						hex[offset++] = Utils.hexStringCharToByte(hexchar);
 						offsetStart = offset;
@@ -440,13 +446,13 @@ public class HexTable {
 						j++;
 						testEnd = string.substring(j, j+1).charAt(0);
 					}
-					int length = Integer.valueOf(string.substring(i+1, j));
+					int length = Integer.parseInt(string.substring(i+1, j));
 					if(offset - offsetStart - 1 > length-1) {
-						System.out.println("ERROR!!! NOENDED STRING TOO LARGE (" +
+						Utils.log("ERROR!!! NOENDED STRING TOO LARGE (" +
 								Utils.fillLeft(String.valueOf(offset - offsetStart), 4) + " - " +
 								Utils.fillLeft(String.valueOf(length), 4) +
 								")!!!");
-						System.out.println(string.substring(stringStart, i));
+						Utils.log(string.substring(stringStart, i));
 					}
 					else {
 						if(offset - offsetStart - 1 < length-1) {
@@ -455,10 +461,9 @@ public class HexTable {
 							}
 						}
 					}
-					i+=(j-i)-1;
-					stringStart = i+2;
+					i += j - i - 1;
+					stringStart = i + 2;
 					break;
-
 				case Constants.NEWLINE:
 					break;
 				case Constants.CODEWORD_START:
@@ -477,7 +482,7 @@ public class HexTable {
 							codeWordValue = reversed.get(key);
 						}
 						else {
-							System.out.println("WARNING!!! CODE WORD NOT IN TABLE: '" + key + "'");
+							Utils.log("WARNING!!! CODE WORD NOT IN TABLE: '" + key + "'");
 						}
 						i = k;
 					}
@@ -490,8 +495,8 @@ public class HexTable {
 						value = reversed.get(nextString);
 					}
 					else {
-						System.out.println("WARNING!!! CHARACTER NOT IN TABLE: '" + nextString + "'");
-						System.out.println(string.substring(stringStart, i));
+						Utils.log("WARNING!!! CHARACTER NOT IN TABLE: '" + nextString + "'");
+						Utils.log(string.substring(stringStart, i));
 					}
 					hex[offset++] = value;
 					break;
@@ -503,8 +508,8 @@ public class HexTable {
 		}
 		//No dejemos que la siguiente cadena empiece tarde
 		if(offset < maxsize) {
-			System.out.println("WARNING!!! STRING TOO SMALL");
-			System.out.println(string.substring(stringStart));
+			Utils.log("WARNING!!! STRING TOO SMALL");
+			Utils.log(string.substring(stringStart));
 			for(int i = offset; i < maxsize; i++) {
 				hex[i] = Constants.PAD_CHAR;
 			}
@@ -513,7 +518,7 @@ public class HexTable {
 			maxsize = offset;
 		}
 		if(Utils.isDebug()) {
-			System.out.print("BYTES TO HEX: " + Utils.fillLeft(String.valueOf(offset), 5) + " / " +  Utils.fillLeft(String.valueOf(maxsize), 5));
+			Utils.logNoNL("BYTES TO HEX: " + Utils.fillLeft(String.valueOf(offset), 5) + " / " +  Utils.fillLeft(String.valueOf(maxsize), 5));
 		}
 		return Arrays.copyOf(hex, maxsize);
 	}
@@ -522,16 +527,13 @@ public class HexTable {
 	 * The Enum ENTRIES_STATUS.
 	 */
 	enum ENTRIES_STATUS {
-
 		/** The searching start of string. */
 		SEARCHING_START_OF_STRING,
-
 		/** The searching end of string. */
 		SEARCHING_END_OF_STRING,
-
 		/** The skipping chars. */
 		SKIPPING_CHARS,
-	};
+	}
 
 	/**
 	 * Get all entries from the file.
@@ -542,10 +544,10 @@ public class HexTable {
 	 * @param endCharsList the end chars list
 	 * @param dictFile the dict file
 	 * @return the all entries
-	 * @throws Exception the exception
+	 * @throws IOException the exception
 	 */
 	public String getAllEntries(byte[] secondFileBytes, int numMinChars, int numIgnoredChars,
-			List<String> endCharsList, String dictFile) throws Exception {
+			List<String> endCharsList, String dictFile) throws IOException {
 		searchPercent = 0;
 		List<OffsetEntry> offsetEntryList = new ArrayList<>();
 		HashSet<String> dict = new HashSet<>(Arrays.asList(FileUtils.getAsciiFile(dictFile).split(Constants.S_NEWLINE)));
@@ -558,10 +560,10 @@ public class HexTable {
 		ENTRIES_STATUS status = ENTRIES_STATUS.SEARCHING_START_OF_STRING;
 		long lastTime = System.currentTimeMillis();
 		for(int i = 0; i < secondFileBytes.length - numMinChars && !Thread.currentThread().isInterrupted(); i++) {
-			searchPercent = (i * 100f) / secondFileBytes.length;
+			searchPercent = i * 100f / secondFileBytes.length;
 			if(System.currentTimeMillis() - lastTime > 1000) {
 				lastTime = System.currentTimeMillis();
-				System.out.println(searchPercent + "% completed.");
+				Utils.log(searchPercent + "% completed.");
 			}
 			Byte readedByteObj = Byte.valueOf(secondFileBytes[i]);
 			String dataCharHex = String.format(Constants.HEX_16_FORMAT, readedByteObj);
@@ -620,7 +622,7 @@ public class HexTable {
 					boolean skippedAreEndings = listContainsFromList(endCharsList, skippedChars);
 					if(skippedChars.size() > numIgnoredChars) {
 						if(sentence.length() > numMinChars) {
-							if(Utils.stringHasWords(dict, word.toString()) || (validString && skippedAreEndings)) {
+							if(Utils.stringHasWords(dict, word.toString()) || validString && skippedAreEndings) {
 								offsetEntryList.add(new OffsetEntry(entryStart, i, endCharsList));
 							}
 							else {
@@ -673,7 +675,7 @@ public class HexTable {
 	 * @return the string
 	 */
 	public String toAsciiTable() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for(Map.Entry<Byte, String> entry : Utils.sortByValue(table).entrySet()) {
 			if(SPANISH_CHARS.containsKey(entry.getValue())) {
 				String spaChar = SPANISH_CHARS.get(entry.getValue());
@@ -686,12 +688,24 @@ public class HexTable {
 		return sb.toString();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (table == null ? 0 : table.hashCode());
+		return result;
+	}
+
 	/**
 	 * Equals.
 	 *
 	 * @param obj the obj
 	 * @return true, if successful
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if(!(obj instanceof HexTable)) {
 			return false;

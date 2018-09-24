@@ -75,7 +75,7 @@ public class IpsPatchEntry {
 			byte[] rleSizeAr = Utils.intToByteArray(rleSize);
 			binEntry[dataOff++] = rleSizeAr[2];
 			binEntry[dataOff++] = rleSizeAr[3];
-			binEntry[dataOff++] = data[0];
+			binEntry[dataOff] = data[0];
 		}
 		else {
 			System.arraycopy(data, 0, binEntry, dataOff, data.length);

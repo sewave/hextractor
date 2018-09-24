@@ -5,6 +5,12 @@ package com.wave.hextractor.util;
  */
 public class KeyConstants {
 
+	/**
+	 * Instantiates a new key constants.
+	 */
+	private KeyConstants() {
+	}
+
 	/** The Constant KEY_FILEMENU. */
 	public static final String KEY_FILEMENU = "fileMenu";
 
@@ -61,16 +67,16 @@ public class KeyConstants {
 
 	/** The Constant KEY_SEARCH_RELATIVE_MENUITEM. */
 	public static final String KEY_SEARCH_RELATIVE_MENUITEM = "searchRelativeMenuItem";
-	
+
 	/** The Constant KEY_SEARCH_ALL_MENUITEM. */
 	public static final String KEY_SEARCH_ALL_MENUITEM = "searchAllMenuItem";
-	
+
 	/** The Constant KEY_EXTRACT_MENUITEM. */
 	public static final String KEY_EXTRACT_MENUITEM = "extractMenuItem";
-	
+
 	/** The Constant KEY_EXTRACT_RESULT_TITLE. */
 	public static final String KEY_EXTRACT_RESULT_TITLE = "extractResultTitle";
-	
+
 	/** The Constant KEY_EXTRACT_RESULT_DESC. */
 	public static final String KEY_EXTRACT_RESULT_DESC = "extractResultDesc";
 
@@ -100,10 +106,10 @@ public class KeyConstants {
 
 	/** The Constant KEY_FILTER_OFFSET. */
 	public static final String KEY_FILTER_OFFSET = "filterOffset";
-	
+
 	/** The Constant KEY_FILTER_OFFSET_ONLY. */
 	public static final String KEY_FILTER_OFFSET_ONLY = "filterOffsetOnly";
-	
+
 	/** The Constant KEY_FILTER_EXT_ONLY. */
 	public static final String KEY_FILTER_EXT_ONLY = "filterExtOnly";
 
@@ -172,31 +178,31 @@ public class KeyConstants {
 
 	/** The Constant KEY_NO_RESULTS_TITLE. */
 	public static final String KEY_NO_RESULTS_TITLE = "noResultsTitle";
-	
+
 	/** The Constant KEY_SEARCHED_ALL_DESC. */
 	public static final String KEY_SEARCHED_ALL_DESC = "searchedAllDesc";
 
 	/** The Constant KEY_SEARCHED_ALL_TITLE. */
 	public static final String KEY_SEARCHED_ALL_TITLE = "searchedAllTitle";
-	
+
 	/** The Constant KEY_SEARCH_ALL_WIN_TITLE. */
 	public static final String KEY_SEARCH_ALL_WIN_TITLE = "searchAllWinTitle";
-	
+
 	/** The Constant KEY_SEARCH_ALL_WIN_SKIP_CHARS_LABEL. */
 	public static final String KEY_SEARCH_ALL_WIN_SKIP_CHARS_LABEL = "searchAllWinSkipCharsLabel";
-	
+
 	/** The Constant KEY_SEARCH_ALL_WIN_END_CHARS_LABEL. */
 	public static final String KEY_SEARCH_ALL_WIN_END_CHARS_LABEL = "searchAllWinEndCharsLabel";
-	
+
 	/** The Constant KEY_SEARCH_ALL_WIN_DICTIONARY_LABEL. */
 	public static final String KEY_SEARCH_ALL_WIN_DICTIONARY_LABEL = "searchAllWinDictionaryLabel";
-	
+
 	/** The Constant KEY_SEARCH_ALL_WIN_SEARCH_BUTTON. */
 	public static final String KEY_SEARCH_ALL_WIN_SEARCH_BUTTON = "searchAllWinSearchButton";
-	
+
 	/** The Constant KEY_SEARCH_ALL_WIN_CANCEL_BUTTON. */
 	public static final String KEY_SEARCH_ALL_WIN_CANCEL_BUTTON = "searchAllWinCancelButton";
-	
+
 	/** The Constant KEY_SEARCH_ALL_WIN_ERROR. */
 	public static final String KEY_SEARCH_ALL_WIN_ERROR = "searchAllWinError";
 
@@ -229,6 +235,9 @@ public class KeyConstants {
 
 	/** The Constant KEY_NEW_PRJ_SPZ. */
 	public static final String KEY_NEW_PRJ_SPZ = "newProjectTipoArchivoTZX";
+
+	/** The Constant KEY_NEW_PRJ_SMS. */
+	public static final String KEY_NEW_PRJ_SMS = "newProjectTipoArchivoSMS";
 
 	/** The Constant KEY_NEW_PRJ_OTHER. */
 	public static final String KEY_NEW_PRJ_OTHER= "newProjectTipoArchivoOtros";

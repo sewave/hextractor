@@ -7,7 +7,9 @@ Herramienta con diferentes modos para ayudar a traducir juegos/ficheros utilizan
 #### EXTRACT ASCII FILE FROM HEX TURNING 3 8 BIT BYTES INTO 4 6 BIT BYTES / EXTRAER ARCHIVO ASCII DE HEXADECIMAL TRANSFORMANDO 3 BYTES DE 8 BITS EN 4 BYTES DE 6 BITS
 -a34 tableFile file scriptAsciiFile offsetsList or file (START-END-STRING_END_CHAR(1+))  
 #### INSERT ASCII AS HEX / INSERTAR ASCII COMO HEX  
--h scriptAsciiFile tableFile targetFile  
+-h scriptAsciiFile tableFile targetFile
+#### INSERT BINARY FILE / INSERTAR ARCHIVO BINARIO
+-if baseBinFile replacementFile hexOffset  
 #### INSERT ASCII AS HEX TURNING 4 6 BIT BYTES INTO 3 8 BIT BYTES / INSERTAR ASCII COMO HEX TRANSFORMANDO 4 BYTES DE 6 BITS EN 3 BYTES DE 8 BITS
 -h43 tableFile file scriptAsciiFile offsetsList or file (START-END-STRING_END_CHAR(1+))  
 #### INSERT DIRECT HEX VALUES / INSERTAR HEXADECIMAL DIRECTO  
@@ -27,7 +29,9 @@ Herramienta con diferentes modos para ayudar a traducir juegos/ficheros utilizan
 #### FIX ZX TZX OR CPC CDT CHECKSUM / REPARAR CHECKSUM ZX TZX O CPC CDT  
 -fctzx tzx/cdt   
 #### FIX ZX TZX OR CPC CDT CHECKSUM / REPARAR CHECKSUM ZX TZX O CPC CDT  
--fctzx tzx/cdt originalTzx/Cdt  
+-fctzx tzx/cdt originalTzx/Cdt
+#### FIX SMS EXPORT CHECKSUM / REPARAR CHECKSUM SMS NO JAPONESA
+-fcsms sms file  
 #### CLEAN EXTRACTED TEXT FILE / LIMPIAR FICHERO DE TEXTO EXTRAIDO  
 -ca file fileCleaned  
 #### SEARCH ALL STRINGS / BUSCAR TODAS LAS CADENAS  
@@ -44,7 +48,10 @@ Herramienta con diferentes modos para ayudar a traducir juegos/ficheros utilizan
  -vip originalFile modifiedFile patchFile  
 #### APPLY IPS PATCH / APLICAR PARCHE IPS  
 -aip originalFile modifiedFile patchFile  
-#### CHECK LINE LENGTHS / VERIFICAR TAMAÃ‘O LINEA  
+#### CHECK LINE LENGTHS / VERIFICAR TAMAÑO LINEA  
 -cll extFile
-#### SEPARATE BY FIRST CHAR LENGTH / SEPARAR POR TAMAÃ‘O DEL PRIMER CARACTER
+#### SEPARATE BY FIRST CHAR LENGTH / SEPARAR POR TAMAÑO DEL PRIMER CARACTER
 -scl file tableFile outFile
+#### INSERT FILE AT OFFSET / INSERTAR FICHERO EN OFFSET
+-if originalFile insertFile offset
+

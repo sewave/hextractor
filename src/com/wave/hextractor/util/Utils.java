@@ -26,8 +26,14 @@ import com.wave.hextractor.pojo.OffsetEntry;
  */
 public class Utils {
 
+	/**
+	 * Hidden constructor.
+	 */
+	private Utils() {
+	}
+
 	/** The Constant INVALID_FILE_CHARACTERS. */
-	private static final List<String> INVALID_FILE_CHARACTERS = Arrays.asList(new String[]{"<", ">", ":", "\"", "\\", "/", "|", "?", "*"});
+	private static final List<String> INVALID_FILE_CHARACTERS = Arrays.asList("<", ">", ":", "\"", "\\", "/", "|", "?", "*");
 
 	/**
 	 * Returns true if the file name is valid.
@@ -55,22 +61,11 @@ public class Utils {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void copyFileUsingStream(String source, String dest) throws IOException {
-		InputStream is = null;
-		OutputStream os = null;
-		try {
-			is = new FileInputStream(source);
-			os = new FileOutputStream(dest);
+		try(InputStream is = new FileInputStream(source); OutputStream os = new FileOutputStream(dest)) {
 			byte[] buffer = new byte[1024];
 			int length;
 			while ((length = is.read(buffer)) > 0) {
 				os.write(buffer, 0, length);
-			}
-		} finally {
-			if(is != null) {
-				is.close();
-			}
-			if(os != null) {
-				os.close();
 			}
 		}
 	}
@@ -83,12 +78,8 @@ public class Utils {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void createFile(String file, String content) throws IOException {
-		OutputStream os = null;
-		try {
-			os = new FileOutputStream(file);
+		try(OutputStream os = new FileOutputStream(file);) {
 			os.write(content.getBytes());
-		} finally {
-			os.close();
 		}
 	}
 
@@ -98,9 +89,8 @@ public class Utils {
 	 * @param path the path
 	 * @param fileName the file name
 	 * @return the joined file name
-	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static String getJoinedFileName(File path, String fileName) throws IOException {
+	public static String getJoinedFileName(File path, String fileName) {
 		return path.getAbsolutePath() + Constants.FILE_SEPARATOR + fileName;
 	}
 
@@ -204,7 +194,7 @@ public class Utils {
 	 * @return short v1 * 256 + v2
 	 */
 	public static final int bytesToInt(byte value1, byte value2) {
-		return (value1 << 8) & 0xFF00 | (value2 & 0xFF);
+		return value1 << 8 & 0xFF00 | value2 & 0xFF;
 	}
 
 	/**
@@ -216,7 +206,7 @@ public class Utils {
 	 * @return short v1 + v2 *256 8
 	 */
 	public static final int bytesToInt(byte value1, byte value2, byte value3) {
-		return (value1 << 16) & 0xFF0000 | (value2 << 8) & 0xFF00 | (value3 & 0xFF);
+		return value1 << 16 & 0xFF0000 | value2 << 8 & 0xFF00 | value3 & 0xFF;
 	}
 
 	/**
@@ -229,7 +219,7 @@ public class Utils {
 	 * @return short v1 + v2 *256 8
 	 */
 	public static final int bytesToInt(byte value1, byte value2, byte value3, byte value4) {
-		return (value1 << 16) & 0xFF000000 | (value2 << 8) & 0xFF0000 | (value3 & 0xFF00)| (value4 & 0xFF);
+		return value1 << 16 & 0xFF000000 | value2 << 8 & 0xFF0000 | value3 & 0xFF00| value4 & 0xFF;
 	}
 
 	/**
@@ -275,9 +265,9 @@ public class Utils {
 							int addrEnd = Integer.parseInt(adrrEndString, Constants.HEX_RADIX);
 							i += Constants.HEX_ADDR_SIZE;
 							//Dump buffer if has hex and address
-							System.out.println("DUMPING " + hexString);
-							System.out.println("TO @" + adrrStartString + ":" + adrrEndString + " " + (addrEnd - addrStart + 1) + " BYTES");
-							System.out.println("");
+							log("DUMPING " + hexString);
+							log("TO @" + adrrStartString + ":" + adrrEndString + " " + (addrEnd - addrStart + 1) + " BYTES");
+							log("");
 							System.arraycopy(line, 0, b, addrStart, line.length);
 							//pad with zeroes if needed
 							for(int j = addrStart + line.length; j <= addrEnd; j++) {
@@ -307,23 +297,23 @@ public class Utils {
 	 *
 	 * @param string the string
 	 * @return the offsets
-	 * @throws Exception the exception
+	 * @throws IOException the exception
 	 */
-	public static List<OffsetEntry> getOffsets(String string) throws Exception {
+	public static List<OffsetEntry> getOffsets(String string) throws IOException {
 		if(string.endsWith(Constants.OFF_EXTENSION)) {
 			string = FileUtils.getCleanOffsets(string);
 		}
 		string = string.toUpperCase();
-		List<OffsetEntry> offsets = new ArrayList<OffsetEntry>();
+		List<OffsetEntry> offsets = new ArrayList<>();
 		for(String offsetString : string.split(Constants.OFFSET_STR_SEPARATOR)) {
 			OffsetEntry entry = new OffsetEntry();
 			String[] values = offsetString.split(Constants.OFFSET_CHAR_SEPARATOR);
-			entry.start = Integer.parseInt(values[0], Constants.HEX_RADIX);
+			entry.setStart(Integer.parseInt(values[0], Constants.HEX_RADIX));
 			if(values.length > 1) {
-				entry.end = Integer.parseInt(values[1], Constants.HEX_RADIX);
+				entry.setEnd(Integer.parseInt(values[1], Constants.HEX_RADIX));
 				if(values.length > 2) {
 					for(int i = 2; i < values.length; i++ ) {
-						entry.endChars.add(values[i]);
+						entry.getEndChars().add(values[i]);
 					}
 				}
 			}
@@ -338,8 +328,8 @@ public class Utils {
 	 * @param lines the lines
 	 * @return the lines cleaned
 	 */
-	public static StringBuffer getLinesCleaned(String[] lines) {
-		StringBuffer cleanedLines = new StringBuffer();
+	public static StringBuilder getLinesCleaned(String[] lines) {
+		StringBuilder cleanedLines = new StringBuilder();
 		for(String line : lines) {
 			line = line.replaceAll(Constants.REGEX_CLEAN_TEXT, Constants.SPACE_STR);
 			line = line.replaceAll(Constants.REGEX_CLEAN_SPACES, Constants.SPACE_STR);
@@ -438,7 +428,7 @@ public class Utils {
 	 * @return the hex offsets
 	 */
 	public static List<OffsetEntry> getHexOffsets(String entries) {
-		List<OffsetEntry> entryList = new ArrayList<OffsetEntry>();
+		List<OffsetEntry> entryList = new ArrayList<>();
 		for(String entryStr : entries.replaceAll(Constants.SPACE_STR, Constants.EMPTY).split(Constants.OFFSET_STR_SEPARATOR)) {
 			OffsetEntry  entry = null;
 			if(entryStr.contains(Constants.OFFSET_CHAR_SEPARATOR)) {
@@ -453,7 +443,7 @@ public class Utils {
 					entry = new OffsetEntry(numbers[0], numbers[0] + numbers[1] - 1, null);
 				}
 				else {
-					System.out.println("Invalid Offset entry!!!!! : " +entryStr);
+					log("Invalid Offset entry!!!!! : " +entryStr);
 				}
 			}
 			if(entry != null) {
@@ -472,14 +462,15 @@ public class Utils {
 	 * @return the map
 	 */
 	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-		List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
+		List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
 		Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
+			@Override
 			public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-				return (o1.getValue()).compareTo(o2.getValue());
+				return o1.getValue().compareTo(o2.getValue());
 			}
 		});
 
-		Map<K, V> result = new LinkedHashMap<K, V>();
+		Map<K, V> result = new LinkedHashMap<>();
 		for (Map.Entry<K, V> entry : list) {
 			result.put(entry.getKey(), entry.getValue());
 		}
@@ -494,7 +485,7 @@ public class Utils {
 	 * @return the string
 	 */
 	public static String toFileString(List<OffsetEntry> offEntries) {
-		StringBuffer entriesStr = new StringBuffer();
+		StringBuilder entriesStr = new StringBuilder();
 		for(OffsetEntry entry : offEntries) {
 			if(entriesStr.length() > 0) {
 				entriesStr.append(Constants.OFFSET_STR_SEPARATOR);
@@ -538,7 +529,7 @@ public class Utils {
 	 * @return the map
 	 */
 	public static Map<String, String> extractDictionary(String[] transFileLines) {
-		Map<String, String> dict = new HashMap<String, String>();
+		Map<String, String> dict = new HashMap<>();
 		String currKey = null;
 		for(String line : transFileLines) {
 			String aKey = getDictKey(line);
@@ -572,10 +563,8 @@ public class Utils {
 			if(aKey != null) {
 				currKey = aKey;
 			}
-			if(isDictValue(line)) {
-				if(dictionary.containsKey(currKey)) {
-					translatedLines[i] = dictionary.get(currKey);
-				}
+			if(isDictValue(line) && dictionary.containsKey(currKey)) {
+				translatedLines[i] = dictionary.get(currKey);
 			}
 		}
 		return translatedLines;
@@ -612,7 +601,7 @@ public class Utils {
 	 * @return the text area
 	 */
 	public static final String getTextArea(int offset, int length, byte[] data, HexTable hexTable) {
-		StringBuffer sb = new StringBuffer(length);
+		StringBuilder sb = new StringBuilder(length);
 		int end = offset + length;
 		if(end > data.length) {
 			end = data.length;
@@ -632,7 +621,7 @@ public class Utils {
 	 * @return the hex area
 	 */
 	public static final String getHexArea(int offset, int length, byte[] data) {
-		StringBuffer sb = new StringBuffer(length * Constants.HEX_VALUE_SIZE);
+		StringBuilder sb = new StringBuilder(length * Constants.HEX_VALUE_SIZE);
 		int end = offset + length;
 		if(end > data.length) {
 			end = data.length;
@@ -644,6 +633,72 @@ public class Utils {
 		return sb.toString();
 	}
 	
+	/**
+	 * Gets the hex area as string 00 01 02 etc.
+	 *
+	 * @param offset the offset
+	 * @param length the length
+	 * @param data the data.
+	 * @return the hex area
+	 */
+	public static final String getHexAreaFixedWidth(int offset, int length, byte[] data, int cols) {
+		StringBuilder sb = new StringBuilder(length * Constants.HEX_VALUE_SIZE);
+		int end = offset + length;
+		if(end > data.length) {
+			end = data.length;
+		}
+		int curCol = 0;
+		for(int i = offset; i < end; i++) {
+			sb.append(String.format(Constants.HEX_16_FORMAT, data[i]));
+			if(curCol == cols - 1 && i < end -1) {
+				sb.append(Constants.S_NEWLINE);
+				curCol = 0;
+			}
+			else {
+				sb.append(Constants.SPACE_STR);
+				curCol++;
+			}
+		}
+		return sb.toString();
+	}
+	
+	/**
+	 * Gets the hex area as string 00 01 02 etc.
+	 *
+	 * @param offset the offset
+	 * @param length the length
+	 * @param data the data.
+	 * @return the hex area
+	 */
+	public static final String getHexAreaFixedWidthHtml(int offset, int length, byte[] data, int cols) {
+		StringBuilder sb = new StringBuilder(length * Constants.HEX_VALUE_SIZE);
+		sb.append("<html><body>");
+		int end = offset + length;
+		if(end > data.length) {
+			end = data.length;
+		}
+		int curCol = 0;
+		for(int i = offset; i < end; i++) {
+			if(curCol % 2 == 0) {
+				sb.append("<span style=\"color:rgb(1, 253, 136)\">");
+			}
+			sb.append(String.format(Constants.HEX_16_FORMAT, data[i]));
+			if(curCol % 2 == 0) {
+				sb.append("</span>");
+			}
+			if(curCol == cols - 1 && i < end -1) {
+				sb.append("</br>");
+				curCol = 0;
+			}
+			else {
+				sb.append(Constants.SPACE_STR);
+				curCol++;
+			}
+		}
+		sb.append("</body></html>");
+		return sb.toString();
+	}
+
 	/**
 	 * Removes comment lines and joins nonaddress lines togheter
 	 * @param asciiFile
@@ -674,31 +729,31 @@ public class Utils {
 		int j = 0;
 		int i = 0;
 		for(i = 0; i <= bytes.length - 4; i += 4) {
-			res[j++] = (byte) ((bytes[i] << 2) & 0xFF | (bytes[i + 1]>> 4) & 0xFF);
-			res[j++] = (byte) (((bytes[i + 1] << 4) & 0xFF) | (bytes[i + 2] >> 2) & 0xFF);
-			res[j++] = (byte) ((bytes[i + 3]  | ((bytes[i + 2] & 0x3) << 6) & 0xFF) & 0xFF);
+			res[j++] = (byte) (bytes[i] << 2 & 0xFF | bytes[i + 1]>> 4 & 0xFF);
+			res[j++] = (byte) (bytes[i + 1] << 4 & 0xFF | bytes[i + 2] >> 2 & 0xFF);
+			res[j++] = (byte) ((bytes[i + 3]  | (bytes[i + 2] & 0x3) << 6 & 0xFF) & 0xFF);
 		}
 		//Copy leftovers
 		switch(bytes.length % 4) {
-			case 1:
-				//No debería poder pasar nunca
-				res[j++] = bytes[i];
-				break;
-			case 2:
-				//2->1
-				res[j++] = (byte) ((bytes[i] << 2) & 0xFF | (bytes[i + 1]>> 4) & 0xFF);
-				break;
-			case 3:
-				//3->2
-				res[j++] = (byte) ((bytes[i] << 2) & 0xFF | (bytes[i + 1]>> 4) & 0xFF);
-				res[j++] = (byte) (((bytes[i + 1] << 4) & 0xFF) | (bytes[i + 2] >> 2) & 0xFF);
-			default:
-			case 0:
+		case 1:
+			//No debería poder pasar nunca
+			res[j++] = bytes[i];
+			break;
+		case 2:
+			//2->1
+			res[j++] = (byte) (bytes[i] << 2 & 0xFF | bytes[i + 1]>> 4 & 0xFF);
+			break;
+		default:
+		case 0:
+		case 3:
+			//3->2
+			res[j++] = (byte) (bytes[i] << 2 & 0xFF | bytes[i + 1]>> 4 & 0xFF);
+			res[j++] = (byte) (bytes[i + 1] << 4 & 0xFF | bytes[i + 2] >> 2 & 0xFF);
 			break;
 		}
 		return Arrays.copyOfRange(res,  0,  j);
 	}
-	
+
 	/**
 	 * Expands 3 bytes to 4 6 bits bytes
 	 * @param bytes
@@ -709,26 +764,66 @@ public class Utils {
 		int j = 0;
 		int i = 0;
 		for(i = 0; i <= bytes.length - 3; i += 3) {
-			res[j++] = (byte) ((bytes[i] >> 2) & 0x3F);
-			res[j++] = (byte) ((((bytes[i] & 0x3) << 4) | ((bytes[i + 1] & 0xFF) >> 4)) & 0x3F);
-			res[j++] = (byte) ((((bytes[i+2] & 0xFF) >> 6) | ((bytes[i + 1] & 0xFF) << 2)) & 0x3F);
+			res[j++] = (byte) (bytes[i] >> 2 & 0x3F);
+			res[j++] = (byte) (((bytes[i] & 0x3) << 4 | (bytes[i + 1] & 0xFF) >> 4) & 0x3F);
+			res[j++] = (byte) (((bytes[i+2] & 0xFF) >> 6 | (bytes[i + 1] & 0xFF) << 2) & 0x3F);
 			res[j++] = (byte) (bytes[i + 2] & 0x3F);
 		}
 		switch(bytes.length % 3) {
-			case 1:
-				res[j++] = (byte) ((bytes[i] >> 2) & 0x3F);
-				res[j++] = (byte) (((bytes[i] & 0x03) << 4) & 0x30);
-				break;
-			case 2:
-				res[j++] = (byte) ((bytes[i] >> 2) & 0x3F);
-				res[j++] = (byte) ((((bytes[i] & 0x3) << 4) & 0x30 | ((bytes[i + 1] >> 4) & 0x0F)) & 0x3F);
-				res[j++] = (byte) ((bytes[i + 1] << 2) & 0x3F);
-				break;
-			default:
-			case 0:
+		case 1:
+			res[j++] = (byte) (bytes[i] >> 2 & 0x3F);
+			res[j++] = (byte) ((bytes[i] & 0x03) << 4 & 0x30);
+			break;
+		case 2:
+			res[j++] = (byte) (bytes[i] >> 2 & 0x3F);
+			res[j++] = (byte) (((bytes[i] & 0x3) << 4 & 0x30 | bytes[i + 1] >> 4 & 0x0F) & 0x3F);
+			res[j++] = (byte) (bytes[i + 1] << 2 & 0x3F);
+			break;
+		default:
+		case 0:
 			break;
 		}
 		return Arrays.copyOfRange(res,  0,  j);
+	}
+
+	/**
+	 * Log.
+	 *
+	 * @param msg the msg
+	 */
+	public static final void log(String msg) {
+		System.out.println(msg);
+	}
+
+	/**
+	 * LogNoNL.
+	 *
+	 * @param msg the msg
+	 */
+	public static final void logNoNL(String msg) {
+		System.out.print(msg);
+	}
+
+	/**
+	 * Log exception.
+	 *
+	 * @param e the e
+	 */
+	public static final void logException(Exception e) {
+		e.printStackTrace();
+	}
+
+	/**
+	 * Short to bytes.
+	 *
+	 * @param value the value
+	 * @return the byte[]
+	 */
+	public static final byte[] shortToBytes(short value) {
+		byte[] returnByteArray = new byte[2];
+		returnByteArray[0] = (byte) (value & Constants.MASK_8BIT);
+		returnByteArray[1] = (byte) (value >>> 8 & Constants.MASK_8BIT);
+		return returnByteArray;
 	}
 
 }

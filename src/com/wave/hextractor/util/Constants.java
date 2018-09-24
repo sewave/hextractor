@@ -9,6 +9,13 @@ import java.util.List;
  * @author slcantero
  */
 public class Constants {
+
+	/**
+	 * Instantiates a new constants.
+	 */
+	private Constants() {
+	}
+
 	/** The Constant RB_NAME. */
 	public static final String RB_NAME= "app";
 
@@ -20,7 +27,7 @@ public class Constants {
 
 	/** The Constant FILE_SEPARATOR. */
 	public static final String FILE_SEPARATOR = System.getProperty("file.separator");
-	
+
 	/** The Constant PARENT_DIR. */
 	public static final String PARENT_DIR = ".." + FILE_SEPARATOR;
 
@@ -30,8 +37,14 @@ public class Constants {
 	/** The Constant CHR_ASTER. */
 	public static final char CHR_ASTER = '*';
 
+	/** The Constant STR_ASTER. */
+	public static final String STR_ASTER = String.valueOf(CHR_ASTER);
+
+	/** The Constant REGEX_STR_ASTER. */
+	public static final String REGEX_STR_ASTER = "\\" + STR_ASTER;
+
 	/** The Constant BYTE_ASTER. */
-	public static final byte BYTE_ASTER = "*".getBytes(StandardCharsets.US_ASCII)[0];
+	public static final byte BYTE_ASTER = STR_ASTER.getBytes(StandardCharsets.US_ASCII)[0];
 
 	/** The Constant STR_DOT. */
 	public static final String STR_DOT = String.valueOf(CHR_DOT);
@@ -69,128 +82,17 @@ public class Constants {
 	/** The Constant IPS_PATCH_MAX_SIZE. */
 	public static final int IPS_PATCH_MAX_SIZE = 0xFFFF;
 
-	/** The Constant MEGADRIVE_CHECKSUM_LOCATION. */
-	public static final int MEGADRIVE_CHECKSUM_LOCATION = 0x18E;
-
-	/** The Constant MEGADRIVE_CHECKSUM_START_CALCULATION. */
-	public static final int MEGADRIVE_CHECKSUM_START_CALCULATION = 0x200;
-
 	/** The Constant MASK_16BIT. */
 	public static final int MASK_16BIT = 0xFFFF;
 
 	/** The Constant MASK_8BIT. */
 	public static final int MASK_8BIT = 0x00FF;
 
-	/** The Constant GAMEBOY_HEADER_CHECKSUM_LOCATION. */
-	public static final int GAMEBOY_HEADER_CHECKSUM_LOCATION = 0x14D;
-
-	/** The Constant GAMEBOY_HEADER_CHECKSUM_START_CALCULATION. */
-	public static final int GAMEBOY_HEADER_CHECKSUM_START_CALCULATION = 0x134;
-
-	/** The Constant GAMEBOY_HEADER_CHECKSUM_END_CALCULATION. */
-	public static final int GAMEBOY_HEADER_CHECKSUM_END_CALCULATION = 0x14C;
-
-	/** The Constant GAMEBOY_ROM_CHECKSUM_LOCATION. */
-	public static final int GAMEBOY_ROM_CHECKSUM_LOCATION = 0x14E;
-
-	/** The Constant SNES_CHECKSUM_BYTES. */
-	public static final int SNES_CHECKSUM_BYTES = 2;
-
-	/** The Constant SNES_CHECKSUMNOT_HEADER_OFF. */
-	public static final int SNES_CHECKSUMNOT_HEADER_OFF = 44;
-
-	/** The Constant SNES_CHECKSUM_HEADER_OFF. */
-	public static final int SNES_CHECKSUM_HEADER_OFF = SNES_CHECKSUMNOT_HEADER_OFF + SNES_CHECKSUM_BYTES;
-
-	/** The Constant SNES_ROMNAME_HEADER_OFF. */
-	public static final int SNES_ROMNAME_HEADER_OFF = 16;
-
-	/** The Constant SNES_ROMNAME_HEADER_LENGTH. */
-	public static final int SNES_ROMNAME_HEADER_LENGTH = 21;
-
-	/** The Constant SNES_ROMNAME_MAP_MODE_OFF. */
-	public static final int SNES_ROMNAME_MAP_MODE_OFF = 37;
-
-	/** The Constant SNES_ROMSIZE_HEADER_OFF. */
-	public static final int SNES_ROMSIZE_HEADER_OFF = 39;
-
-	/** The Constant SNES_LOROM_HEADER_OFF. */
-	public static final int SNES_LOROM_HEADER_OFF = 0x7FB0;
-
-	/** The Constant SNES_HIROM_OFFSET. */
-	public static final int SNES_HIROM_OFFSET = 0x8000;
-
-	/** The Constant SNES_INITIAL_CHECKSUM. */
-	public static final int SNES_INITIAL_CHECKSUM = 0;
-
-	/** The Constant SNES_INITIAL_CHECKSUMNOT. */
-	public static final int SNES_INITIAL_CHECKSUMNOT = 0xFFFF;
-
-	/** The Constant SNES_HEADER_EMPTY. */
-	public static final int SNES_HEADER_EMPTY = 0;
-
 	/** The Constant HEXSIZE_8BIT_VALUE. */
 	public static final int HEXSIZE_8BIT_VALUE = 2;
 
 	/** The Constant HEXSIZE_16BIT_VALUE. */
 	public static final int HEXSIZE_16BIT_VALUE = 4;
-
-	/** The Constant SNES_ROM_SIZE_1MBIT. */
-	public static final int SNES_ROM_SIZE_1MBIT = 131072;
-
-	/** The Constant SNES_ROM_SIZE_PAD. */
-	public static final int SNES_ROM_SIZE_PAD = SNES_ROM_SIZE_1MBIT * 8;
-
-	/** The Constant SNES_SMC_HEADER_SIZE. */
-	public static final int SNES_SMC_HEADER_SIZE = 0x200;
-
-	/** The Constant SNES_INT_HEADER_LEN. */
-	public static final int SNES_INT_HEADER_LEN = 80;
-
-	/** The Constant SNES_HIROM_BIT. */
-	public static final int SNES_HIROM_BIT = 1;
-
-	/** The Constant SNES_HEADER_SIZE_CHUNKS. */
-	public static final int SNES_HEADER_SIZE_CHUNKS = 0x400;
-
-	/** The Constant SNES_HEADER_NAME_MIN_CHAR. */
-	public static final int SNES_HEADER_NAME_MIN_CHAR = 0x1F;
-
-	/** The Constant SNES_HEADER_NAME_MAX_CHAR. */
-	public static final int SNES_HEADER_NAME_MAX_CHAR = 0x7F;
-
-	/** The Constant SNES_03_04MBIT. */
-	public static final int SNES_03_04MBIT = 0x09;
-
-	/** The Constant SNES_05_08MBIT. */
-	public static final int SNES_05_08MBIT = 0x0A;
-
-	/** The Constant SNES_09_16MBIT. */
-	public static final int SNES_09_16MBIT = 0x0B;
-
-	/** The Constant SNES_17_32MBIT. */
-	public static final int SNES_17_32MBIT = 0x0C;
-
-	/** The Constant SNES_33_64MBIT. */
-	public static final int SNES_33_64MBIT = 0x0D;
-
-	/** The Constant SNES_03_04MBIT_SIZE. */
-	public static final int SNES_03_04MBIT_SIZE = 4 * SNES_ROM_SIZE_1MBIT;
-
-	/** The Constant SNES_05_08MBIT_SIZE. */
-	public static final int SNES_05_08MBIT_SIZE = 8 * SNES_ROM_SIZE_1MBIT;
-
-	/** The Constant SNES_09_16MBIT_SIZE. */
-	public static final int SNES_09_16MBIT_SIZE = 16 * SNES_ROM_SIZE_1MBIT;
-
-	/** The Constant SNES_17_32MBIT_SIZE. */
-	public static final int SNES_17_32MBIT_SIZE = 32 * SNES_ROM_SIZE_1MBIT;
-
-	/** The Constant SNES_33_64MBIT_SIZE. */
-	public static final int SNES_33_64MBIT_SIZE = 64 * SNES_ROM_SIZE_1MBIT;
-
-	/** The Constant GAMEBOY_ROM_CHECKSUM_START_CALCULATION. */
-	public static final int GAMEBOY_ROM_CHECKSUM_START_CALCULATION = 0x000;
 
 	/** The Constant NEWLINE. */
 	public static final char NEWLINE = '\n';
@@ -275,16 +177,16 @@ public class Constants {
 
 	/** The Constant EXTRACT_EXTENSION. */
 	public static final String EXTRACT_EXTENSION = ".ext";
-	
+
 	/** The Constant EXTRACT_EXTENSION_NODOT. */
 	public static final String EXTRACT_EXTENSION_NODOT = "ext";
 
 	/** The Constant OFFSET_EXTENSION. */
 	public static final String OFFSET_EXTENSION = ".off";
-	
+
 	/** The Constant TBL_EXTENSION_REGEX. */
 	public static final String TBL_EXTENSION_REGEX = "[.]tbl";
-	
+
 	/** The Constant PAD_CHAR. */
 	public static final byte PAD_CHAR = 0;
 
@@ -346,13 +248,8 @@ public class Constants {
 	public static final String UTF_8_BOM_LE = "\uFFFE";
 
 	/** The Constant RESERVED_CHARS. */
-	public static final List<String> RESERVED_CHARS = Arrays.asList(
-			new String[]{
-					String.valueOf(Constants.HEX_CHAR),
-					ADDR_STR,
-					S_MAX_BYTES,
-					String.valueOf(Constants.STR_NUM_CHARS),
-					S_COMMENT_LINE,S_CODEWORD_START,S_CODEWORD_END});
+	public static final List<String> RESERVED_CHARS = Arrays.asList(String.valueOf(Constants.HEX_CHAR), ADDR_STR,
+			S_MAX_BYTES, String.valueOf(Constants.STR_NUM_CHARS), S_COMMENT_LINE, S_CODEWORD_START, S_CODEWORD_END);
 
 	/** The Constant DEFAULT_DICT. */
 	public static final String DEFAULT_DICT = "EngDict.txt";
@@ -372,22 +269,28 @@ public class Constants {
 	/** The Constant EXTENSIONS_TZX_CDT. */
 	public static final List<String> EXTENSIONS_TZX_CDT = Arrays.asList("tzx", "cdt");
 
+	/** The Constant EXTENSIONS_SMS. */
+	public static final List<String> EXTENSIONS_SMS = Arrays.asList("sms");
+
 	/** The Constant FILE_TYPE_OTHER. */
 	public static final String FILE_TYPE_OTHER =  "0";
 
 	/** The Constant FILE_TYPE_MEGADRIVE. */
 	public static final String FILE_TYPE_MEGADRIVE =  "1";
 
+	/** The Constant FILE_TYPE_MASTERSYSTEM. */
+	public static final String FILE_TYPE_MASTERSYSTEM =  "2";
+
 	/** The Constant FILE_TYPE_NGB. */
-	public static final String FILE_TYPE_NGB =  "2";
+	public static final String FILE_TYPE_NGB =  "3";
 
 	/** The Constant FILE_TYPE_SNES. */
-	public static final String FILE_TYPE_SNES =  "3";
+	public static final String FILE_TYPE_SNES =  "4";
 
 	/** The Constant FILE_TYPE_ZXTAP. */
-	public static final String FILE_TYPE_ZXTAP =  "4";
+	public static final String FILE_TYPE_ZXTAP =  "5";
 
 	/** The Constant FILE_TYPE_TZX. */
-	public static final String FILE_TYPE_TZX =  "5";
+	public static final String FILE_TYPE_TZX =  "6";
 
 }

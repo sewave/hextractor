@@ -21,6 +21,9 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -28,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
@@ -105,22 +107,22 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The Constant NEW_PROJECT_GRID_VGAP. */
 	private static final int NEW_PROJECT_GRID_VGAP = 10;
-	
+
 	/** The Constant SEARCH_ALL_GRID_ROWS. */
 	private static final int SEARCH_ALL_GRID_ROWS = 4;
-	
+
 	/** The Constant SEARCH_ALL_GRID_COLS. */
 	private static final int SEARCH_ALL_GRID_COLS = 2;
-	
+
 	/** The Constant SEARCH_ALL_GRID_HGAP. */
 	private static final int SEARCH_ALL_GRID_HGAP = 10;
-	
+
 	/** The Constant SEARCH_ALL_GRID_VGAP. */
 	private static final int SEARCH_ALL_GRID_VGAP = 10;
-	
+
 	/** The Constant SEARCH_ALL_END_CHARS_LENGTH. */
 	private static final int SEARCH_ALL_END_CHARS_LENGTH = 40;
-	
+
 	/** The Constant MAX_COLS_AND_ROWS. */
 	private static final int MAX_COLS_AND_ROWS = 32;
 
@@ -144,15 +146,12 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The Constant EXTENSION_OFFSET. */
 	private static final String EXTENSION_OFFSET = ".off";
-	
+
 	/** The Constant EXTENSION_EXTRACTION. */
 	private static final String EXTENSION_EXTRACTION = ".ext";
 
 	/** The Constant SEARCH_RES_DIMENSION. */
 	private static final Dimension SEARCH_RES_DIMENSION = new Dimension(600, 200);
-
-	/** The Constant SEARCHRES_FONT. */
-	private static final String SEARCHRES_FONT = "Courier New";
 
 	/** The Constant SEARCHRES_FONT_SIZE. */
 	private static final int SEARCHRES_FONT_SIZE =  18;
@@ -177,16 +176,16 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The Constant SEARCH_ALL_DEFAULT_CHARS_INDEX. */
 	private static final int SEARCH_ALL_DEFAULT_CHARS_INDEX = 4;
-	
+
 	/** The Constant SEARCH_ALL_DEFAULT_END_CHARS. */
 	private static final String SEARCH_ALL_DEFAULT_END_CHARS = "FF";
-	
+
 	/** The Constant SEARCH_ALL_MIN_PROGRESS. */
 	private static final int SEARCH_ALL_MIN_PROGRESS = 0;
-	
+
 	/** The Constant SEARCH_ALL_MAX_PROGRESS. */
 	private static final int SEARCH_ALL_MAX_PROGRESS = 100;
-	
+
 	/** The other entry. */
 	private SimpleEntry<String, String> otherEntry;
 
@@ -204,6 +203,9 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The tzx entry. */
 	private SimpleEntry<String, String> tzxEntry;
+
+	/** The sms entry. */
+	private SimpleEntry<String, String> smsEntry;
 
 	/** The file bytes. */
 	private byte[] fileBytes;
@@ -235,23 +237,8 @@ public class HexViewer extends JFrame implements ActionListener {
 	/** The project file. */
 	private File projectFile;
 
-	/** The offset label. */
-	private JLabel offsetLabel;
-
 	/** The offset label value. */
 	private JTextField offsetLabelValue;
-
-	/** The menu bar. */
-	private JMenuBar menuBar;
-
-	/** The file menu. */
-	private JMenu fileMenu;
-
-	/** The table menu. */
-	private JMenu tableMenu;
-
-	/** The offset menu. */
-	private JMenu offsetMenu;
 
 	/** The open table. */
 	private JMenuItem openTable;
@@ -280,27 +267,21 @@ public class HexViewer extends JFrame implements ActionListener {
 	/** The exit. */
 	private JMenuItem exit;
 
-	/** The help menu. */
-	private JMenu helpMenu;
-
 	/** The about menu item. */
 	private JMenuItem about;
 
 	/** The help item. */
 	private JMenuItem help;
 
-	/** The tools menu. */
-	private JMenu toolsMenu;
-
 	/** The go to. */
 	private JMenuItem goTo;
 
 	/** The search relative. */
 	private JMenuItem searchRelative;
-	
+
 	/** The search all. */
 	private JMenuItem searchAll;
-	
+
 	/** The extract. */
 	private JMenuItem extract;
 
@@ -325,21 +306,15 @@ public class HexViewer extends JFrame implements ActionListener {
 	/** The vsb. */
 	private JScrollBar vsb;
 
-	/** The first row. */
-	private JPanel firstRow;
-
-	/** The second row. */
-	private JPanel secondRow;
-
 	/** The table filter. */
 	private SimpleFilter tableFilter;
 
 	/** The offset file filter. */
 	private SimpleFilter offsetFileFilter;
-	
+
 	/** The offset only file filter. */
 	private SimpleFilter offsetOnlyFileFilter;
-	
+
 	/** The ext only file filter. */
 	private SimpleFilter extOnlyFileFilter;
 
@@ -352,20 +327,11 @@ public class HexViewer extends JFrame implements ActionListener {
 	/** The new project window. */
 	private JFrame newPrjWin;
 
-	/** The new project window name label. */
-	private JLabel newPrjWinNameLabel;
-
 	/** The new project window name input. */
 	private JTextField newPrjWinNameInput;
 
-	/** The new project window file label. */
-	private JLabel newPrjWinFileLabel;
-
 	/** The new project window file input. */
 	private JTextField newPrjWinFileInput;
-
-	/** The new project window file type label. */
-	private JLabel newPrjWinFileTypeLabel;
 
 	/** The new project window file type options. */
 	private JComboBox<Entry<String, String>> newPrjWinFileTypeOpt;
@@ -385,45 +351,42 @@ public class HexViewer extends JFrame implements ActionListener {
 	/** The visible rows. */
 	private int visibleRows = MAX_COLS_AND_ROWS;
 
-	/** The view menu. */
-	private JMenu viewMenu;
-
 	/** The view 16 cols menu item. */
 	private JCheckBoxMenuItem view16Cols;
 
 	/** The view 16 rows menu item. */
 	private JCheckBoxMenuItem view16Rows;
-	
+
 	/** The search all strings window. */
 	private JFrame searchAllStringsWin;
-	
-	/** The search all win skip chars label. */
-	private JLabel searchAllWinSkipCharsLabel;
-	
+
 	/** The search all win skip chars opt. */
 	private JComboBox<Integer> searchAllWinSkipCharsOpt;
-	
-	/** The search all win end chars label. */
-	private JLabel searchAllWinEndCharsLabel;
-	
+
 	/** The search all win end chars input. */
 	private JTextField searchAllWinEndCharsInput;
-	
+
 	/** The search all win search button. */
 	private JButton searchAllWinSearchButton;
-	
+
 	/** The search all win cancel button. */
 	private JButton searchAllWinCancelButton;
-	
+
 	/** The search all win progress bar. */
 	private JProgressBar searchAllWinProgressBar;
-	
+
 	/** The search all thread. */
-	private Thread searchAllThread = null;
-	
+	private transient Thread searchAllThread = null;
+
 	/** The search all thread error. */
 	private boolean searchAllThreadError = false;
+
+	/** The BASE_FONT for the application. */
+	private static final Font BASE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 13);
 	
+	/** The SEARCH_JOKER_EXPANSIONS for searches. */
+	private static final int SEARCH_JOKER_EXPANSIONS = 8;
+
 	/**
 	 * Gets the offset block.
 	 *
@@ -476,8 +439,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		highlighterHex.removeAllHighlights();
 		try {
 			highlighterHex.addHighlight(hexTextArea.getCaretPosition(),
-					hexTextArea.getCaretPosition() + Constants.HEX_VALUE_SIZE, BLUE_PAINTER);
+					hexTextArea.getCaretPosition() + Constants.HEX_VALUE_SIZE - 1, BLUE_PAINTER);
 		} catch (BadLocationException e1) {
+			//Do nothing
 		}
 		Highlighter highlighterAscii = asciiTextArea.getHighlighter();
 		highlighterAscii.removeAllHighlights();
@@ -496,6 +460,7 @@ public class HexViewer extends JFrame implements ActionListener {
 						ORANGE_PAINTER);
 			}
 		} catch (BadLocationException e1) {
+			Utils.log("Bad location.");
 		}
 		offsetLabelValue.setText(Utils.intToHexString(offset + asciiTextArea.getCaretPosition(), Constants.HEX_ADDR_SIZE));
 	}
@@ -572,7 +537,7 @@ public class HexViewer extends JFrame implements ActionListener {
 				}
 			});
 			add(startItem);
-			if(currEntry.start > 0 || selectedEntry != currEntry) {
+			if(currEntry.getStart() > 0 || selectedEntry != currEntry) {
 				endItem = new JMenuItem();
 				endItem.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_OFFSET_SET_END)) {
 					/**  serialVersion UID. */
@@ -663,13 +628,11 @@ public class HexViewer extends JFrame implements ActionListener {
 						lastSelectedEndChars.toUpperCase().replaceAll(Constants.SPACE_STR, Constants.EMPTY)
 						.split(Constants.OFFSET_CHAR_SEPARATOR)));
 				selectedEntry.setEnd(offset + asciiTextArea.getCaretPosition());
-				if((selectedEntry.getStart() > 0 || selectedEntry.getEnd() > 0)) {
-					if(selectedEntry == currEntry) {
-						currEntry.mergeInto(offEntries);
-						currEntry = new OffsetEntry();
-						currEntry.start = -1;
-						currEntry.end = -1;
-					}
+				if((selectedEntry.getStart() > 0 || selectedEntry.getEnd() > 0) && selectedEntry == currEntry) {
+					currEntry.mergeInto(offEntries);
+					currEntry = new OffsetEntry();
+					currEntry.setStart(-1);
+					currEntry.setEnd(-1);
 				}
 			}
 			else {
@@ -717,9 +680,9 @@ public class HexViewer extends JFrame implements ActionListener {
 		setLookAndFeel();
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		createMenu();
-		firstRow = new JPanel();
+		JPanel firstRow = new JPanel();
 		firstRow.setLayout(new FlowLayout());
-		secondRow = new JPanel();
+		JPanel secondRow = new JPanel();
 		secondRow.setLayout(new FlowLayout(FlowLayout.LEADING));
 		add(firstRow);
 		add(secondRow);
@@ -731,6 +694,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		offsetsTextArea.setEditable(false);
 		offsetsTextArea.setDisabledTextColor(Color.WHITE);
 		offsetsTextArea.setEnabled(false);
+		offsetsTextArea.setFont(BASE_FONT);
 		firstRow.add(offsetsTextArea);
 		offsetsTextArea.setText(getVisibleOffsets(offset, visibleColumns, visibleRows));
 		hexTextArea = new JTextArea(visibleRows, visibleColumns * Constants.HEX_VALUE_SIZE);
@@ -741,25 +705,27 @@ public class HexViewer extends JFrame implements ActionListener {
 		hexTextArea.setDisabledTextColor(Color.WHITE);
 		hexTextArea.setEnabled(false);
 		hexTextArea.setCaretColor(Color.GRAY);
+		hexTextArea.setFont(BASE_FONT);
 		firstRow.add(hexTextArea);
-		hexTextArea.setText(Utils.getHexArea(offset, getViewSize(), fileBytes));
+		hexTextArea.setText(Utils.getHexAreaFixedWidth(offset, getViewSize(), fileBytes, visibleColumns));
 		asciiTextArea = new JTextArea(visibleRows, visibleColumns);
-		asciiTextArea.setLineWrap(Boolean.TRUE);
+		asciiTextArea.setLineWrap(true);
 		asciiTextArea.setBackground(Color.BLACK);
 		asciiTextArea.setForeground(Color.WHITE);
 		asciiTextArea.setDisabledTextColor(Color.WHITE);
 		asciiTextArea.setEnabled(false);
 		asciiTextArea.setEditable(false);
 		asciiTextArea.setCaretColor(Color.GRAY);
+		asciiTextArea.setFont(BASE_FONT);
 		firstRow.add(asciiTextArea);
 		asciiTextArea.setText(Utils.getTextArea(offset, getViewSize(), fileBytes, hexTable));
 		resultsWindow = new JFrame(rb.getString(KeyConstants.KEY_SEARCH_RESULT_TITLE));
 		resultsWindow.setLayout(new FlowLayout());
-		searchResults = new JList<TableSearchResult>(new TableSearchResult[0]);
+		searchResults = new JList<>(new TableSearchResult[0]);
 		searchResults.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		searchResults.setLayoutOrientation(JList.VERTICAL);
 		searchResults.setVisibleRowCount(8);
-		searchResults.setFont(new Font(SEARCHRES_FONT, Font.PLAIN, SEARCHRES_FONT_SIZE));
+		searchResults.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SEARCHRES_FONT_SIZE));
 		JScrollPane listScroller = new JScrollPane(searchResults);
 		listScroller.setPreferredSize(SEARCH_RES_DIMENSION);
 		resultsWindow.add(listScroller);
@@ -768,22 +734,23 @@ public class HexViewer extends JFrame implements ActionListener {
 		createNewPrjWin();
 		vsb = new JScrollBar();
 		firstRow.add(vsb);
-		offsetLabel = new JLabel(rb.getString(KeyConstants.KEY_OFFSET_LABEL));
+		JLabel offsetLabel = new JLabel(rb.getString(KeyConstants.KEY_OFFSET_LABEL));
 		secondRow.add(offsetLabel);
 		offsetLabelValue = new JTextField(Utils.intToHexString(offset, Constants.HEX_ADDR_SIZE), Constants.HEX_ADDR_SIZE);
 		offsetLabelValue.setEnabled(false);
 		secondRow.add(offsetLabelValue);
 		offsetLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		offsetLabelValue.setAlignmentX(Component.LEFT_ALIGNMENT);
-		offEntries = new ArrayList<OffsetEntry>();
+		offEntries = new ArrayList<>();
 		currEntry = new OffsetEntry();
-		currEntry.start = -1;
-		currEntry.end = -1;
+		currEntry.setStart(-1);
+		currEntry.setEnd(-1);
 		createSearchAllWin();
 		setResizable(Boolean.FALSE);
 		addAllListeners();
 		pack();
 		vsb.setPreferredSize(new Dimension((int) vsb.getPreferredSize().getWidth(), (int) (getSize().getHeight() * 0.85)));
+		refreshViewMode();
 		setVisible(true);
 		refreshAll();
 	}
@@ -794,10 +761,10 @@ public class HexViewer extends JFrame implements ActionListener {
 	private void createSearchAllWin() {
 		searchAllStringsWin = new JFrame(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_TITLE));
 		searchAllStringsWin.setLayout(new GridLayout(SEARCH_ALL_GRID_ROWS, SEARCH_ALL_GRID_COLS, SEARCH_ALL_GRID_HGAP, SEARCH_ALL_GRID_VGAP));
-		searchAllWinSkipCharsLabel = new JLabel(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_SKIP_CHARS_LABEL), SwingConstants.LEFT);
-		searchAllWinEndCharsLabel = new JLabel(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_END_CHARS_LABEL), SwingConstants.LEFT);
+		JLabel searchAllWinSkipCharsLabel = new JLabel(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_SKIP_CHARS_LABEL), SwingConstants.LEFT);
+		JLabel searchAllWinEndCharsLabel = new JLabel(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_END_CHARS_LABEL), SwingConstants.LEFT);
 		searchAllWinEndCharsInput = new JTextField(SEARCH_ALL_END_CHARS_LENGTH);
-		searchAllWinSkipCharsOpt = new JComboBox<Integer>();
+		searchAllWinSkipCharsOpt = new JComboBox<>();
 		for(int i = 0; i <= 16; i++) {
 			searchAllWinSkipCharsOpt.addItem(i);
 		}
@@ -820,20 +787,22 @@ public class HexViewer extends JFrame implements ActionListener {
 	private void createNewPrjWin() {
 		newPrjWin = new JFrame(rb.getString(KeyConstants.KEY_NEW_PRJ_TITLE));
 		newPrjWin.setLayout(new GridLayout(NEW_PROJECT_GRID_ROWS, NEW_PROJECT_GRID_COLS, NEW_PROJECT_GRID_HGAP, NEW_PROJECT_GRID_VGAP));
-		newPrjWinNameLabel = new JLabel(rb.getString(KeyConstants.KEY_NEW_PRJ_NAME), SwingConstants.LEFT);
-		newPrjWinFileLabel = new JLabel(rb.getString(KeyConstants.KEY_NEW_PRJ_FILE), SwingConstants.LEFT);
-		newPrjWinFileTypeLabel = new JLabel(rb.getString(KeyConstants.KEY_NEW_PRJ_FILETYPE), SwingConstants.LEFT);
+		JLabel newPrjWinNameLabel = new JLabel(rb.getString(KeyConstants.KEY_NEW_PRJ_NAME), SwingConstants.LEFT);
+		JLabel newPrjWinFileLabel = new JLabel(rb.getString(KeyConstants.KEY_NEW_PRJ_FILE), SwingConstants.LEFT);
+		JLabel newPrjWinFileTypeLabel = new JLabel(rb.getString(KeyConstants.KEY_NEW_PRJ_FILETYPE), SwingConstants.LEFT);
 		newPrjWinNameInput = new JTextField(30);
 		newPrjWinFileInput = new JTextField();
-		newPrjWinFileTypeOpt = new JComboBox<Map.Entry<String, String>>();
-		otherEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KeyConstants.KEY_NEW_PRJ_OTHER), Constants.FILE_TYPE_OTHER);
-		smdEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KeyConstants.KEY_NEW_PRJ_SMD), Constants.FILE_TYPE_MEGADRIVE);
-		snesEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KeyConstants.KEY_NEW_PRJ_SNES), Constants.FILE_TYPE_SNES);
-		gbEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KeyConstants.KEY_NEW_PRJ_NGB), Constants.FILE_TYPE_NGB);
-		tapEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KeyConstants.KEY_NEW_PRJ_SPT), Constants.FILE_TYPE_ZXTAP);
-		tzxEntry = new AbstractMap.SimpleEntry<String, String>(rb.getString(KeyConstants.KEY_NEW_PRJ_SPZ), Constants.FILE_TYPE_TZX);
+		newPrjWinFileTypeOpt = new JComboBox<>();
+		otherEntry = new AbstractMap.SimpleEntry<>(rb.getString(KeyConstants.KEY_NEW_PRJ_OTHER), Constants.FILE_TYPE_OTHER);
+		smdEntry = new AbstractMap.SimpleEntry<>(rb.getString(KeyConstants.KEY_NEW_PRJ_SMD), Constants.FILE_TYPE_MEGADRIVE);
+		snesEntry = new AbstractMap.SimpleEntry<>(rb.getString(KeyConstants.KEY_NEW_PRJ_SNES), Constants.FILE_TYPE_SNES);
+		gbEntry = new AbstractMap.SimpleEntry<>(rb.getString(KeyConstants.KEY_NEW_PRJ_NGB), Constants.FILE_TYPE_NGB);
+		tapEntry = new AbstractMap.SimpleEntry<>(rb.getString(KeyConstants.KEY_NEW_PRJ_SPT), Constants.FILE_TYPE_ZXTAP);
+		tzxEntry = new AbstractMap.SimpleEntry<>(rb.getString(KeyConstants.KEY_NEW_PRJ_SPZ), Constants.FILE_TYPE_TZX);
+		smsEntry = new AbstractMap.SimpleEntry<>(rb.getString(KeyConstants.KEY_NEW_PRJ_SMS), Constants.FILE_TYPE_MASTERSYSTEM);
 		newPrjWinFileTypeOpt.addItem(otherEntry);
 		newPrjWinFileTypeOpt.addItem(smdEntry);
+		newPrjWinFileTypeOpt.addItem(smsEntry);
 		newPrjWinFileTypeOpt.addItem(gbEntry);
 		newPrjWinFileTypeOpt.addItem(snesEntry);
 		newPrjWinFileTypeOpt.addItem(tapEntry);
@@ -855,9 +824,9 @@ public class HexViewer extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Change view mode.
+	 * Refresh view mode.
 	 */
-	private void changeViewMode() {
+	private void refreshViewMode() {
 		hexTextArea.setCaretPosition(0);
 		asciiTextArea.setCaretPosition(0);
 		if(view16Cols.getState()) {
@@ -888,6 +857,10 @@ public class HexViewer extends JFrame implements ActionListener {
 		offsetsTextArea.setPreferredSize(DIMENSION_0_0);
 		offsetsTextArea.setRows(visibleRows);
 		pack();
+		//Fix for java 8+ width
+		asciiTextArea.setSize(asciiTextArea.getWidth() + 1, asciiTextArea.getHeight());
+		asciiTextArea.setPreferredSize(new Dimension(asciiTextArea.getWidth() + 1, asciiTextArea.getHeight()));
+		pack();
 		refreshAll();
 	}
 
@@ -911,19 +884,21 @@ public class HexViewer extends JFrame implements ActionListener {
 			}
 		});
 		asciiTextArea.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
 				if (e.isPopupTrigger()) {
 					doPop(e);
 				}
 			}
 
+			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (e.isPopupTrigger()) {
 					doPop(e);
 				}
 			}
 			private void doPop(MouseEvent e) {
-				asciiTextArea.setCaretPosition(e.getX() / 8 + (e.getY() / 18) * visibleColumns);
+				asciiTextArea.setCaretPosition(e.getX() / 8 + e.getY() / 18 * visibleColumns);
 				PopUpOffsetEntry menu = new PopUpOffsetEntry(getCaretEntry());
 				menu.show(e.getComponent(), e.getX(), e.getY());
 			}
@@ -932,6 +907,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			/* (non-Javadoc)
 			 * @see java.awt.event.AdjustmentListener#adjustmentValueChanged(java.awt.event.AdjustmentEvent)
 			 */
+			@Override
 			public void adjustmentValueChanged(AdjustmentEvent evt) {
 				Adjustable source = evt.getAdjustable();
 				if (evt.getValueIsAdjusting()) {
@@ -957,9 +933,11 @@ public class HexViewer extends JFrame implements ActionListener {
 					case AdjustmentEvent.TRACK:
 						offset = value;
 						break;
+					default:
+						break;
 					}
 					asciiTextArea.setText(Utils.getTextArea(offset, getViewSize(), fileBytes, hexTable));
-					hexTextArea.setText(Utils.getHexArea(offset, getViewSize(), fileBytes));
+					hexTextArea.setText(Utils.getHexAreaFixedWidth(offset, getViewSize(), fileBytes, visibleColumns));
 					asciiTextArea.setCaretPosition(asciiTextArea.getText().length());
 				}
 			}
@@ -973,6 +951,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		});
 		//Drop on new project, batch creation
 		new FileDrop(newPrjWin, new FileDrop.Listener() {
+			@Override
 			public void filesDropped(java.io.File[] files) {
 				if(files != null) {
 					if(files.length > 1) {
@@ -983,7 +962,7 @@ public class HexViewer extends JFrame implements ActionListener {
 							try {
 								ProjectUtils.createProject(file);
 							} catch (Exception e) {
-								e.printStackTrace();
+								Utils.logException(e);
 							}
 						}
 						newPrjWin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -1004,12 +983,15 @@ public class HexViewer extends JFrame implements ActionListener {
 			}
 		});
 		newPrjWinFileInput.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
 			public void changedUpdate(DocumentEvent e) {
 				cleanFile();
 			}
+			@Override
 			public void removeUpdate(DocumentEvent e) {
 				cleanFile();
 			}
+			@Override
 			public void insertUpdate(DocumentEvent e) {
 				cleanFile();
 			}
@@ -1018,6 +1000,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			}
 		});
 		searchResults.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent evt) {
 				@SuppressWarnings("unchecked")
 				JList<TableSearchResult> list = (JList<TableSearchResult>) evt.getSource();
@@ -1045,6 +1028,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			}
 		});
 		new FileDrop(this, new FileDrop.Listener() {
+			@Override
 			public void filesDropped(java.io.File[] files) {
 				if(files != null && files.length > 0) {
 					requestFocus();
@@ -1094,6 +1078,14 @@ public class HexViewer extends JFrame implements ActionListener {
 			public void keyPressed(KeyEvent keyEvent) {
 				// Auto-repeated on time
 				switch (keyEvent.getKeyCode()) {
+				case KeyEvent.VK_ADD:
+				case KeyEvent.VK_PLUS:
+					offset++;
+					break;
+				case KeyEvent.VK_SUBTRACT:
+				case KeyEvent.VK_MINUS:
+					offset--;
+					break;
 				case KeyEvent.VK_PAGE_DOWN:
 					offset += getOffsetBlock();
 					break;
@@ -1160,10 +1152,10 @@ public class HexViewer extends JFrame implements ActionListener {
 					break;
 				case KeyEvent.VK_END:
 					if ((keyEvent.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
-						offset = (fileBytes.length - getViewSize());
+						offset = fileBytes.length - getViewSize();
 					} else {
 						OffsetEntry selectedEntry = getCaretEntry();
-						if (currEntry.start > 0 || selectedEntry != currEntry) {
+						if (currEntry.getStart() > 0 || selectedEntry != currEntry) {
 							endItemAction(selectedEntry);
 						}
 					}
@@ -1187,6 +1179,8 @@ public class HexViewer extends JFrame implements ActionListener {
 						deleteItemAction(selectedEntryDel);
 					}
 					break;
+				default:
+					break;
 				}
 				refreshAll();
 			}
@@ -1199,6 +1193,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			 */
 			@Override
 			public void keyReleased(KeyEvent keyEvent) {
+				//No action
 			}
 
 			/*
@@ -1208,6 +1203,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			 */
 			@Override
 			public void keyTyped(KeyEvent keyEvent) {
+				//No action
 			}
 		});
 	}
@@ -1221,11 +1217,11 @@ public class HexViewer extends JFrame implements ActionListener {
 	 * @return the visible offsets
 	 */
 	private static final String getVisibleOffsets(int offset, int columns, int rows) {
-		StringBuffer sb = new StringBuffer((Constants.HEX_ADDR_SIZE + HEX_STARTS.length() + Constants.SPACE_STR.length()) * rows);
+		StringBuilder sb = new StringBuilder((Constants.HEX_ADDR_SIZE + HEX_STARTS.length() + Constants.SPACE_STR.length()) * rows);
 		for(int i = 0; i < rows; i++) {
 			sb.append(HEX_STARTS);
 			sb.append(Utils.intToHexString(offset + i * columns, Constants.HEX_ADDR_SIZE));
-			sb.append(Constants.SPACE_STR);
+			sb.append(Constants.S_NEWLINE);
 		}
 		return sb.toString();
 	}
@@ -1254,7 +1250,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			asciiTextArea.setCaretPosition(0);
 			hexTextArea.setCaretPosition(0);
 		}
-		hexTextArea.setText(Utils.getHexArea(offset, getViewSize(), fileBytes));
+		hexTextArea.setText(Utils.getHexAreaFixedWidth(offset, getViewSize(), fileBytes, visibleColumns));
 		asciiTextArea.setText(Utils.getTextArea(offset, getViewSize(), fileBytes, hexTable));
 		offsetsTextArea.setText(getVisibleOffsets(offset, visibleColumns, visibleRows));
 		vsb.setMinimum(0);
@@ -1276,16 +1272,16 @@ public class HexViewer extends JFrame implements ActionListener {
 	 */
 	private void createMenu() {
 		//Create objects
-		menuBar = new JMenuBar();
+		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 
 		//Menus
-		fileMenu = new JMenu(rb.getString(KeyConstants.KEY_FILEMENU));
-		tableMenu = new JMenu(rb.getString(KeyConstants.KEY_TABLEMENU));
-		offsetMenu = new JMenu(rb.getString(KeyConstants.KEY_OFFSETMENU));
-		toolsMenu = new JMenu(rb.getString(KeyConstants.KEY_TOOLS_MENU));
-		helpMenu = new JMenu(rb.getString(KeyConstants.KEY_HELP_MENU));
-		viewMenu = new JMenu(rb.getString(KeyConstants.KEY_VIEW_MENU));
+		JMenu fileMenu = new JMenu(rb.getString(KeyConstants.KEY_FILEMENU));
+		JMenu tableMenu = new JMenu(rb.getString(KeyConstants.KEY_TABLEMENU));
+		JMenu offsetMenu = new JMenu(rb.getString(KeyConstants.KEY_OFFSETMENU));
+		JMenu toolsMenu = new JMenu(rb.getString(KeyConstants.KEY_TOOLS_MENU));
+		JMenu helpMenu = new JMenu(rb.getString(KeyConstants.KEY_HELP_MENU));
+		JMenu viewMenu = new JMenu(rb.getString(KeyConstants.KEY_VIEW_MENU));
 
 		//Items
 		exit =  new JMenuItem(rb.getString(KeyConstants.KEY_EXIT_MENUITEM));
@@ -1309,13 +1305,13 @@ public class HexViewer extends JFrame implements ActionListener {
 		view16Rows = new JCheckBoxMenuItem(rb.getString(KeyConstants.KEY_16ROWS_MENUITEM));
 
 		tableFilter = new SimpleFilter(EXTENSION_TABLE, rb.getString(KeyConstants.KEY_FILTER_TABLE));
-		offsetFileFilter = new SimpleFilter(Arrays.asList(EXTENSION_OFFSET, EXTENSION_EXTRACTION), 
+		offsetFileFilter = new SimpleFilter(Arrays.asList(EXTENSION_OFFSET, EXTENSION_EXTRACTION),
 				rb.getString(KeyConstants.KEY_FILTER_OFFSET));
-		
-		offsetOnlyFileFilter = new SimpleFilter(Arrays.asList(EXTENSION_OFFSET), 
+
+		offsetOnlyFileFilter = new SimpleFilter(Arrays.asList(EXTENSION_OFFSET),
 				rb.getString(KeyConstants.KEY_FILTER_OFFSET_ONLY));
-		
-		extOnlyFileFilter = new SimpleFilter(Arrays.asList(EXTENSION_EXTRACTION), 
+
+		extOnlyFileFilter = new SimpleFilter(Arrays.asList(EXTENSION_EXTRACTION),
 				rb.getString(KeyConstants.KEY_FILTER_EXT_ONLY));
 
 		//Setup menu
@@ -1422,7 +1418,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			private static final long serialVersionUID = 251407879942401227L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				changeViewMode();
+				refreshViewMode();
 			}
 		});
 		view16Rows.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_16ROWS_MENUITEM)) {
@@ -1430,7 +1426,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			private static final long serialVersionUID = 251407879942401225L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				changeViewMode();
+				refreshViewMode();
 			}
 		});
 		help.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_HELP_MENUITEM)) {
@@ -1477,7 +1473,7 @@ public class HexViewer extends JFrame implements ActionListener {
 						FileUtils.extractAsciiFile(hexTable, fileBytes, fileChooser.getSelectedFile().getAbsolutePath(),
 								offEntries, false);
 					} catch (Exception e1) {
-						e1.printStackTrace();
+						Utils.logException(e1);
 					}
 				}
 				refreshAll();
@@ -1554,6 +1550,7 @@ public class HexViewer extends JFrame implements ActionListener {
 							offset = Integer.parseInt(s, Constants.HEX_RADIX);
 						}
 					} catch (NumberFormatException e1) {
+						//Do nothing
 					}
 					refreshAll();
 				}
@@ -1576,7 +1573,7 @@ public class HexViewer extends JFrame implements ActionListener {
 				String searchString = JOptionPane.showInputDialog(rb.getString(KeyConstants.KEY_SEARCH_RELATIVE));
 				if(searchString != null && searchString.length() > 0) {
 					try {
-						List<TableSearchResult> results = FileUtils.searchRelative8Bits(fileBytes, searchString);
+						List<TableSearchResult> results = FileUtils.multiSearchRelative8Bits(fileBytes, searchString, SEARCH_JOKER_EXPANSIONS);
 						if(results.isEmpty()) {
 							JOptionPane.showMessageDialog(help, rb.getString(KeyConstants.KEY_NO_RESULTS_DESC),
 									rb.getString(KeyConstants.KEY_NO_RESULTS_TITLE), JOptionPane.INFORMATION_MESSAGE);
@@ -1609,7 +1606,7 @@ public class HexViewer extends JFrame implements ActionListener {
 									rb.getString(KeyConstants.KEY_NO_RESULTS_TITLE), JOptionPane.INFORMATION_MESSAGE);
 						}
 						else {
-							List<TableSearchResult> searchRes = new ArrayList<TableSearchResult>();
+							List<TableSearchResult> searchRes = new ArrayList<>();
 							for(Integer res : results) {
 								TableSearchResult tsr = new TableSearchResult();
 								tsr.setHexTable(hexTable);
@@ -1672,7 +1669,7 @@ public class HexViewer extends JFrame implements ActionListener {
 						try {
 							FileUtils.writeFileAscii(tableFile.getAbsolutePath(), hexTable.toAsciiTable());
 						} catch (Exception e1) {
-							e1.printStackTrace();
+							Utils.logException(e1);
 						}
 					}
 					refreshAll();
@@ -1715,9 +1712,9 @@ public class HexViewer extends JFrame implements ActionListener {
 				JFileChooser fileChooser = new JFileChooser();
 				File selectedFile;
 				if(offsetFile.getAbsolutePath().endsWith(Constants.EXTRACT_EXTENSION)) {
-					selectedFile = new File(FileUtils.getFilePath(offsetFile) + File.separator +  
+					selectedFile = new File(FileUtils.getFilePath(offsetFile) + File.separator +
 							tableFile.getName().replaceAll(Constants.TBL_EXTENSION_REGEX,
-							Constants.OFFSET_EXTENSION));					
+									Constants.OFFSET_EXTENSION));
 				} else {
 					selectedFile = offsetFile;
 				}
@@ -1742,7 +1739,7 @@ public class HexViewer extends JFrame implements ActionListener {
 						Collections.sort(offEntries);
 						FileUtils.writeFileAscii(offsetFile.getAbsolutePath(), Utils.toFileString(offEntries));
 					} catch (Exception e1) {
-						e1.printStackTrace();
+						Utils.logException(e1);
 					}
 				}
 				refreshAll();
@@ -1787,9 +1784,9 @@ public class HexViewer extends JFrame implements ActionListener {
 				try{
 					String name = newPrjWinNameInput.getText();
 					String fileName = newPrjWinFileInput.getText();
-					formErrors = (name == null || name.length() < NEW_PROJECT_NAME_MIN_LENGTH ||
+					formErrors = name == null || name.length() < NEW_PROJECT_NAME_MIN_LENGTH ||
 							fileName == null || fileName.length() == 0 ||
-							!Utils.isValidFileName(fileName) || !Utils.isValidFileName(name));
+							!Utils.isValidFileName(fileName) || !Utils.isValidFileName(name);
 					if(formErrors) {
 						JOptionPane.showMessageDialog(null, rb.getString(KeyConstants.KEY_NEW_PRJ_ERRORS_MSG), rb.getString(KeyConstants.KEY_ERROR_TITLE), JOptionPane.ERROR_MESSAGE);
 					}
@@ -1804,7 +1801,7 @@ public class HexViewer extends JFrame implements ActionListener {
 								rb.getString(KeyConstants.KEY_NEW_PRJ_GENERATING_MSG), JOptionPane.INFORMATION_MESSAGE);
 					}
 				} catch (Exception e1) {
-					e1.printStackTrace();
+					Utils.logException(e1);
 					JOptionPane.showMessageDialog(null, rb.getString(KeyConstants.KEY_ERROR), rb.getString(KeyConstants.KEY_ERROR_TITLE), JOptionPane.ERROR_MESSAGE);
 				} finally {
 					newPrjWin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -1838,6 +1835,7 @@ public class HexViewer extends JFrame implements ActionListener {
 					searchAllThreadError = true;
 				}
 				SwingUtilities.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						searchAllWinProgressBar.setValue(0);
 						enableSearchAllWindow();
@@ -1851,24 +1849,27 @@ public class HexViewer extends JFrame implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						disableSearchAllWindow();
 						searchAllWinProgressBar.setValue(SEARCH_ALL_MIN_PROGRESS);
 					}
 				});
-				if(searchAllWinEndCharsInput.getText() != null && searchAllWinEndCharsInput.getText().length() > 0 && 
+				if(searchAllWinEndCharsInput.getText() != null && searchAllWinEndCharsInput.getText().length() > 0 &&
 						searchAllWinEndCharsInput.getText().matches(REGEXP_OFFSET_ENTRIES)) {
-					Thread searchAll = new Thread(new Runnable() {
-				         public void run() {
-				        	 searchAllThreadAction();
-				         }});
-					searchAll.start();
+					Thread searchAllThreadInstance = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							searchAllThreadAction();
+						}});
+					searchAllThreadInstance.start();
 				}
 				else {
 					JOptionPane.showMessageDialog(asciiTextArea.getParent(),
 							rb.getString(KeyConstants.KEY_ALERT_INVALID_ENDCHARS),
 							rb.getString(KeyConstants.KEY_ALERT_INVALID_ENDCHARS_TITLE), JOptionPane.ERROR_MESSAGE);
 					SwingUtilities.invokeLater(new Runnable() {
+						@Override
 						public void run() {
 							enableSearchAllWindow();
 							searchAllWinProgressBar.setValue(SEARCH_ALL_MIN_PROGRESS);
@@ -1878,7 +1879,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			}
 		});
 	}
-	
+
 	/**
 	 * Search all thread action.
 	 */
@@ -1887,57 +1888,58 @@ public class HexViewer extends JFrame implements ActionListener {
 		final String extractFile = hexFile.getName() + Constants.EXTRACT_EXTENSION;
 		searchAllThreadError = false;
 		searchAllThread = new Thread(new Runnable() {
-	         public void run() {
-	        	try {
-	        		File file = new File(Constants.DEFAULT_DICT);
-	        		if(!file.exists()) {
-	        			file = new File(Constants.PARENT_DIR + Constants.DEFAULT_DICT);
-	        		}
-	        		if(file.exists()) {
-	        			FileUtils.searchAllStrings(hexTable, fileBytes, searchAllWinSkipCharsOpt.getSelectedIndex(),
-	        					searchAllWinEndCharsInput.getText(), file.getAbsolutePath(), extractFile);
-	        		}
-	        		else {
-	        			searchAllThreadError = true;
-	        		}
+			@Override
+			public void run() {
+				try {
+					File file = new File(Constants.DEFAULT_DICT);
+					if(!file.exists()) {
+						file = new File(Constants.PARENT_DIR + Constants.DEFAULT_DICT);
+					}
+					if(file.exists()) {
+						FileUtils.searchAllStrings(hexTable, fileBytes, searchAllWinSkipCharsOpt.getSelectedIndex(),
+								searchAllWinEndCharsInput.getText(), file.getAbsolutePath(), extractFile);
+					}
+					else {
+						searchAllThreadError = true;
+					}
 				} catch (Exception e) {
 					searchAllThreadError = true;
-					e.printStackTrace();
+					Utils.logException(e);
 				}
-	         }
-	    });
-		if(searchAllThread != null) {
-			searchAllThread.start();
-			synchronized (searchAllThread) {
-				while (searchAllThread != null && 
-						searchAllThread.isAlive() && 
-						!searchAllThread.isInterrupted()) {
-					try {
-						searchAllThread.wait(50);
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								searchAllWinProgressBar.setValue((int) hexTable.getSearchPercent());
-							}
-						});
-						Thread.sleep(50);
-					} catch (InterruptedException e1) {
-						searchAllThreadError = true;
-						e1.printStackTrace();
-					}
+			}
+		});
+		searchAllThread.start();
+		synchronized (searchAllThread) {
+			while (searchAllThread != null &&
+					searchAllThread.isAlive() &&
+					!searchAllThread.isInterrupted()) {
+				try {
+					searchAllThread.wait(50);
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							searchAllWinProgressBar.setValue((int) hexTable.getSearchPercent());
+						}
+					});
+					Thread.sleep(50);
+				} catch (InterruptedException e1) {
+					searchAllThreadError = true;
+					Utils.logException(e1);
 				}
 			}
 		}
-	    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-	    if(searchAllThreadError) {
-	    	JOptionPane.showMessageDialog(searchAllStringsWin, rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_ERROR),
+		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		if(searchAllThreadError) {
+			JOptionPane.showMessageDialog(searchAllStringsWin, rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_ERROR),
 					rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_ERROR), JOptionPane.INFORMATION_MESSAGE);
-	    }
-	    else {
+		}
+		else {
 			JOptionPane.showMessageDialog(searchAllStringsWin, rb.getString(KeyConstants.KEY_SEARCHED_ALL_DESC) + extractFile,
 					rb.getString(KeyConstants.KEY_SEARCHED_ALL_TITLE), JOptionPane.INFORMATION_MESSAGE);
 			searchAllStringsWin.setVisible(false);
-	    }
+		}
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				enableSearchAllWindow();
 				searchAllWinProgressBar.setValue(SEARCH_ALL_MIN_PROGRESS);
@@ -1972,25 +1974,20 @@ public class HexViewer extends JFrame implements ActionListener {
 			if(Constants.EXTENSIONS_MEGADRIVE.contains(extension)) {
 				newPrjWinFileTypeOpt.setSelectedItem(smdEntry);
 			}
-			else {
-				if(Constants.EXTENSIONS_SNES.contains(extension)) {
-					newPrjWinFileTypeOpt.setSelectedItem(snesEntry);
-				}
-				else {
-					if(Constants.EXTENSIONS_GB.contains(extension)) {
-						newPrjWinFileTypeOpt.setSelectedItem(gbEntry);
-					}
-					else {
-						if(Constants.EXTENSIONS_TAP.contains(extension)) {
-							newPrjWinFileTypeOpt.setSelectedItem(tapEntry);
-						}
-						else {
-							if(Constants.EXTENSIONS_TZX_CDT.contains(extension)) {
-								newPrjWinFileTypeOpt.setSelectedItem(tzxEntry);
-							}
-						}
-					}
-				}
+			if(Constants.EXTENSIONS_SNES.contains(extension)) {
+				newPrjWinFileTypeOpt.setSelectedItem(snesEntry);
+			}
+			if(Constants.EXTENSIONS_GB.contains(extension)) {
+				newPrjWinFileTypeOpt.setSelectedItem(gbEntry);
+			}
+			if(Constants.EXTENSIONS_TAP.contains(extension)) {
+				newPrjWinFileTypeOpt.setSelectedItem(tapEntry);
+			}
+			if(Constants.EXTENSIONS_TZX_CDT.contains(extension)) {
+				newPrjWinFileTypeOpt.setSelectedItem(tzxEntry);
+			}
+			if(Constants.EXTENSIONS_SMS.contains(extension)) {
+				newPrjWinFileTypeOpt.setSelectedItem(smsEntry);
 			}
 		}
 	}
@@ -2043,7 +2040,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		newPrjWin.setLocationRelativeTo(this);
 		newPrjWin.setVisible(true);
 	}
-	
+
 	/**
 	 * Enable search all window.
 	 */
@@ -2096,7 +2093,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		try {
 			hexTable = new HexTable(tableFile.getAbsolutePath());
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			Utils.logException(e1);
 		}
 		refreshAll();
 	}
@@ -2111,11 +2108,11 @@ public class HexViewer extends JFrame implements ActionListener {
 		try {
 			offEntries = Utils.getOffsets(FileUtils.getCleanOffsets(offsetFile.getAbsolutePath()));
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			Utils.logException(e1);
 		}
 		refreshAll();
 	}
-	
+
 	/**
 	 * Reload ext as offsets file.
 	 *
@@ -2127,7 +2124,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			offEntries = Utils.getOffsets(FileUtils.getCleanOffsetsString(
 					FileUtils.cleanExtractedFile(selectedFile.getAbsolutePath())));
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			Utils.logException(e1);
 		}
 		refreshAll();
 	}
@@ -2140,7 +2137,7 @@ public class HexViewer extends JFrame implements ActionListener {
 	private void reloadHexFile(File selectedFile) {
 		hexFile = selectedFile;
 		try {
-			byte[] newFileBytes = FileUtils.getFileBytes(hexFile.getAbsolutePath());
+			byte[] newFileBytes = Files.readAllBytes(Paths.get(hexFile.getAbsolutePath()));
 			if(newFileBytes.length >= getViewSize()) {
 				fileBytes = newFileBytes;
 			}
@@ -2149,7 +2146,7 @@ public class HexViewer extends JFrame implements ActionListener {
 				System.arraycopy(newFileBytes, 0, fileBytes, 0, newFileBytes.length);
 			}
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			Utils.logException(e1);
 		}
 		offset = 0;
 		asciiTextArea.setCaretPosition(0);
@@ -2164,7 +2161,7 @@ public class HexViewer extends JFrame implements ActionListener {
 			UIManager.setLookAndFeel(
 					UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
-			e.printStackTrace();
+			Utils.logException(e);
 		}
 		rb = ResourceBundle.getBundle(Constants.RB_NAME, Locale.getDefault());
 	}
@@ -2174,31 +2171,29 @@ public class HexViewer extends JFrame implements ActionListener {
 	 *
 	 * @param inputFile the input file
 	 * @param tableFile the table file
-	 * @throws Exception the exception
+	 * @throws IOException the exception
 	 */
-	public static void view(String inputFile, String tableFile) throws Exception {
-		System.out.println("Viewing Hex file \"" + inputFile + "\"\n with table file: \"" + tableFile + "\".");
-		new HexViewer(FileUtils.getFileBytes(inputFile), inputFile, new HexTable(tableFile), tableFile);
+	public static void view(String inputFile, String tableFile) throws IOException {
+		Utils.log("Viewing Hex file \"" + inputFile + "\"\n with table file: \"" + tableFile + "\".");
+		new HexViewer(Files.readAllBytes(Paths.get(inputFile)), inputFile, new HexTable(tableFile), tableFile);
 	}
 
 	/**
 	 * New HexViewer with inputFile and default table.
 	 *
 	 * @param inputFile the input file
-	 * @throws Exception the exception
+	 * @throws IOException the exception
 	 */
-	public static void view(String inputFile) throws Exception {
-		System.out.println("Viewing Hex file \"" + inputFile + "\"\n with table file ascii.");
-		new HexViewer(FileUtils.getFileBytes(inputFile), inputFile, new HexTable(0), DEFAULT_TABLE);
+	public static void view(String inputFile) throws IOException {
+		Utils.log("Viewing Hex file \"" + inputFile + "\"\n with table file ascii.");
+		new HexViewer(Files.readAllBytes(Paths.get(inputFile)), inputFile, new HexTable(0), DEFAULT_TABLE);
 	}
 
 	/**
 	 * New empty HexViewer.
-	 *
-	 * @throws Exception the exception
 	 */
-	public static void view() throws Exception {
-		System.out.println("Viewing Hex file empty with table file ascii.");
+	public static void view() {
+		Utils.log("Viewing Hex file empty with table file ascii.");
 		new HexViewer(new byte[MAX_COLS_AND_ROWS * MAX_COLS_AND_ROWS], DEFAULT_HEXFILE, new HexTable(0), DEFAULT_TABLE);
 	}
 

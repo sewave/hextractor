@@ -11,6 +11,12 @@ import com.wave.hextractor.Hextractor;
  */
 public class ProjectUtils {
 
+	/**
+	 * Instantiates a new project utils.
+	 */
+	private ProjectUtils() {
+	}
+
 	/** The Constant ECHO_OFF. */
 	private static final String ECHO_OFF = "@echo off";
 
@@ -20,23 +26,17 @@ public class ProjectUtils {
 	/** The Constant PROG_CALL. */
 	private static final String PROG_CALL = "java -jar Hextractor.jar ";
 
-	/** The Constant EXCUTEHEXVIEWER_FILE. */
-	private static final String EXCUTEHEXVIEWER_FILE = "0.hexviewer.bat";
+	/** The Constant ORIGINALSCRIPT_FILE. */
+	private static final String ORIGINALSCRIPT_FILE = "1.extractScript.bat";
 
 	/** The Constant EXTRACTHEX_FILE. */
 	private static final String EXTRACTHEX_FILE = "2.extractHex.bat";
 
-	/** The Constant ORIGINALSCRIPT_FILE. */
-	private static final String ORIGINALSCRIPT_FILE = "1.originalScript.bat";
-
-	/** The Constant CLEAN_FILE. */
-	private static final String CLEAN_FILE = "4.clean.bat";
-
 	/** The Constant INSERT_FILE. */
-	private static final String INSERT_FILE = "3.insert.bat";
+	private static final String INSERT_FILE = "3.insertAll.bat";
 
 	/** The Constant CREATEPATCH_FILE. */
-	private static final String CREATEPATCH_FILE = "5.createPatch.bat";
+	private static final String CREATEPATCH_FILE = "4.createPatch.bat";
 
 	/** The Constant HEX_EXTENSION. */
 	private static final String HEX_EXTENSION = ".hex";
@@ -61,6 +61,9 @@ public class ProjectUtils {
 
 	/** The Constant FILE_README. */
 	private static final String FILE_README = "_readme.txt";
+
+	/** The Constant LOG_GENERATING. */
+	private static final String LOG_GENERATING = "Generating / Generando ";
 
 	/**
 	 * Gets the tfile name.
@@ -99,16 +102,14 @@ public class ProjectUtils {
 	 * @param fileName the file name
 	 * @param fileType the file type
 	 * @param projectFile the project file
-	 * @throws Exception the exception
+	 * @throws IOException the exception
 	 */
-	public static final void createNewProject(String name, String fileName, String fileType, File projectFile) throws Exception {
+	public static final void createNewProject(String name, String fileName, String fileType, File projectFile) throws IOException {
 		File projectFolder = createProjectFolder(name);
 		String transfileName = TR_FILENAME_PREFIX + fileName;
 		copyBaseFiles(projectFolder, name, projectFile);
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, EXCUTEHEXVIEWER_FILE), createHexviewerFile(name, fileName));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, EXTRACTHEX_FILE), createExtractHexFile(name, fileName, transfileName));
 		Utils.createFile(Utils.getJoinedFileName(projectFolder, ORIGINALSCRIPT_FILE), createOriginalScriptFile(name, fileName));
-		Utils.createFile(Utils.getJoinedFileName(projectFolder, CLEAN_FILE), createCleanFile(name));
+		Utils.createFile(Utils.getJoinedFileName(projectFolder, EXTRACTHEX_FILE), createExtractHexFile(name, transfileName));
 		Utils.createFile(Utils.getJoinedFileName(projectFolder, INSERT_FILE), createInsertFile(name, fileName, fileType, transfileName));
 		Utils.createFile(Utils.getJoinedFileName(projectFolder, CREATEPATCH_FILE), createCreatePatchFile(name, fileName, transfileName));
 		Utils.createFile(Utils.getJoinedFileName(projectFolder, name + HEX_EXTENSION), createHexFile(name));
@@ -118,10 +119,20 @@ public class ProjectUtils {
 	 * Creates the project.
 	 *
 	 * @param file the file
-	 * @throws Exception the exception
+	 * @throws IOException the exception
 	 */
-	public static final void createProject(File file) throws Exception {
+	public static final void createProject(File file) throws IOException {
 		ProjectUtils.createNewProject(getProjectName(file.getName()), file.getName(), getFileType(file), file);
+	}
+
+	/**
+	 * Creates the project.
+	 *
+	 * @param file the file
+	 * @throws IOException the exception
+	 */
+	public static final void createProject(String file) throws IOException {
+		ProjectUtils.createProject(new File(file));
 	}
 
 	/**
@@ -153,44 +164,17 @@ public class ProjectUtils {
 							if(Constants.EXTENSIONS_TZX_CDT.contains(extension)) {
 								res = Constants.FILE_TYPE_TZX;
 							}
+							else {
+								if(Constants.EXTENSIONS_SMS.contains(extension)) {
+									res = Constants.FILE_TYPE_MASTERSYSTEM;
+								}
+							}
 						}
 					}
 				}
 			}
 		}
 		return res;
-	}
-
-	/**
-	 * Creates the hexviewer file.
-	 *
-	 * @param name the name
-	 * @param fileName the file name
-	 * @return the string
-	 */
-	private static final String createHexviewerFile(String name, String fileName) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + EXCUTEHEXVIEWER_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append(Constants.NEWLINE);
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
-	}
-
-	/**
-	 * Creates the clean file.
-	 *
-	 * @param name the name
-	 * @return the string
-	 */
-	private static final String createCleanFile(String name) {
-		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + CLEAN_FILE + "...");
-		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
-		fileContent.append(getScriptName(name)).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-ca tr_"+ SCRIPTNAME_VAR +".ext tr_"+ SCRIPTNAME_VAR +"_clean.ext").append(Constants.NEWLINE);
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
 	}
 
 	/**
@@ -202,7 +186,7 @@ public class ProjectUtils {
 	 */
 	private static final String createOriginalScriptFile(String name, String fileName) {
 		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + ORIGINALSCRIPT_FILE + "...");
+		Utils.log(LOG_GENERATING + ORIGINALSCRIPT_FILE + "...");
 		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
 		fileContent.append(getTfileName(fileName)).append(Constants.NEWLINE);
 		fileContent.append(getScriptName(name)).append(Constants.NEWLINE);
@@ -222,7 +206,7 @@ public class ProjectUtils {
 	 */
 	private static final String createInsertFile(String name, String fileName, String fileType, String transfileName) {
 		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + INSERT_FILE + "...");
+		Utils.log(LOG_GENERATING + INSERT_FILE + "...");
 		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
 		fileContent.append(getTfileName(transfileName)).append(Constants.NEWLINE);
 		fileContent.append(getSfileName(fileName)).append(Constants.NEWLINE);
@@ -251,6 +235,11 @@ public class ProjectUtils {
 						if(Constants.FILE_TYPE_TZX.equals(fileType)) {
 							checksumMode = Hextractor.MODE_FIX_ZXTZX_CHECKSUM;
 						}
+						else {
+							if(Constants.FILE_TYPE_MASTERSYSTEM.equals(fileType)) {
+								checksumMode = Hextractor.MODE_FIX_SMS_CHECKSUM;
+							}
+						}
 					}
 				}
 			}
@@ -272,7 +261,7 @@ public class ProjectUtils {
 	 */
 	private static final String createCreatePatchFile(String name, String fileName, String transFileName) {
 		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + CREATEPATCH_FILE + "...");
+		Utils.log(LOG_GENERATING + CREATEPATCH_FILE + "...");
 		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
 		fileContent.append(getTfileName(transFileName)).append(Constants.NEWLINE);
 		fileContent.append(getSfileName(fileName)).append(Constants.NEWLINE);
@@ -290,7 +279,7 @@ public class ProjectUtils {
 	 */
 	private static final String createHexFile(String name) {
 		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + name + HEX_EXTENSION + "...");
+		Utils.log(LOG_GENERATING + name + HEX_EXTENSION + "...");
 		fileContent.append(";Traducciones Wave " + YEAR).append(Constants.NEWLINE);
 		fileContent.append(";54 72 61 64 75 63 63 69 6F 6E 65 73 20 57 61 76 65 20 3");
 		fileContent.append(YEAR.substring(0, 1) + " 3" + YEAR.substring(1, 2) + " 3" + YEAR.substring(2, 3) + " 3" + YEAR.substring(3, 4) + "@000000E0:000000F5").append(Constants.NEWLINE);
@@ -300,14 +289,13 @@ public class ProjectUtils {
 	/**
 	 * Creates the extract hex file.
 	 *
-	 * @param name the name
 	 * @param fileName the file name
 	 * @param transfileName the transfile name
 	 * @return the string
 	 */
-	private static final String createExtractHexFile(String name, String fileName, String transfileName) {
+	private static final String createExtractHexFile(String name, String transfileName) {
 		StringBuilder fileContent = new StringBuilder();
-		System.out.println("Generating / Generando " + EXTRACTHEX_FILE + "...");
+		Utils.log(LOG_GENERATING + EXTRACTHEX_FILE + "...");
 		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
 		fileContent.append(getTfileName(transfileName)).append(Constants.NEWLINE);
 		fileContent.append(getScriptName(name)).append(Constants.NEWLINE);
@@ -340,10 +328,10 @@ public class ProjectUtils {
 	 * @return the file
 	 * @throws Exception the exception
 	 */
-	private static final File createProjectFolder(String name) throws Exception {
+	private static final File createProjectFolder(String name) throws IOException {
 		File projectFolder = new File(name);
 		if(!projectFolder.exists() && !projectFolder.mkdir()) {
-			throw new Exception("Error generating: " + name + " directory." );
+			throw new IOException("Error generating: " + name + " directory." );
 		}
 		return projectFolder;
 	}
@@ -380,7 +368,7 @@ public class ProjectUtils {
 		try {
 			return new File(Constants.CURRENT_DIR).getCanonicalFile().getName();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Utils.logException(e);
 			return Constants.EMPTY;
 		}
 	}

@@ -1,6 +1,7 @@
 package com.wave.hextractor.gui;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,13 +10,16 @@ import javax.swing.filechooser.FileFilter;
 /**
  * The Class SimpleFilter.
  */
-public class SimpleFilter extends FileFilter {
+public class SimpleFilter extends FileFilter implements Serializable {
+
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = -1735785449456394453L;
 
 	/** The exts. */
-	List<String> exts;
+	private List<String> exts;
 
 	/** The message. */
-	String message;
+	private String message;
 
 	/**
 	 * Instantiates a new simple filter.
@@ -31,8 +35,8 @@ public class SimpleFilter extends FileFilter {
 	/**
 	 * Instantiates a new simple filter.
 	 *
-	 * @param asList the as list
-	 * @param string the string
+	 * @param exts the exts
+	 * @param message the message
 	 */
 	public SimpleFilter(List<String> exts, String message) {
 		this.exts = exts;
