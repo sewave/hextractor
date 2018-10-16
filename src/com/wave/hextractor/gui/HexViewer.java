@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -22,6 +23,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.AbstractMap;
@@ -34,6 +36,7 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -383,9 +386,18 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The BASE_FONT for the application. */
 	private static final Font BASE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 13);
-	
+
 	/** The SEARCH_JOKER_EXPANSIONS for searches. */
 	private static final int SEARCH_JOKER_EXPANSIONS = 8;
+
+	/** The Constant ICON16. */
+	public static final URL ICON16 = HexViewer.class.getResource("/icon/rom16.png");
+
+	/** The Constant ICON32. */
+	public static final URL ICON32 = HexViewer.class.getResource("/icon/rom32.png");
+
+	/** The Constant ICON96. */
+	public static final URL ICON96 = HexViewer.class.getResource("/icon/rom96.png");
 
 	/**
 	 * Gets the offset block.
@@ -751,8 +763,24 @@ public class HexViewer extends JFrame implements ActionListener {
 		pack();
 		vsb.setPreferredSize(new Dimension((int) vsb.getPreferredSize().getWidth(), (int) (getSize().getHeight() * 0.85)));
 		refreshViewMode();
+		setIcons();
 		setVisible(true);
 		refreshAll();
+	}
+
+	/**
+	 * Sets the icons.
+	 */
+	private void setIcons() {
+		List<Image> images = new ArrayList<>();
+		try {
+			images.add(ImageIO.read(ICON96));
+			images.add(ImageIO.read(ICON32));
+			images.add(ImageIO.read(ICON16));
+		} catch (IOException e) {
+			Utils.logException(e);
+		}
+		this.setIconImages(images);
 	}
 
 	/**
@@ -1600,21 +1628,14 @@ public class HexViewer extends JFrame implements ActionListener {
 				String searchString = JOptionPane.showInputDialog(rb.getString(KeyConstants.KEY_FIND));
 				if(searchString != null && searchString.length() > 0) {
 					try {
-						List<Integer> results = FileUtils.findString(fileBytes, hexTable, searchString, true);
+						List<TableSearchResult>  results = FileUtils.multiFindString(fileBytes, hexTable, searchString, true,
+								SEARCH_JOKER_EXPANSIONS);
 						if(results.isEmpty()) {
 							JOptionPane.showMessageDialog(help, rb.getString(KeyConstants.KEY_NO_RESULTS_DESC),
 									rb.getString(KeyConstants.KEY_NO_RESULTS_TITLE), JOptionPane.INFORMATION_MESSAGE);
 						}
 						else {
-							List<TableSearchResult> searchRes = new ArrayList<>();
-							for(Integer res : results) {
-								TableSearchResult tsr = new TableSearchResult();
-								tsr.setHexTable(hexTable);
-								tsr.setOffset(res);
-								tsr.setWord(searchString);
-								searchRes.add(tsr);
-							}
-							searchResults.setListData(searchRes.toArray(new TableSearchResult[0]));
+							searchResults.setListData(results.toArray(new TableSearchResult[0]));
 							resultsWindow.pack();
 							resultsWindow.setLocationRelativeTo(resultsWindow.getParent());
 							resultsWindow.setVisible(true);

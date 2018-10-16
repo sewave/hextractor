@@ -482,6 +482,56 @@ public class FileUtils {
 	}
 
 	/**
+	 * Searches but * can be expanded to up to expansion number of chars.
+	 * @param fileBytes .
+	 * @param hexTable .
+	 * @param searchString .
+	 * @param ignoreCase .
+	 * @param expansion .
+	 * @return .
+	 * @throws IllegalArgumentException .
+	 */
+	public static List<TableSearchResult> multiFindString(byte[] fileBytes, HexTable hexTable, String searchString,
+			boolean ignoreCase, int expansion) {
+		List<TableSearchResult> res = new ArrayList<>();
+		String replacement = "";
+		if (searchString.contains(Constants.STR_ASTER)) {
+			for (int i = 0; i < expansion; i++) {
+				replacement += Constants.STR_ASTER;
+				String searchStrRep = searchString.replaceAll(Constants.REGEX_STR_ASTER, replacement);
+				res.addAll(toTableResults(hexTable, searchStrRep,
+						findString(fileBytes, hexTable, searchStrRep, ignoreCase)));
+			}
+		}
+		else {
+			res.addAll(
+					toTableResults(hexTable, searchString, findString(fileBytes, hexTable, searchString, ignoreCase)));
+		}
+		return new ArrayList<>(res);
+	}
+
+	/**
+	 * To table results.
+	 * @param list
+	 * @param searchString
+	 * @param hexTable
+	 *
+	 * @return the list
+	 */
+	public static final List<TableSearchResult> toTableResults(HexTable hexTable, String searchString,
+			List<Integer> list) {
+		List<TableSearchResult> searchRes = new ArrayList<>();
+		for (Integer res : list) {
+			TableSearchResult tsr = new TableSearchResult();
+			tsr.setHexTable(hexTable);
+			tsr.setOffset(res);
+			tsr.setWord(searchString);
+			searchRes.add(tsr);
+		}
+		return searchRes;
+	}
+
+	/**
 	 * Equivalent chars.
 	 *
 	 * @param displacement the displacement
