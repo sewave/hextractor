@@ -188,6 +188,9 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The Constant SEARCH_ALL_MAX_PROGRESS. */
 	private static final int SEARCH_ALL_MAX_PROGRESS = 100;
+	
+	/** The Constant OFFSET_LABEL_LENGTH. */
+	private static final int OFFSET_LABEL_LENGTH = 50;
 
 	/** The other entry. */
 	private SimpleEntry<String, String> otherEntry;
@@ -474,7 +477,17 @@ public class HexViewer extends JFrame implements ActionListener {
 		} catch (BadLocationException e1) {
 			Utils.log("Bad location.");
 		}
-		offsetLabelValue.setText(Utils.intToHexString(offset + asciiTextArea.getCaretPosition(), Constants.HEX_ADDR_SIZE));
+		offsetLabelValue.setText(getOffsetLabelValue());
+	}
+	
+	private String getOffsetLabelValue() {
+		int currPos = offset + asciiTextArea.getCaretPosition();
+		int size = fileBytes.length - 1;
+		int lengthDec = String.valueOf(size).length();
+		int lengthHex = Integer.toHexString(size).length();
+		return "0x" + Utils.intToHexString(currPos, lengthHex) + " (" + String.format("%0" + lengthDec + "d", currPos)
+				+ ") / 0x" + Utils.intToHexString(size, lengthHex) + " (" + String.format("%0" + lengthDec + "d", size)
+				+ ") - (" + String.format("%03.2f", 100f * (currPos) / size) + "% )";
 	}
 
 	/**
@@ -748,7 +761,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		firstRow.add(vsb);
 		JLabel offsetLabel = new JLabel(rb.getString(KeyConstants.KEY_OFFSET_LABEL));
 		secondRow.add(offsetLabel);
-		offsetLabelValue = new JTextField(Utils.intToHexString(offset, Constants.HEX_ADDR_SIZE), Constants.HEX_ADDR_SIZE);
+		offsetLabelValue = new JTextField(getOffsetLabelValue(), OFFSET_LABEL_LENGTH);
 		offsetLabelValue.setEnabled(false);
 		secondRow.add(offsetLabelValue);
 		offsetLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
