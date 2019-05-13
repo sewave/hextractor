@@ -21,7 +21,7 @@ public class IpsPatchUtils {
 	}
 
 	/**
-	 * Creates a IPS patch file patchFile from de differences between
+	 * Creates a IPS patch file patchFile from the differences between
 	 * originalFile to modifiedFile.
 	 *
 	 * @param originalFile original file, unmodified.
@@ -70,6 +70,7 @@ public class IpsPatchUtils {
 		}
 		FileUtils.writeFileBytes(patchFile, generatePatchFile(patchEntries));
 		validateIpsPatch(originalFile, modifiedFile, patchFile);
+		FileUtils.outputFileDigests(originalFile);
 	}
 
 	/**

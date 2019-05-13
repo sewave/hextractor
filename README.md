@@ -54,4 +54,7 @@ Herramienta con diferentes modos para ayudar a traducir juegos/ficheros utilizan
 -scl file tableFile outFile
 #### INSERT FILE AT OFFSET / INSERTAR FICHERO EN OFFSET
 -if originalFile insertFile offset
+#### GENERATE FILE DIGESTS / GENERAR HASHES DE FICHERO
+-gd file
+
 

@@ -90,6 +90,9 @@ public class Hextractor {
 
 	/** The Constant MODE_SEPARATE_CHAR_LENGTH. */
 	public static final String MODE_SEPARATE_CHAR_LENGTH = "-scl";
+	
+	/** The Constant MODE_GENERATE_FILE_DIGESTS. */
+	public static final String MODE_GENERATE_FILE_DIGESTS = "-gd";
 
 	/**
 	 * Prints the usage.
@@ -163,7 +166,11 @@ public class Hextractor {
 										if (MODE_CHECK_LINE_LENGTH.equals(mode)) {
 											FileUtils.checkLineLength(args[1]);
 										} else {
-											printUsage(rb);
+											if (MODE_GENERATE_FILE_DIGESTS.equals(mode)) {
+												FileUtils.outputFileDigests(args[1]);
+											} else {
+												printUsage(rb);
+											}
 										}
 									}
 								}

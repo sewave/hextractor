@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,8 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.zip.CRC32;
+
+import javax.xml.bind.DatatypeConverter;
 
 import com.wave.hextractor.object.HexTable;
+import com.wave.hextractor.pojo.FileWithDigests;
 import com.wave.hextractor.pojo.OffsetEntry;
 import com.wave.hextractor.pojo.TableSearchResult;
 
@@ -30,7 +36,13 @@ public class FileUtils {
 
 	/** The Constant FILES_SEPARATOR. */
 	private static final String FILES_SEPARATOR = "\"\n to file \"";
-
+	
+	/** The Constant MD5_DIGEST. */
+	public static final String MD5_DIGEST = "MD5";
+	
+	/** The Constant SHA1_DIGEST. */
+	public static final String SHA1_DIGEST = "SHA-1";
+	
 	/**
 	 * Instantiates a new file utils.
 	 */
@@ -792,6 +804,58 @@ public class FileUtils {
 		byte[] replacementData = Files.readAllBytes(Paths.get(replacementFile));
 		System.arraycopy(replacementData, 0, baseData, offset, replacementData.length);
 		writeFileBytes(baseFile, baseData);
+	}
+
+	/**
+	 * Outputs the file SHA1, MD5 and CRC32 (in hex), with file name and bytes
+	 * FILE
+	 * MD5: XXXXXXXXXXXXX
+	 * SHA1: XXXXXXXXXXXXX
+	 * CRC32: XXXXXXXXXXXXX
+	 * XXXXXXX bytes
+	 * @param string
+	 * @throws IOException 
+	 */
+	public static final void outputFileDigests(String file) throws IOException {
+		FileWithDigests fileWithDigests = getFileWithDigests(file);
+		Utils.log(fileWithDigests.getName());
+		Utils.log("MD5: " + fileWithDigests.getMd5());
+		Utils.log("SHA1: " + fileWithDigests.getSha1());
+		Utils.log("CRC32: " + fileWithDigests.getCrc32());
+		Utils.log(String.format("%,d", fileWithDigests.getBytes().length) + " bytes");
+	}
+
+	/**
+	 * Returns the file with the digests
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
+	public static final FileWithDigests getFileWithDigests(String fileName) throws IOException {
+		FileWithDigests fileWithDigests = new FileWithDigests();
+		File file = new File(fileName);
+		fileWithDigests.setName(file.getName());
+		fileWithDigests.setBytes(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+		fileWithDigests.setCrc32(getCrc32Hex(fileWithDigests.getBytes()));
+		fileWithDigests.setMd5(getDigestHex(fileWithDigests.getBytes(), MD5_DIGEST));
+		fileWithDigests.setSha1(getDigestHex(fileWithDigests.getBytes(), SHA1_DIGEST));
+		return fileWithDigests;
+	}
+
+	private static final String getCrc32Hex(byte[] bytes) {
+		CRC32 crc32 = new CRC32();
+		crc32.update(bytes);
+		return String.format("%08X", crc32.getValue()).toLowerCase();
+	}
+
+	private static final String getDigestHex(byte[] bytes, String digest) {
+		String res = "";
+		try {
+			res = DatatypeConverter.printHexBinary(MessageDigest.getInstance(digest).digest(bytes)).toLowerCase();
+		} catch (NoSuchAlgorithmException e) {
+			Utils.logException(e);
+		}
+		return res;
 	}
 
 }
