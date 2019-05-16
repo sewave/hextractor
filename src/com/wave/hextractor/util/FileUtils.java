@@ -822,7 +822,7 @@ public class FileUtils {
 		Utils.log("MD5: " + fileWithDigests.getMd5());
 		Utils.log("SHA1: " + fileWithDigests.getSha1());
 		Utils.log("CRC32: " + fileWithDigests.getCrc32());
-		Utils.log(String.format("%,d", fileWithDigests.getBytes().length) + " bytes");
+		Utils.log(String.format("%d", fileWithDigests.getBytes().length) + " bytes");
 	}
 
 	/**
