@@ -251,6 +251,9 @@ public class HexViewer extends JFrame implements ActionListener {
 
 	/** The save table. */
 	private JMenuItem saveTable;
+	
+	/** The reload table. */
+	private JMenuItem reloadTable;
 
 	/** The open offsets. */
 	private JMenuItem openOffsets;
@@ -1330,6 +1333,8 @@ public class HexViewer extends JFrame implements ActionListener {
 		newProject = new JMenuItem(rb.getString(KeyConstants.KEY_NEW_PROJECT_MENUITEM));
 		openTable = new JMenuItem(rb.getString(KeyConstants.KEY_OPEN_TABLE_MENUITEM));
 		saveTable = new JMenuItem(rb.getString(KeyConstants.KEY_SAVE_TABLE_MENUITEM));
+		reloadTable = new JMenuItem(rb.getString(KeyConstants.KEY_RELOAD_TABLE_MENUITEM));
+		
 		about = new JMenuItem(rb.getString(KeyConstants.KEY_ABOUT_MENUITEM));
 		help = new JMenuItem(rb.getString(KeyConstants.KEY_HELP_MENUITEM));
 		goTo = new JMenuItem(rb.getString(KeyConstants.KEY_GOTO_MENUITEM));
@@ -1362,6 +1367,7 @@ public class HexViewer extends JFrame implements ActionListener {
 
 		tableMenu.add(openTable);
 		tableMenu.add(saveTable);
+		tableMenu.add(reloadTable);
 
 		offsetMenu.add(openOffsets);
 		offsetMenu.add(saveOffsets);
@@ -1398,6 +1404,7 @@ public class HexViewer extends JFrame implements ActionListener {
 		goTo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK));
 		openTable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK));
 		saveTable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
+		reloadTable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0));
 		searchRelative.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK));
 		searchAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK));
 		extract.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_DOWN_MASK));
@@ -1407,6 +1414,10 @@ public class HexViewer extends JFrame implements ActionListener {
 		nextOffset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0));
 		prevOffset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 		clearOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK));
+		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0));
+		help.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+		view16Cols.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
+		view16Rows.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0));
 	}
 
 	/**
@@ -1707,6 +1718,16 @@ public class HexViewer extends JFrame implements ActionListener {
 						}
 					}
 					refreshAll();
+				}
+			}
+		});
+		reloadTable.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_RELOAD_TABLE_MENUITEM)) {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 251407879942401218L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(tableFile != null && tableFile.exists()) {
+					reloadTableFile(tableFile);
 				}
 			}
 		});

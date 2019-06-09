@@ -43,7 +43,10 @@ public class KeyConstants {
 
 	/** The Constant KEY_SAVE_TABLE_MENUITEM. */
 	public static final String KEY_SAVE_TABLE_MENUITEM = "saveTableMenuItem";
-
+	
+	/** The Constant KEY_RELOAD_TABLE_MENUITEM. */
+	public static final String KEY_RELOAD_TABLE_MENUITEM = "reloadTableMenuItem";
+	
 	/** The Constant KEY_OPEN_OFFSETS_MENUITEM. */
 	public static final String KEY_OPEN_OFFSETS_MENUITEM = "openOffsetsMenuItem";
 
