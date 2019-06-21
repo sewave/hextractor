@@ -1,5 +1,11 @@
 [![Build Status](https://travis-ci.com/sewave/hextractor.svg?branch=master)](https://travis-ci.com/sewave/hextractor)
 
+| Branch        | Build           | Coverage           |
+| ------------- |:-------------:|:-------------:|
+| master      | [![Build Status](https://travis-ci.com/sewave/hextractor.svg?branch=master)](https://travis-ci.com/sewave/hextractor)
+ | [![codecov](https://codecov.io/gh/sewave/hextractor/branch/master/graph/badge.svg)](https://codecov.io/gh/sewave/hextractor) |
+
+
 # hextractor
 Tool with different modes to help translate games/files using table files and fixed string length.  
 Herramienta con diferentes modos para ayudar a traducir juegos/ficheros utilizando tablas y cadenas de longitud fija.  
