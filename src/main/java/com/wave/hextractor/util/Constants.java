@@ -2,6 +2,7 @@ package com.wave.hextractor.util;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -292,5 +293,81 @@ public class Constants {
 
 	/** The Constant FILE_TYPE_TZX. */
 	public static final String FILE_TYPE_TZX =  "6";
+		
+	public static final String SYSTEM_SMD =  "Mega Drive";
+	
+	public static final String SYSTEM_SMS =  "Master System";
+	
+	public static final String SYSTEM_SMD_32X =  "Mega Drive 32X";
+	
+	public static final String SYSTEM_SFC =  "Super Nintendo";
+	
+	public static final String SYSTEM_NES =  "NES";
+	
+	public static final String SYSTEM_GB =  "Game Boy";
+	
+	public static final String SYSTEM_GBC =  "Game Boy Color";
+	
+	public static final String SYSTEM_PCE =  "PC Engine";
+	
+	public static final String SYSTEM_MSX =  "MSX";
+	
+	public static final String SYSTEM_ZXS =  "ZX Spectrum";
+	
+	public static final String SYSTEM_CPC =  "Amstrad CPC";
+	
+	public static final String SYSTEM_GBA =  "Game Boy Advance";
+	
+	public static final String SYSTEM_SGG =  "Game Gear";
+	
+	public static final String SYSTEM_SG1K =  "SG-1000";
+	
+	public static final String SYSTEM_COL =  "Colecovision";
+	
+	public static final String SYSTEM_NGP =  "Neo Geo Pocket";
+	
+	public static final String SYSTEM_NGPC =  "Neo Geo Pocket Color";
+	
+	public static final HashMap<String, String> EXTENSION_TO_SYSTEM = new HashMap<>();
+	
+	static {
+		//Micropcs
+		EXTENSION_TO_SYSTEM.put("mx1", SYSTEM_MSX);
+		EXTENSION_TO_SYSTEM.put("mx2", SYSTEM_MSX);
+		EXTENSION_TO_SYSTEM.put("rom", SYSTEM_MSX);
+		EXTENSION_TO_SYSTEM.put("tap", SYSTEM_ZXS);
+		EXTENSION_TO_SYSTEM.put("tzx", SYSTEM_ZXS);
+		EXTENSION_TO_SYSTEM.put("cdt", SYSTEM_CPC);
+		
+		//Sega
+		EXTENSION_TO_SYSTEM.put("smd", SYSTEM_SMD);
+		EXTENSION_TO_SYSTEM.put("gen", SYSTEM_SMD);
+		EXTENSION_TO_SYSTEM.put("bin", SYSTEM_SMD);
+		EXTENSION_TO_SYSTEM.put("md", SYSTEM_SMD);
+		EXTENSION_TO_SYSTEM.put("32x", SYSTEM_SMD_32X);
+		EXTENSION_TO_SYSTEM.put("sms", SYSTEM_SMS);
+		EXTENSION_TO_SYSTEM.put("gg", SYSTEM_SGG);
+		EXTENSION_TO_SYSTEM.put("sg", SYSTEM_SG1K);
+		
+		//Nintendo
+		EXTENSION_TO_SYSTEM.put("sfc", SYSTEM_SFC);
+		EXTENSION_TO_SYSTEM.put("smc", SYSTEM_SFC);
+		EXTENSION_TO_SYSTEM.put("nes", SYSTEM_NES);
+		EXTENSION_TO_SYSTEM.put("gb", SYSTEM_GB);
+		EXTENSION_TO_SYSTEM.put("gbc", SYSTEM_GBC);
+		EXTENSION_TO_SYSTEM.put("gba", SYSTEM_GBA);
+		
+		//Hudson
+		EXTENSION_TO_SYSTEM.put("pce", SYSTEM_PCE);
+		
+		//SNK
+		EXTENSION_TO_SYSTEM.put("ngp", SYSTEM_NGP);
+		EXTENSION_TO_SYSTEM.put("ngc", SYSTEM_NGPC);
+		
+		//Coleco
+		EXTENSION_TO_SYSTEM.put("col", SYSTEM_COL);
+		
+	}
+	
 
 }

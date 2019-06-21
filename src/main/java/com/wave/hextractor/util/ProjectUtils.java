@@ -266,7 +266,8 @@ public class ProjectUtils {
 		fileContent.append(getTfileName(transFileName)).append(Constants.NEWLINE);
 		fileContent.append(getSfileName(fileName)).append(Constants.NEWLINE);
 		fileContent.append(getScriptName(name)).append(Constants.NEWLINE);
-		fileContent.append(PROG_CALL).append("-cip " + SFILENAMENAME_VAR + " " + TFILENAMENAME_VAR + " " + SCRIPTNAME_VAR +".ips").append(Constants.NEWLINE);
+		fileContent.append(PROG_CALL).append(Hextractor.CREATE_IPS_PATCH + " " + SFILENAMENAME_VAR + " " + TFILENAMENAME_VAR + " " + SCRIPTNAME_VAR +".ips").append(Constants.NEWLINE);
+		fileContent.append(PROG_CALL).append(Hextractor.MODE_FILL_READ_ME + " " + SCRIPTNAME_VAR + "_readme.txt " + " " + SCRIPTNAME_VAR + "_readme.txt " + SFILENAMENAME_VAR).append(Constants.NEWLINE);
 		fileContent.append(PAUSE).append(Constants.NEWLINE);
 		return fileContent.toString();
 	}

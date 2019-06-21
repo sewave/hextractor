@@ -10,9 +10,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +44,11 @@ public class FileUtils {
 	
 	/** The Constant SHA1_DIGEST. */
 	public static final String SHA1_DIGEST = "SHA-1";
+	
+	private static final SimpleDateFormat GAME_DATE_DATE_FORMAT = new SimpleDateFormat("dd/MM/YYYY");
+	private static final SimpleDateFormat GAME_YEAR_DATE_FORMAT = new SimpleDateFormat("YYYY");
+	
+	private static final String COMMA_THE = ", The";
 	
 	/**
 	 * Instantiates a new file utils.
@@ -817,12 +824,26 @@ public class FileUtils {
 	 * @throws IOException 
 	 */
 	public static final void outputFileDigests(String file) throws IOException {
-		FileWithDigests fileWithDigests = getFileWithDigests(file);
-		Utils.log(fileWithDigests.getName());
-		Utils.log("MD5: " + fileWithDigests.getMd5());
-		Utils.log("SHA1: " + fileWithDigests.getSha1());
-		Utils.log("CRC32: " + fileWithDigests.getCrc32());
-		Utils.log(String.format("%d", fileWithDigests.getBytes().length) + " bytes");
+		Utils.log(getFileDigests(getFileWithDigests(file)));
+	}
+	
+	/**
+	 * Gets the file SHA1, MD5 and CRC32 (in hex), with file name and bytes
+	 * FILE
+	 * MD5: XXXXXXXXXXXXX
+	 * SHA1: XXXXXXXXXXXXX
+	 * CRC32: XXXXXXXXXXXXX
+	 * XXXXXXX bytes
+	 * @param fileWithDigests
+	 * @return
+	 */
+	public static String getFileDigests(FileWithDigests fileWithDigests) {
+		StringBuilder fileDigests = new StringBuilder(fileWithDigests.getName()).append(System.lineSeparator());
+		fileDigests.append("MD5: ").append(fileWithDigests.getMd5()).append(System.lineSeparator());
+		fileDigests.append("SHA1: ").append(fileWithDigests.getSha1()).append(System.lineSeparator());
+		fileDigests.append("CRC32: ").append(fileWithDigests.getCrc32()).append(System.lineSeparator());
+		fileDigests.append(String.format("%d", fileWithDigests.getBytes().length)).append(" bytes");
+		return fileDigests.toString();
 	}
 
 	/**
@@ -856,6 +877,61 @@ public class FileUtils {
 			Utils.logException(e);
 		}
 		return res;
+	}
+
+	/**
+	 * Fills the variables {GAME}, {SYSTEM} and {HASHES} from the file settings based on 
+	 * the extension.
+	 * @param emptyDataFile file with variables
+	 * @param filledDataFile file with the results
+	 * @param fileName game file
+	 * @throws IOException 
+	 */
+	public static void fillGameData(String emptyDataFile, String filledDataFile, String fileName) throws IOException {
+		Utils.log("Filling game data from: \"" + emptyDataFile + "\""); 
+		Utils.log(" to: \"" + filledDataFile + "\"");
+		Utils.log(" for file: \"" + fileName + "\"");
+		String readmeFile = getAsciiFile(emptyDataFile);
+		FileWithDigests fileWithDigests = getFileWithDigests(fileName);
+		readmeFile = readmeFile.replaceAll("\\{GAME\\}", getGameName(fileWithDigests.getName()));
+		readmeFile = readmeFile.replaceAll("\\{SYSTEM\\}", getGameSystem(fileWithDigests.getName()));
+		readmeFile = readmeFile.replaceAll("\\{HASHES\\}", getFileDigests(fileWithDigests));
+		readmeFile = readmeFile.replaceAll("\\{DATE\\}", GAME_DATE_DATE_FORMAT.format(new Date()));
+		readmeFile = readmeFile.replaceAll("\\{YEAR\\}", GAME_YEAR_DATE_FORMAT.format(new Date()));
+		writeFileAscii(filledDataFile, readmeFile);
+	}
+
+	public static String getGameSystem(String fileName) {
+		String system = Constants.EXTENSION_TO_SYSTEM.get(getFileExtension(fileName).toLowerCase());
+		if(system == null) {
+			system = "XXXX";
+		}
+		return system;
+	}
+
+	public static String getGameName(String fileName) {
+		String gameName = fileName;
+		int parentesis = fileName.indexOf('(');
+		int claudator = fileName.indexOf('[');
+		int dot = fileName.indexOf('.');
+		int cut = fileName.length();
+		if(dot > -1 && dot < cut) {
+			cut = dot;
+		}
+		if(parentesis > -1 && parentesis < cut) {
+			cut = parentesis;
+		}
+		if(claudator > -1 && claudator < cut) {
+			cut = claudator;
+		}
+		int comma = fileName.indexOf(COMMA_THE);
+		if(comma > -1 && comma < cut) {
+			gameName = "The " + gameName.substring(0, comma) + gameName.substring(comma + COMMA_THE.length(), cut);
+		}
+		else {
+			gameName = gameName.substring(0, cut);
+		}
+		return gameName.trim();
 	}
 
 }

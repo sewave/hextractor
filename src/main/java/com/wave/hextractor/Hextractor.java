@@ -93,6 +93,9 @@ public class Hextractor {
 	
 	/** The Constant MODE_GENERATE_FILE_DIGESTS. */
 	public static final String MODE_GENERATE_FILE_DIGESTS = "-gd";
+	
+	/** The Constant MODE_FILL_READ_ME. */
+	public static final String MODE_FILL_READ_ME = "-frm";
 
 	/**
 	 * Prints the usage.
@@ -236,7 +239,11 @@ public class Hextractor {
 												FileUtils.replaceFileData(args[1], args[2],
 														Integer.valueOf(args[3], Constants.HEX_RADIX));
 											} else {
-												printUsage(rb);
+												if (MODE_FILL_READ_ME.equals(mode)) {
+													FileUtils.fillGameData(args[1], args[2], args[3]);
+												} else {
+													printUsage(rb);
+												}
 											}
 										}
 									}

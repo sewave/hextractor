@@ -56,5 +56,6 @@ Herramienta con diferentes modos para ayudar a traducir juegos/ficheros utilizan
 -if originalFile insertFile offset
 #### GENERATE FILE DIGESTS / GENERAR HASHES DE FICHERO
 -gd file
-
+#### FILL READ ME / RELLENAR LEEME
+-frm readme file
 
