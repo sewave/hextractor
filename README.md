@@ -1,4 +1,4 @@
-![Travis Master Build](https://travis-ci.com/sewave/hextractor.svg?branch=master)
+[![Build Status](https://travis-ci.com/sewave/hextractor.svg?branch=master)](https://travis-ci.com/sewave/hextractor)
 
 # hextractor
 Tool with different modes to help translate games/files using table files and fixed string length.  
