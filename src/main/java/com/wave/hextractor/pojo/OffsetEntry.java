@@ -242,7 +242,7 @@ public class OffsetEntry implements Comparable<OffsetEntry>, Serializable {
 		for (OffsetEntry oEntry : offEntries) {
 			boolean startInside = oEntry.getStart() >= getStart() && oEntry.getStart() <= getEnd();
 			boolean endInside = oEntry.getEnd() >= getStart() && oEntry.getEnd() <= getEnd();
-			// Si está fuera de rango, se incluye en el resultado
+			// Si esta fuera de rango, se incluye en el resultado
 			if (!startInside && !endInside) {
 				result.add(oEntry);
 			} else {

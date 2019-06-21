@@ -579,7 +579,7 @@ public class HexViewer extends JFrame implements ActionListener {
 				});
 				add(endItem);
 			}
-			//Hemos caido en una entry existente, tendrá opcion de borrar o hacer split
+			//Hemos caido en una entry existente, tendra opcion de borrar o hacer split
 			if(currEntry != selectedEntry) {
 				splitItem = new JMenuItem();
 				splitItem.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_OFFSET_SPLIT)) {

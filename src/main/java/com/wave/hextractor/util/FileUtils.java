@@ -23,8 +23,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.zip.CRC32;
 
-import javax.xml.bind.DatatypeConverter;
-
 import com.wave.hextractor.object.HexTable;
 import com.wave.hextractor.pojo.FileWithDigests;
 import com.wave.hextractor.pojo.OffsetEntry;
@@ -872,7 +870,7 @@ public class FileUtils {
 	private static final String getDigestHex(byte[] bytes, String digest) {
 		String res = "";
 		try {
-			res = DatatypeConverter.printHexBinary(MessageDigest.getInstance(digest).digest(bytes)).toLowerCase();
+			res = Utils.bytesToHex(MessageDigest.getInstance(digest).digest(bytes));
 		} catch (NoSuchAlgorithmException e) {
 			Utils.logException(e);
 		}

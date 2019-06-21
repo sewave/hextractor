@@ -736,7 +736,7 @@ public class Utils {
 		//Copy leftovers
 		switch(bytes.length % 4) {
 		case 1:
-			//No debería poder pasar nunca
+			//No deberÃ­a poder pasar nunca
 			res[j++] = bytes[i];
 			break;
 		case 2:
@@ -825,5 +825,13 @@ public class Utils {
 		returnByteArray[1] = (byte) (value >>> 8 & Constants.MASK_8BIT);
 		return returnByteArray;
 	}
+	
+	public static String bytesToHex(byte[] hashInBytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hashInBytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString().toLowerCase();
+    }
 
 }

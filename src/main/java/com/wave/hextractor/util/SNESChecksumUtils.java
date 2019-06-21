@@ -187,7 +187,7 @@ public class SNESChecksumUtils {
 		int romSize = fileBytes.length / SNES_ROM_SIZE_1MBIT * SNES_ROM_SIZE_1MBIT;
 
 		if (headerSize != 0 && headerSize != SNES_SMC_HEADER_SIZE) {
-			throw new IllegalArgumentException("Invalid header size / Tamaño header invalido: " + headerSize);
+			throw new IllegalArgumentException("Invalid header size / TamaÃ±o header invÃ¡lido: " + headerSize);
 		}
 		Utils.log("ROM size: " + romSize / SNES_ROM_SIZE_1MBIT + " Mbit");
 		if (headerSize > 0) {
@@ -327,7 +327,7 @@ public class SNESChecksumUtils {
 			if ((romType & SNES_HIROM_BIT) == 0 && !isHiRom
 					|| (romType & SNES_HIROM_BIT) == SNES_HIROM_BIT && isHiRom) {
 				res = true;
-				// 3.Verificamos que el tamaño especificado sea correcto
+				// 3.Verificamos que el tamaÃ±o especificado sea correcto
 				int snesBanks = header[SNES_ROMSIZE_HEADER_OFF] & Constants.MASK_8BIT;
 				int snesSize = SNES_HEADER_SIZE_CHUNKS << snesBanks;
 

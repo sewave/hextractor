@@ -6,6 +6,10 @@
 	<artifactId>hextractor</artifactId>
 	<version>1.5.0</version>
 	<description>Tool to translate fles replacing fixed length strings</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
@@ -22,16 +26,16 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.1.2</version>
 				<configuration>
-				  <!-- DO NOT include log4j.properties file in your Jar -->
-				  <excludes>
-					<exclude>**/log4j.properties</exclude>
-				  </excludes>
-				  <archive>
-					<manifest>
-						<!-- Jar file entry point -->
-						<mainClass>com.wave.hextractor.Hextractor</mainClass>
-					</manifest>
-				  </archive>
+					<!-- DO NOT include log4j.properties file in your Jar -->
+					<excludes>
+						<exclude>**/log4j.properties</exclude>
+					</excludes>
+					<archive>
+						<manifest>
+							<!-- Jar file entry point -->
+							<mainClass>com.wave.hextractor.Hextractor</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>

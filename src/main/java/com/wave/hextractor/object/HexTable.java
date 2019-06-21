@@ -39,20 +39,20 @@ public class HexTable implements Serializable {
 	/** The Constant SPANISH_CHARS. */
 	private static final Map<String, String> SPANISH_CHARS = new HashMap<>();
 	static {
-		SPANISH_CHARS.put("a", "·");
-		SPANISH_CHARS.put("e", "È");
-		SPANISH_CHARS.put("i", "Ì");
-		SPANISH_CHARS.put("o", "Û");
-		SPANISH_CHARS.put("u", "˙");
-		SPANISH_CHARS.put("n", "Ò");
-		SPANISH_CHARS.put("!", "°");
-		SPANISH_CHARS.put("?", "ø");
-		SPANISH_CHARS.put("A", "¡");
-		SPANISH_CHARS.put("E", "…");
-		SPANISH_CHARS.put("I", "Õ");
-		SPANISH_CHARS.put("O", "”");
-		SPANISH_CHARS.put("U", "⁄");
-		SPANISH_CHARS.put("N", "—");
+		SPANISH_CHARS.put("a", "√°");
+		SPANISH_CHARS.put("e", "√©");
+		SPANISH_CHARS.put("i", "√≠");
+		SPANISH_CHARS.put("o", "√≥");
+		SPANISH_CHARS.put("u", "√∫");
+		SPANISH_CHARS.put("n", "√±");
+		SPANISH_CHARS.put("!", "¬°");
+		SPANISH_CHARS.put("?", "¬ø");
+		SPANISH_CHARS.put("A", "√Å");
+		SPANISH_CHARS.put("E", "√â");
+		SPANISH_CHARS.put("I", "√ç");
+		SPANISH_CHARS.put("O", "√ì");
+		SPANISH_CHARS.put("U", "√ö");
+		SPANISH_CHARS.put("N", "√ë");
 	}
 
 	/** The table. */
