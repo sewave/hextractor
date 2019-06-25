@@ -1877,7 +1877,7 @@ public class HexViewer extends JFrame implements ActionListener {
 				try {
 					searchAllThread.wait(50);
 					SwingUtilities.invokeLater(() -> searchAllWinProgressBar.setValue((int) hexTable.getSearchPercent()));
-					Thread.sleep(50);
+					searchAllThread.wait(50);
 				} catch (InterruptedException e1) {
 					searchAllThreadError = true;
 					Utils.logException(e1);

@@ -4,6 +4,7 @@ import com.wave.hextractor.object.HexTable;
 import com.wave.hextractor.pojo.FileWithDigests;
 import com.wave.hextractor.pojo.OffsetEntry;
 import com.wave.hextractor.pojo.TableSearchResult;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -11,11 +12,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.CRC32;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
+import static java.lang.String.valueOf;
 
 /**
  * Utility class for files.
@@ -32,8 +33,8 @@ public class FileUtils {
 	/** The Constant SHA1_DIGEST. */
 	private static final String SHA1_DIGEST = "SHA-1";
 	
-	private static final SimpleDateFormat GAME_DATE_DATE_FORMAT = new SimpleDateFormat("dd/MM/YYYY");
-	private static final SimpleDateFormat GAME_YEAR_DATE_FORMAT = new SimpleDateFormat("YYYY");
+	private static final FastDateFormat GAME_DATE_DATE_FORMAT = FastDateFormat.getInstance("dd/MM/yyyy");
+	private static final FastDateFormat GAME_YEAR_DATE_FORMAT = FastDateFormat.getInstance("yyyy");
 	
 	private static final String COMMA_THE = ", The";
 	
@@ -187,31 +188,6 @@ public class FileUtils {
 		try (PrintWriter out = new PrintWriter(filename, Constants.UTF8_ENCODING)) {
 			out.print(ascii);
 		}
-	}
-
-	/**
-	 * Interleaves the EVEN lines of firstFile with the ODD lines of the</br>
-	 * secondFile to the third file.
-	 * @param firstFile EVEN lines.
-	 * @param secondFile ODD lines.
-	 * @param thirdFile resultingFile.
-	 * @throws IOException .
-	 */
-	public static void interleaveFiles(String firstFile, String secondFile, String thirdFile) throws IOException {
-		Utils.log("Interleaving files EVEN: \"" + firstFile + "\"\n to ODD: \"" + secondFile + "\".");
-		String[] file1 = getAsciiFile(firstFile).split(Constants.S_NEWLINE);
-		String[] file2 = getAsciiFile(secondFile).split(Constants.S_NEWLINE);
-		StringBuilder sb = new StringBuilder();
-		// file 1 is even, file 2 is odd
-		for (int i = 0; i < file1.length; i++) {
-			if (i % 2 == 0) {
-				sb.append(file1[i]);
-			} else {
-				sb.append(file2[i]);
-			}
-			sb.append(Constants.NEWLINE);
-		}
-		writeFileAscii(thirdFile, sb.toString());
 	}
 
 	/**

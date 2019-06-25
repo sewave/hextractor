@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f2bd93eb-de9a-431f-a67b-142c6baba63d" name="Default Changelist" comment="" />
+    <list default="true" id="f2bd93eb-de9a-431f-a67b-142c6baba63d" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/sonar-project.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.travis.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/gui/HexViewer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/gui/HexViewer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/FileUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/FileUtils.java" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/classes/" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -21,8 +27,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/FileUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="27" column="4" selection-start-line="27" selection-start-column="4" selection-end-line="27" selection-end-column="4" />
+            <state relative-caret-position="-731">
+              <caret line="14" selection-start-line="14" selection-end-line="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/gui/HexViewer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="264">
+              <caret line="1881" column="48" lean-forward="true" selection-start-line="1881" selection-start-column="48" selection-end-line="1881" selection-end-column="48" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -46,24 +64,6 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/IpsPatchUtils.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3247">
-              <caret line="198" column="5" selection-start-line="198" selection-start-column="5" selection-end-line="198" selection-end-column="5" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/ProjectUtils.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1785">
-              <caret line="115" column="5" selection-start-line="115" selection-start-column="5" selection-end-line="115" selection-end-column="5" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/Utils.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="2686">
@@ -76,14 +76,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/com/wave/hextractor/util/UtilsTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="612">
-              <caret line="36" lean-forward="true" selection-start-line="36" selection-end-line="36" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="105">
+              <caret line="8" column="52" lean-forward="true" selection-start-line="8" selection-start-column="52" selection-end-line="8" selection-end-column="52" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/Hextractor.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="128">
+              <caret line="159" column="50" selection-start-line="159" selection-start-column="50" selection-end-line="159" selection-end-column="50" />
             </state>
           </provider>
         </entry>
@@ -130,6 +136,8 @@
       <find>º</find>
       <find>typos</find>
       <find>private</find>
+      <find>fileutils</find>
+      <find>Thread.sleep(50);</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -144,14 +152,14 @@
         <option value="$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/ProjectUtils.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/wave/hextractor/pojo/OffsetEntry.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/wave/hextractor/pojo/TableSearchResult.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/wave/hextractor/gui/HexViewer.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/wave/hextractor/object/FileDrop.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/FileUtils.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/wave/hextractor/object/HexTable.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/Utils.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/wave/hextractor/util/UtilsTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/wave/hextractor/util/FileUtilsTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/Constants.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/FileUtils.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/wave/hextractor/gui/HexViewer.java" />
       </list>
     </option>
   </component>
@@ -172,102 +180,6 @@
             <path>
               <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
               <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="gui" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="object" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="resources" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-              <item name="resources" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hextractor" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hextractor" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-              <item name="resources" type="462c0819:PsiDirectoryNode" />
-              <item name="files" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -301,7 +213,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.FileUtilsTest.testGetGameSystem">
+  <component name="RunManager" selected="Application.Hextractor">
     <configuration name="Hextractor" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.wave.hextractor.Hextractor" />
       <module name="hextractor" />
@@ -373,8 +285,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.FileUtilsTest.testGetGameSystem" />
         <item itemvalue="Application.Hextractor" />
+        <item itemvalue="JUnit.FileUtilsTest.testGetGameSystem" />
         <item itemvalue="JUnit.All in hextractor" />
         <item itemvalue="JUnit.UtilsTest.testIntToByteArray" />
         <item itemvalue="JUnit.UtilsTest.testCopyFileUsingStream" />
@@ -395,9 +307,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="All_in_hextractor - 2019.06.21 at 23h 03m 47s.xml">
-      <configuration name="All in hextractor" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="UtilsTest - 2019.06.24 at 20h 51m 29s.xml">
       <configuration name="UtilsTest" configurationId="JUnit" />
     </history-entry>
@@ -425,10 +334,12 @@
     <history-entry file="FileUtilsTest_testGetGameSystem - 2019.06.25 at 20h 35m 59s.xml">
       <configuration name="FileUtilsTest.testGetGameSystem" configurationId="JUnit" />
     </history-entry>
+    <history-entry file="FileUtilsTest_testGetGameSystem - 2019.06.25 at 21h 02m 08s.xml">
+      <configuration name="FileUtilsTest.testGetGameSystem" configurationId="JUnit" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26096824" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -445,7 +356,7 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Version Control" order="9" weight="0.3289689" />
       <window_info anchor="bottom" id="Messages" order="10" />
       <window_info anchor="bottom" id="Inspection Results" order="11" visible="true" weight="0.3289689" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -479,13 +390,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="7" column="23" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/Hextractor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4279">
-          <caret line="22" column="25" lean-forward="true" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -578,23 +482,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/FileUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="27" column="4" selection-start-line="27" selection-start-column="4" selection-end-line="27" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/gui/HexViewer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="29172">
-          <caret line="1774" column="52" selection-start-line="1774" selection-start-column="52" selection-end-line="1774" selection-end-column="52" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/IpsPatchUtils.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3247">
@@ -665,8 +552,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/com/wave/hextractor/util/UtilsTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="36" lean-forward="true" selection-start-line="36" selection-end-line="36" />
+        <state relative-caret-position="105">
+          <caret line="8" column="52" lean-forward="true" selection-start-line="8" selection-start-column="52" selection-end-line="8" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/Hextractor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="128">
+          <caret line="159" column="50" selection-start-line="159" selection-start-column="50" selection-end-line="159" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/FileUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-731">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/gui/HexViewer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="1881" column="48" lean-forward="true" selection-start-line="1881" selection-start-column="48" selection-end-line="1881" selection-end-column="48" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
