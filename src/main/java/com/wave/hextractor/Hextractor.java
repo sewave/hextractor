@@ -1,20 +1,10 @@
 package com.wave.hextractor;
 
+import com.wave.hextractor.gui.HexViewer;
+import com.wave.hextractor.util.*;
+
 import java.util.Locale;
 import java.util.ResourceBundle;
-
-import com.wave.hextractor.gui.HexViewer;
-import com.wave.hextractor.util.Constants;
-import com.wave.hextractor.util.FileUtils;
-import com.wave.hextractor.util.GBChecksumUtils;
-import com.wave.hextractor.util.IpsPatchUtils;
-import com.wave.hextractor.util.KeyConstants;
-import com.wave.hextractor.util.ProjectUtils;
-import com.wave.hextractor.util.SMDChecksumUtils;
-import com.wave.hextractor.util.SMSChecksumUtils;
-import com.wave.hextractor.util.SNESChecksumUtils;
-import com.wave.hextractor.util.TAPChecksumUtils;
-import com.wave.hextractor.util.Utils;
 
 /**
  * Main class that routes all the options.

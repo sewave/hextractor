@@ -1,11 +1,9 @@
 package com.wave.hextractor.object;
 
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.Reader;
+import java.awt.dnd.DnDConstants;
+import java.io.*;
 
 /**
  * This class makes it easy to drag and drop files from the operating
@@ -58,7 +56,6 @@ public class FileDrop {
 	private static Boolean supportsDnD;
 
 	/** The default border color. */
-	// Default border color
 	private static java.awt.Color defaultBorderColor = new java.awt.Color(0f, 0f, 1f, 0.25f);
 
 	/**
@@ -246,7 +243,7 @@ public class FileDrop {
 				} // end dragOver
 
 				@Override
-				@SuppressWarnings({ "rawtypes", "unchecked" })
+				@SuppressWarnings({ "rawtypes"})
 				public void drop(java.awt.dnd.DropTargetDropEvent evt) {
 					log(out, "FileDrop: drop event.");
 					try { // Get whatever was dropped
@@ -265,11 +262,10 @@ public class FileDrop {
 							// Convert list to array
 							java.io.File[] filesTemp = new java.io.File[fileList.size()];
 							fileList.toArray(filesTemp);
-							final java.io.File[] files = filesTemp;
 
 							// Alert listener to drop.
 							if (listener != null) {
-								listener.filesDropped(files);
+								listener.filesDropped(filesTemp);
 							}
 
 							// Mark that drop is completed.
@@ -282,13 +278,13 @@ public class FileDrop {
 							// BEGIN 2007-09-12 Nathan Blomquist -- Linux (KDE/Gnome) support added.
 							DataFlavor[] flavors = tr.getTransferDataFlavors();
 							boolean handled = false;
-							for (int zz = 0; zz < flavors.length; zz++) {
-								if (flavors[zz].isRepresentationClassReader()) {
+							for (DataFlavor flavor : flavors) {
+								if (flavor.isRepresentationClassReader()) {
 									// Say we'll take it.
-									evt.acceptDrop(java.awt.dnd.DnDConstants.ACTION_COPY);
+									evt.acceptDrop(DnDConstants.ACTION_COPY);
 									log(out, "FileDrop: reader accepted.");
 
-									Reader reader = flavors[zz].getReaderForText(tr);
+									Reader reader = flavor.getReaderForText(tr);
 
 									BufferedReader br = new BufferedReader(reader);
 
@@ -371,7 +367,7 @@ public class FileDrop {
 	 */
 	private static boolean supportsDnD() { // Static Boolean
 		if (supportsDnD == null) {
-			boolean support = false;
+			boolean support;
 			try {
 				Class.forName("java.awt.dnd.DnDConstants");
 				support = true;
@@ -381,7 +377,7 @@ public class FileDrop {
 			} // end catch
 			supportsDnD = support;
 		} // end if: first time through
-		return supportsDnD.booleanValue();
+		return supportsDnD;
 	} // end supportsDnD
 
 	/** The Constant ZERO_CHAR_STRING. */
@@ -399,7 +395,7 @@ public class FileDrop {
 	private static File[] createFileArray(BufferedReader bReader, PrintStream out) {
 		try {
 			java.util.List list = new java.util.ArrayList();
-			java.lang.String line = null;
+			java.lang.String line;
 			while ((line = bReader.readLine()) != null) {
 				try {
 					// kde seems to append a 0 char to the end of the reader
@@ -442,20 +438,18 @@ public class FileDrop {
 
 		// Listen for hierarchy changes and remove the drop target when the parent gets
 		// cleared out.
-		c.addHierarchyListener(new java.awt.event.HierarchyListener() {
-			@Override
-			public void hierarchyChanged(java.awt.event.HierarchyEvent evt) {
-				log(out, "FileDrop: Hierarchy changed.");
-				java.awt.Component parent = c.getParent();
-				if (parent == null) {
-					c.setDropTarget(null);
-					log(out, "FileDrop: Drop target cleared from component.");
-				} // end if: null parent
-				else {
-					new java.awt.dnd.DropTarget(c, dropListener);
-					log(out, "FileDrop: Drop target added to component.");
-				} // end else: parent not null
-			} // end hierarchyChanged
+		// end hierarchyChanged
+		c.addHierarchyListener(evt -> {
+			log(out, "FileDrop: Hierarchy changed.");
+			Component parent = c.getParent();
+			if (parent == null) {
+				c.setDropTarget(null);
+				log(out, "FileDrop: Drop target cleared from component.");
+			} // end if: null parent
+			else {
+				new java.awt.dnd.DropTarget(c, dropListener);
+				log(out, "FileDrop: Drop target added to component.");
+			} // end else: parent not null
 		}); // end hierarchy listener
 		if (c.getParent() != null) {
 			new java.awt.dnd.DropTarget(c, dropListener);
@@ -469,8 +463,8 @@ public class FileDrop {
 			java.awt.Component[] comps = cont.getComponents();
 
 			// Set it's components as listeners also
-			for (int i = 0; i < comps.length; i++) {
-				makeDropTarget(out, comps[i], recursive);
+			for (Component comp : comps) {
+				makeDropTarget(out, comp, true);
 			}
 		} // end if: recursively set components as listener
 	} // end dropListener
@@ -560,8 +554,8 @@ public class FileDrop {
 			c.setDropTarget(null);
 			if (recursive && c instanceof java.awt.Container) {
 				java.awt.Component[] comps = ((java.awt.Container) c).getComponents();
-				for (int i = 0; i < comps.length; i++) {
-					remove(out, comps[i], recursive);
+				for (Component comp : comps) {
+					remove(out, comp, true);
 				}
 				return true;
 			} // end if: recursive
@@ -591,7 +585,7 @@ public class FileDrop {
 	 *
 	 * @since 1.1
 	 */
-	public static interface Listener {
+	public interface Listener {
 
 		/**
 		 * This method is called when files have been successfully dropped.
@@ -599,7 +593,7 @@ public class FileDrop {
 		 * @param files An array of <tt>File</tt>s that were dropped.
 		 * @since 1.0
 		 */
-		public abstract void filesDropped(java.io.File[] files);
+		void filesDropped(java.io.File[] files);
 
 	} // end inner-interface Listener
 
@@ -607,8 +601,8 @@ public class FileDrop {
 
 	/**
 	 * This is the event that is passed to the
-	 * {@link FileDropListener#filesDropped filesDropped(...)} method in
-	 * your {@link FileDropListener} when files are dropped onto
+	 * method in
+	 * your when files are dropped onto
 	 * a registered drop target.
 	 *
 	 * <p>I'm releasing this code into the Public Domain. Enjoy.</p>
@@ -633,7 +627,6 @@ public class FileDrop {
 		 * @param files The array of files that were dropped
 		 * @param source the source
 		 * @since 1.1
-		 * @source The event source
 		 */
 		public Event(java.io.File[] files, Object source) {
 			super(source);

@@ -1,10 +1,10 @@
 package com.wave.hextractor.util;
 
+import com.wave.hextractor.Hextractor;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
-
-import com.wave.hextractor.Hextractor;
 
 /**
  * The Class ProjectUtils.
@@ -71,7 +71,7 @@ public class ProjectUtils {
 	 * @param name the name
 	 * @return the tfile name
 	 */
-	private static final String getTfileName(String name) {
+	private static String getTfileName(String name) {
 		return "set T_FILENAME=\"" + name + "\"";
 	}
 
@@ -81,7 +81,7 @@ public class ProjectUtils {
 	 * @param name the name
 	 * @return the sfile name
 	 */
-	private static final String getSfileName(String name) {
+	private static String getSfileName(String name) {
 		return "set S_FILENAME=\"" + name + "\"";
 	}
 
@@ -91,7 +91,7 @@ public class ProjectUtils {
 	 * @param name the name
 	 * @return the script name
 	 */
-	private static final String getScriptName(String name) {
+	private static String getScriptName(String name) {
 		return "set SCRIPTNAME=\"" + name + "\"";
 	}
 
@@ -104,7 +104,7 @@ public class ProjectUtils {
 	 * @param projectFile the project file
 	 * @throws IOException the exception
 	 */
-	public static final void createNewProject(String name, String fileName, String fileType, File projectFile) throws IOException {
+	public static void createNewProject(String name, String fileName, String fileType, File projectFile) throws IOException {
 		File projectFolder = createProjectFolder(name);
 		String transfileName = TR_FILENAME_PREFIX + fileName;
 		copyBaseFiles(projectFolder, name, projectFile);
@@ -121,7 +121,7 @@ public class ProjectUtils {
 	 * @param file the file
 	 * @throws IOException the exception
 	 */
-	public static final void createProject(File file) throws IOException {
+	public static void createProject(File file) throws IOException {
 		ProjectUtils.createNewProject(getProjectName(file.getName()), file.getName(), getFileType(file), file);
 	}
 
@@ -131,7 +131,7 @@ public class ProjectUtils {
 	 * @param file the file
 	 * @throws IOException the exception
 	 */
-	public static final void createProject(String file) throws IOException {
+	public static void createProject(String file) throws IOException {
 		ProjectUtils.createProject(new File(file));
 	}
 
@@ -141,7 +141,7 @@ public class ProjectUtils {
 	 * @param file the file
 	 * @return the file type
 	 */
-	private static final String getFileType(File file) {
+	private static String getFileType(File file) {
 		String res = Constants.FILE_TYPE_OTHER;
 		if(file != null) {
 			String extension =  FileUtils.getFileExtension(file);
@@ -184,7 +184,7 @@ public class ProjectUtils {
 	 * @param fileName the file name
 	 * @return the string
 	 */
-	private static final String createOriginalScriptFile(String name, String fileName) {
+	private static String createOriginalScriptFile(String name, String fileName) {
 		StringBuilder fileContent = new StringBuilder();
 		Utils.log(LOG_GENERATING + ORIGINALSCRIPT_FILE + "...");
 		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
@@ -204,7 +204,7 @@ public class ProjectUtils {
 	 * @param transfileName the transfile name
 	 * @return the string
 	 */
-	private static final String createInsertFile(String name, String fileName, String fileType, String transfileName) {
+	private static String createInsertFile(String name, String fileName, String fileType, String transfileName) {
 		StringBuilder fileContent = new StringBuilder();
 		Utils.log(LOG_GENERATING + INSERT_FILE + "...");
 		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
@@ -245,7 +245,7 @@ public class ProjectUtils {
 			}
 		}
 		if(checksumMode.length() > 0) {
-			fileContent.append(PROG_CALL).append(checksumMode + " " + TFILENAMENAME_VAR).append(Constants.NEWLINE);
+			fileContent.append(PROG_CALL).append(checksumMode).append(" ").append(TFILENAMENAME_VAR).append(Constants.NEWLINE);
 		}
 		fileContent.append(PAUSE).append(Constants.NEWLINE);
 		return fileContent.toString();
@@ -259,7 +259,7 @@ public class ProjectUtils {
 	 * @param transFileName the trans file name
 	 * @return the string
 	 */
-	private static final String createCreatePatchFile(String name, String fileName, String transFileName) {
+	private static String createCreatePatchFile(String name, String fileName, String transFileName) {
 		StringBuilder fileContent = new StringBuilder();
 		Utils.log(LOG_GENERATING + CREATEPATCH_FILE + "...");
 		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
@@ -278,23 +278,23 @@ public class ProjectUtils {
 	 * @param name the name
 	 * @return the string
 	 */
-	private static final String createHexFile(String name) {
+	private static String createHexFile(String name) {
 		StringBuilder fileContent = new StringBuilder();
 		Utils.log(LOG_GENERATING + name + HEX_EXTENSION + "...");
-		fileContent.append(";Traducciones Wave " + YEAR).append(Constants.NEWLINE);
+		fileContent.append(";Traducciones Wave ").append(YEAR).append(Constants.NEWLINE);
 		fileContent.append(";54 72 61 64 75 63 63 69 6F 6E 65 73 20 57 61 76 65 20 3");
-		fileContent.append(YEAR.substring(0, 1) + " 3" + YEAR.substring(1, 2) + " 3" + YEAR.substring(2, 3) + " 3" + YEAR.substring(3, 4) + "@000000E0:000000F5").append(Constants.NEWLINE);
+		fileContent.append(YEAR, 0, 1).append(" 3").append(YEAR, 1, 2).append(" 3").append(YEAR, 2, 3).append(" 3").append(YEAR, 3, 4).append("@000000E0:000000F5").append(Constants.NEWLINE);
 		return fileContent.toString();
 	}
 
 	/**
 	 * Creates the extract hex file.
 	 *
-	 * @param fileName the file name
+	 * @param name the file name
 	 * @param transfileName the transfile name
 	 * @return the string
 	 */
-	private static final String createExtractHexFile(String name, String transfileName) {
+	private static String createExtractHexFile(String name, String transfileName) {
 		StringBuilder fileContent = new StringBuilder();
 		Utils.log(LOG_GENERATING + EXTRACTHEX_FILE + "...");
 		fileContent.append(ECHO_OFF).append(Constants.NEWLINE);
@@ -313,7 +313,7 @@ public class ProjectUtils {
 	 * @param projectFile the project file
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	private static final void copyBaseFiles(File projectFolder, String name, File projectFile) throws IOException {
+	private static void copyBaseFiles(File projectFolder, String name, File projectFile) throws IOException {
 		Utils.copyFileUsingStream(FILE_HEXTRACTOR, Utils.getJoinedFileName(projectFolder, FILE_HEXTRACTOR));
 		Utils.copyFileUsingStream(FILE_README, Utils.getJoinedFileName(projectFolder, name + FILE_README));
 		if(projectFile != null) {
@@ -324,12 +324,8 @@ public class ProjectUtils {
 
 	/**
 	 * Creates the project folder.
-	 *
-	 * @param name the name
-	 * @return the file
-	 * @throws Exception the exception
 	 */
-	private static final File createProjectFolder(String name) throws IOException {
+	private static File createProjectFolder(String name) throws IOException {
 		File projectFolder = new File(name);
 		if(!projectFolder.exists() && !projectFolder.mkdir()) {
 			throw new IOException("Error generating: " + name + " directory." );
@@ -343,7 +339,7 @@ public class ProjectUtils {
 	 * @param fileName the file name
 	 * @return the project name
 	 */
-	public static final String getProjectName(String fileName) {
+	public static String getProjectName(String fileName) {
 		String projectName = fileName;
 		for(String ext : Constants.EXTENSIONS_MEGADRIVE) {
 			if(!"32x".equals(ext)) {
@@ -355,7 +351,7 @@ public class ProjectUtils {
 		}
 		projectName = projectName.replaceAll(" ", "");
 		projectName = projectName.replaceAll("(\\(.*\\))", "");
-		projectName = projectName.replaceAll("(\\[.*\\])", "");
+		projectName = projectName.replaceAll("(\\[.*])", "");
 		projectName = projectName.replaceAll("[^A-Za-z0-9]", "");
 		return projectName.toLowerCase();
 	}
@@ -365,7 +361,7 @@ public class ProjectUtils {
 	 *
 	 * @return the project name
 	 */
-	public static final String getProjectName() {
+	public static String getProjectName() {
 		try {
 			return new File(Constants.CURRENT_DIR).getCanonicalFile().getName();
 		} catch (IOException e) {

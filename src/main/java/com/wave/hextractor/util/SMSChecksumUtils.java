@@ -13,28 +13,28 @@ import java.util.Arrays;
 public class SMSChecksumUtils {
 
 	/** The Constant SMS_HEADER_START. */
-	public static final String SMS_HEADER_START = "TMR SEGA";
+	private static final String SMS_HEADER_START = "TMR SEGA";
 
 	/** The Constant SMS_HEADER_LOCATION. */
-	public static final int SMS_HEADER_LOCATION = 0x7FF0;
+	private static final int SMS_HEADER_LOCATION = 0x7FF0;
 
 	/** The Constant SMS_HEADER_SIZE. */
-	public static final int SMS_HEADER_SIZE = 0x10;
+	private static final int SMS_HEADER_SIZE = 0x10;
 
 	/** The Constant SMS_HEADER_COUNTRY_CHECKSUMRANGE_OFFSET. */
-	public static final int SMS_HEADER_COUNTRY_CHECKSUMRANGE_OFFSET = 0xF;
+	private static final int SMS_HEADER_COUNTRY_CHECKSUMRANGE_OFFSET = 0xF;
 
 	/** The Constant SMS_HEADER_CHECKSUM_OFFSET. */
-	public static final int SMS_HEADER_CHECKSUM_OFFSET = 0xA;
+	private static final int SMS_HEADER_CHECKSUM_OFFSET = 0xA;
 
 	/** The Constant HIGH_NIBBLE_SHIFTS. */
-	public static final int HIGH_NIBBLE_SHIFTS = 4;
+	private static final int HIGH_NIBBLE_SHIFTS = 4;
 
 	/** The Constant SMS_HEADER_COUNTRY_OVERSEAS. */
-	public static final int SMS_HEADER_COUNTRY_OVERSEAS = 0x4;
+	private static final int SMS_HEADER_COUNTRY_OVERSEAS = 0x4;
 
 	/** The Constant SMS_CHECKSUM_BYTES. */
-	public static final int SMS_CHECKSUM_BYTES = 2;
+	private static final int SMS_CHECKSUM_BYTES = 2;
 
 	/**
 	 * Calculated SMS checksum.
@@ -42,7 +42,7 @@ public class SMSChecksumUtils {
 	 * @param file the file
 	 * @return the short
 	 */
-	private static final short calculatedSMSChecksum(byte[] file) {
+	private static short calculatedSMSChecksum(byte[] file) {
 		short checksum = 0;
 		for (int i = 0; i < SMS_HEADER_LOCATION; i++) {
 			checksum += file[i] & Constants.MASK_8BIT;
@@ -59,7 +59,7 @@ public class SMSChecksumUtils {
 	 * @param file the file
 	 * @param updateChecksum the update checksum
 	 */
-	private static final void calculateSMSChecksum(byte[] file, boolean updateChecksum) {
+	private static void calculateSMSChecksum(byte[] file, boolean updateChecksum) {
 		boolean isSmsOv = isSMSOverseasRom(file);
 		Utils.log("Is SMS overseas ROM? " + isSmsOv);
 		if (isSmsOv) {
@@ -86,7 +86,7 @@ public class SMSChecksumUtils {
 	 * @param updateChecksum the update checksum
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	private static final void calculateSMSChecksum(String file, boolean updateChecksum) throws IOException {
+	private static void calculateSMSChecksum(String file, boolean updateChecksum) throws IOException {
 		byte[] fileBytes = Files.readAllBytes(Paths.get(file));
 		calculateSMSChecksum(fileBytes, updateChecksum);
 		if (updateChecksum) {
@@ -101,7 +101,7 @@ public class SMSChecksumUtils {
 	 *
 	 * @param file the file
 	 */
-	public static final void checkSMSChecksum(byte[] file) {
+	public static void checkSMSChecksum(byte[] file) {
 		calculateSMSChecksum(file, false);
 	}
 
@@ -111,7 +111,7 @@ public class SMSChecksumUtils {
 	 * @param file the file
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static final void checkSMSChecksum(String file) throws IOException {
+	public static void checkSMSChecksum(String file) throws IOException {
 		calculateSMSChecksum(file, false);
 	}
 
@@ -120,7 +120,7 @@ public class SMSChecksumUtils {
 	 *
 	 * @param file the file
 	 */
-	public static final void checkUpdateSMSChecksum(byte[] file) {
+	public static void checkUpdateSMSChecksum(byte[] file) {
 		calculateSMSChecksum(file, true);
 	}
 
@@ -130,7 +130,7 @@ public class SMSChecksumUtils {
 	 * @param file the file
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static final void checkUpdateSMSChecksum(String file) throws IOException {
+	public static void checkUpdateSMSChecksum(String file) throws IOException {
 		calculateSMSChecksum(file, true);
 	}
 
@@ -140,7 +140,7 @@ public class SMSChecksumUtils {
 	 * @param file the file
 	 * @return the SMS checksum
 	 */
-	private static final short getSMSChecksum(byte[] file) {
+	private static short getSMSChecksum(byte[] file) {
 		return Short.reverseBytes(
 				ByteBuffer.wrap(getSMSHeader(file), SMS_HEADER_CHECKSUM_OFFSET, SMS_CHECKSUM_BYTES).getShort());
 	}
@@ -151,7 +151,7 @@ public class SMSChecksumUtils {
 	 * @param file the file
 	 * @return the SMS header
 	 */
-	private static final byte[] getSMSHeader(byte[] file) {
+	private static byte[] getSMSHeader(byte[] file) {
 		return Arrays.copyOfRange(file, SMS_HEADER_LOCATION, SMS_HEADER_LOCATION + SMS_HEADER_SIZE);
 	}
 
@@ -161,7 +161,7 @@ public class SMSChecksumUtils {
 	 * @param file the file
 	 * @return true, if is SMS overseas rom
 	 */
-	public static final boolean isSMSOverseasRom(byte[] file) {
+	private static boolean isSMSOverseasRom(byte[] file) {
 		byte[] header = getSMSHeader(file);
 		return header[SMS_HEADER_COUNTRY_CHECKSUMRANGE_OFFSET] >> HIGH_NIBBLE_SHIFTS == SMS_HEADER_COUNTRY_OVERSEAS
 				&& new String(header).startsWith(SMS_HEADER_START);

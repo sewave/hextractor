@@ -1,6 +1,6 @@
 package com.wave.hextractor.util;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 /**
  * Class for gui utilities.
@@ -15,11 +15,9 @@ public class GuiUtils {
 
 	/**
 	 * Shows a confirmation dialog for the title and message passed.
-	 * @param title
-	 * @param message
 	 * @return true if accepted.
 	 */
-	public static final boolean confirmActionAlert(String title, String message) {
+	public static boolean confirmActionAlert(String title, String message) {
 		return JOptionPane.showConfirmDialog(null, message, title,
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
 	}

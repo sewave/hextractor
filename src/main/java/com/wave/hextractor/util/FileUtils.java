@@ -1,32 +1,21 @@
 package com.wave.hextractor.util;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.wave.hextractor.object.HexTable;
+import com.wave.hextractor.pojo.FileWithDigests;
+import com.wave.hextractor.pojo.OffsetEntry;
+import com.wave.hextractor.pojo.TableSearchResult;
+
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.CRC32;
 
-import com.wave.hextractor.object.HexTable;
-import com.wave.hextractor.pojo.FileWithDigests;
-import com.wave.hextractor.pojo.OffsetEntry;
-import com.wave.hextractor.pojo.TableSearchResult;
+import static java.lang.String.*;
 
 /**
  * Utility class for files.
@@ -38,10 +27,10 @@ public class FileUtils {
 	private static final String FILES_SEPARATOR = "\"\n to file \"";
 	
 	/** The Constant MD5_DIGEST. */
-	public static final String MD5_DIGEST = "MD5";
+	private static final String MD5_DIGEST = "MD5";
 	
 	/** The Constant SHA1_DIGEST. */
-	public static final String SHA1_DIGEST = "SHA-1";
+	private static final String SHA1_DIGEST = "SHA-1";
 	
 	private static final SimpleDateFormat GAME_DATE_DATE_FORMAT = new SimpleDateFormat("dd/MM/YYYY");
 	private static final SimpleDateFormat GAME_YEAR_DATE_FORMAT = new SimpleDateFormat("YYYY");
@@ -65,7 +54,6 @@ public class FileUtils {
 
 	/**
 	 * Gets the extension of a file, i.e.: file.ext => ext
-	 * @param file file to look at.
 	 * @return the extension.
 	 */
 	public static String getFileExtension(String fileName) {
@@ -93,7 +81,7 @@ public class FileUtils {
 	 * @param absolutePath the absolute path
 	 * @return the file path
 	 */
-	public static String getFilePath(String absolutePath) {
+	private static String getFilePath(String absolutePath) {
 		return absolutePath.substring(0, absolutePath.lastIndexOf(File.separator));
 	}
 
@@ -101,17 +89,17 @@ public class FileUtils {
 	 * Returns the ascii file with only Constants.NEWLINE as line separators.
 	 * @param filename .
 	 * @return .
-	 * @throws Exception .
+	 * @throws FileNotFoundException .
 	 */
 	public static String getAsciiFile(String filename) throws FileNotFoundException {
 		Scanner scanner = new Scanner(new File(filename), Constants.UTF8_ENCODING);
 		String input = scanner.useDelimiter("\\A").next();
 		scanner.close();
-		input = input.replace(String.valueOf(Constants.NEWLINE) + String.valueOf(Constants.CRETURN),
-				String.valueOf(Constants.NEWLINE));
-		input = input.replace(String.valueOf(Constants.CRETURN) + String.valueOf(Constants.NEWLINE),
-				String.valueOf(Constants.NEWLINE));
-		input = input.replace(String.valueOf(Constants.CRETURN), String.valueOf(Constants.NEWLINE));
+		input = input.replace(Constants.NEWLINE + valueOf(Constants.CRETURN),
+				valueOf(Constants.NEWLINE));
+		input = input.replace(Constants.CRETURN + valueOf(Constants.NEWLINE),
+				valueOf(Constants.NEWLINE));
+		input = input.replace(valueOf(Constants.CRETURN), valueOf(Constants.NEWLINE));
 		return input;
 	}
 
@@ -158,10 +146,6 @@ public class FileUtils {
 
 	/**
 	 * Inserts ascii as hex from a 4 to 3 data.
-	 * @param table
-	 * @param inputFile
-	 * @param outputFile
-	 * @throws IOException
 	 */
 	public static void insertHex4To3Data(String table, String inputFile, String outputFile) throws IOException {
 		Utils.log("Inserting ascii as hex 4 to 3 from \"" + inputFile + FILES_SEPARATOR + outputFile
@@ -185,7 +169,7 @@ public class FileUtils {
 	 * @param b file bytes.
 	 * @throws IOException the exception
 	 */
-	public static void writeFileBytes(String filename, byte[] b) throws IOException {
+	static void writeFileBytes(String filename, byte[] b) throws IOException {
 		try (FileOutputStream stream = new FileOutputStream(filename)) {
 			stream.write(b);
 		}
@@ -303,7 +287,7 @@ public class FileUtils {
 				}
 			}
 		}
-		Utils.log("TOTAL BYTES WRITTEN: " + Utils.fillLeft(String.valueOf(totalBytesWritten), Constants.HEX_ADDR_SIZE)
+		Utils.log("TOTAL BYTES WRITTEN: " + Utils.fillLeft(valueOf(totalBytesWritten), Constants.HEX_ADDR_SIZE)
 		+ " / " + Utils.intToHexString(totalBytesWritten, Constants.HEX_ADDR_SIZE) + " Hex");
 		writeFileBytes(thirdFile, outFileBytes);
 	}
@@ -327,14 +311,9 @@ public class FileUtils {
 
 	/**
 	 * Extracts the ascii file.
-	 * @param hexTable
-	 * @param fileBytes
-	 * @param outFile
-	 * @param offsetsArg
-	 * @throws IOException
 	 */
-	public static void extractAsciiFile(HexTable hexTable, byte[] fileBytes, String outFile, String offsetsArg,
-			boolean showExtractions) throws IOException {
+	private static void extractAsciiFile(HexTable hexTable, byte[] fileBytes, String outFile, String offsetsArg,
+										 boolean showExtractions) throws IOException {
 		if (offsetsArg != null && offsetsArg.length() > 0) {
 			extractAsciiFile(hexTable, fileBytes, outFile, Utils.getOffsets(offsetsArg), showExtractions);
 		}
@@ -342,11 +321,6 @@ public class FileUtils {
 
 	/**
 	 * Extracts the ascii file.
-	 * @param hexTable
-	 * @param fileBytes
-	 * @param outFile
-	 * @param offsetsArg
-	 * @throws IOException
 	 */
 	public static void extractAsciiFile(HexTable hexTable, byte[] fileBytes, String outFile, List<OffsetEntry> offsets,
 			boolean showExtractions) throws IOException {
@@ -389,7 +363,7 @@ public class FileUtils {
 		List<HexTable> usedTables = new ArrayList<>();
 		for (TableSearchResult t : hexTables) {
 			if (!usedTables.contains(t.getHexTable())) {
-				writeFileAscii(outFilePrefix + "." + Utils.fillLeft(String.valueOf(tablesFound), 3),
+				writeFileAscii(outFilePrefix + "." + Utils.fillLeft(valueOf(tablesFound), 3),
 						t.getHexTable().toAsciiTable());
 				usedTables.add(t.getHexTable());
 			}
@@ -404,7 +378,7 @@ public class FileUtils {
 	 * @param searchString the search string
 	 * @return list of tables.
 	 */
-	public static List<TableSearchResult> searchRelative8Bits(byte[] fileBytes, String searchString) {
+	private static List<TableSearchResult> searchRelative8Bits(byte[] fileBytes, String searchString) {
 		List<TableSearchResult> res = new ArrayList<>();
 		int wordLength = searchString.length();
 		if (wordLength < Constants.MIN_SEARCH_WORD_LENGTH) {
@@ -463,8 +437,8 @@ public class FileUtils {
 	 * @return .
 	 * @throws IllegalArgumentException .
 	 */
-	public static List<Integer> findString(byte[] fileBytes, HexTable hexTable, String searchString,
-			boolean ignoreCase) {
+	private static List<Integer> findString(byte[] fileBytes, HexTable hexTable, String searchString,
+											boolean ignoreCase) {
 		List<Integer> res = new ArrayList<>();
 		int wordLength = searchString.length();
 		if (ignoreCase) {
@@ -529,14 +503,10 @@ public class FileUtils {
 
 	/**
 	 * To table results.
-	 * @param list
-	 * @param searchString
-	 * @param hexTable
-	 *
 	 * @return the list
 	 */
-	public static final List<TableSearchResult> toTableResults(HexTable hexTable, String searchString,
-			List<Integer> list) {
+	private static List<TableSearchResult> toTableResults(HexTable hexTable, String searchString,
+														  List<Integer> list) {
 		List<TableSearchResult> searchRes = new ArrayList<>();
 		for (Integer res : list) {
 			TableSearchResult tsr = new TableSearchResult();
@@ -605,26 +575,16 @@ public class FileUtils {
 
 	/**
 	 * Searches all the strings on the rom for the given table.
-	 * @param hexTable
-	 * @param fileBytes
-	 * @param numIgnoredChars
-	 * @param endChars
-	 * @param dictFile
-	 * @param extractFile
-	 * @throws IOException
 	 */
-	public static boolean searchAllStrings(HexTable hexTable, byte[] fileBytes, int numIgnoredChars, String endChars,
-			String dictFile, String extractFile) throws IOException {
-		boolean res = false;
+	public static void searchAllStrings(HexTable hexTable, byte[] fileBytes, int numIgnoredChars, String endChars,
+										String dictFile, String extractFile) throws IOException {
 		String entries = hexTable.getAllEntries(fileBytes,
 				Constants.MIN_NUM_CHARS_WORD, numIgnoredChars, Arrays.asList(endChars.toUpperCase()
 						.replaceAll(Constants.SPACE_STR, Constants.EMPTY).split(Constants.OFFSET_CHAR_SEPARATOR)),
 				dictFile);
 		if (entries != null && entries.length() > 0) {
 			extractAsciiFile(hexTable, fileBytes, extractFile, entries, false);
-			res = true;
 		}
-		return res;
 	}
 
 	/**
@@ -705,7 +665,6 @@ public class FileUtils {
 	/**
 	 * Returns offsets as a unique line from a string.
 	 *
-	 * @param fileName the string
 	 * @return the clean offsets
 	 */
 	public static String getCleanOffsetsString(String string) {
@@ -739,10 +698,6 @@ public class FileUtils {
 	/**
 	 * Separates the string based on the table entry of the first character,
 	 * adds newline after the desired chars.
-	 * @param file inFile
-	 * @param table table file
-	 * @param outFile output file
-	 * @throws IOException
 	 */
 	public static void separateCharLength(String file, String table, String outFile) throws IOException {
 		Utils.log("Separating string from \"" + file + FILES_SEPARATOR + outFile + "\"" + "\n using table: \"" + table
@@ -758,7 +713,7 @@ public class FileUtils {
 	 * @param table the table
 	 * @return the string
 	 */
-	public static String separateCharLength(String text, HexTable table) {
+	private static String separateCharLength(String text, HexTable table) {
 		StringBuilder res = new StringBuilder();
 		int length = text.length();
 		for (int i = 0; i < length;) {
@@ -773,7 +728,7 @@ public class FileUtils {
 					endLength = length;
 				}
 				res.append(Constants.S_NEWLINE).append(lenChar).append(Constants.S_NEWLINE);
-				res.append(text.substring(i + 1, endLength));
+				res.append(text, i + 1, endLength);
 				i += strLen + 1;
 			}
 		}
@@ -797,11 +752,6 @@ public class FileUtils {
 
 	/**
 	 * Replaces bytes on baseFile starting at offset for the ones on replacementFile.
-	 *
-	 * @param baseFile file to replace
-	 * @param replacementFile file to insert
-	 * @param offset offset to insert into
-	 * @throws IOException
 	 */
 	public static void replaceFileData(String baseFile, String replacementFile, Integer offset) throws IOException {
 		Utils.log("Replacing bytes on file: '" + baseFile + "' on offset (dec): " + offset + " with file: '" + replacementFile + "'");
@@ -818,10 +768,8 @@ public class FileUtils {
 	 * SHA1: XXXXXXXXXXXXX
 	 * CRC32: XXXXXXXXXXXXX
 	 * XXXXXXX bytes
-	 * @param string
-	 * @throws IOException 
 	 */
-	public static final void outputFileDigests(String file) throws IOException {
+	public static void outputFileDigests(String file) throws IOException {
 		Utils.log(getFileDigests(getFileWithDigests(file)));
 	}
 	
@@ -832,25 +780,20 @@ public class FileUtils {
 	 * SHA1: XXXXXXXXXXXXX
 	 * CRC32: XXXXXXXXXXXXX
 	 * XXXXXXX bytes
-	 * @param fileWithDigests
-	 * @return
 	 */
-	public static String getFileDigests(FileWithDigests fileWithDigests) {
+	private static String getFileDigests(FileWithDigests fileWithDigests) {
 		StringBuilder fileDigests = new StringBuilder(fileWithDigests.getName()).append(System.lineSeparator());
 		fileDigests.append("MD5: ").append(fileWithDigests.getMd5()).append(System.lineSeparator());
 		fileDigests.append("SHA1: ").append(fileWithDigests.getSha1()).append(System.lineSeparator());
 		fileDigests.append("CRC32: ").append(fileWithDigests.getCrc32()).append(System.lineSeparator());
-		fileDigests.append(String.format("%d", fileWithDigests.getBytes().length)).append(" bytes");
+		fileDigests.append(format("%d", fileWithDigests.getBytes().length)).append(" bytes");
 		return fileDigests.toString();
 	}
 
 	/**
 	 * Returns the file with the digests
-	 * @param fileName
-	 * @return
-	 * @throws IOException
 	 */
-	public static final FileWithDigests getFileWithDigests(String fileName) throws IOException {
+	static FileWithDigests getFileWithDigests(String fileName) throws IOException {
 		FileWithDigests fileWithDigests = new FileWithDigests();
 		File file = new File(fileName);
 		fileWithDigests.setName(file.getName());
@@ -861,13 +804,13 @@ public class FileUtils {
 		return fileWithDigests;
 	}
 
-	private static final String getCrc32Hex(byte[] bytes) {
+	private static String getCrc32Hex(byte[] bytes) {
 		CRC32 crc32 = new CRC32();
 		crc32.update(bytes);
-		return String.format("%08X", crc32.getValue()).toLowerCase();
+		return format("%08X", crc32.getValue()).toLowerCase();
 	}
 
-	private static final String getDigestHex(byte[] bytes, String digest) {
+	private static String getDigestHex(byte[] bytes, String digest) {
 		String res = "";
 		try {
 			res = Utils.bytesToHex(MessageDigest.getInstance(digest).digest(bytes));
@@ -880,10 +823,6 @@ public class FileUtils {
 	/**
 	 * Fills the variables {GAME}, {SYSTEM} and {HASHES} from the file settings based on 
 	 * the extension.
-	 * @param emptyDataFile file with variables
-	 * @param filledDataFile file with the results
-	 * @param fileName game file
-	 * @throws IOException 
 	 */
 	public static void fillGameData(String emptyDataFile, String filledDataFile, String fileName) throws IOException {
 		Utils.log("Filling game data from: \"" + emptyDataFile + "\""); 
@@ -891,15 +830,15 @@ public class FileUtils {
 		Utils.log(" for file: \"" + fileName + "\"");
 		String readmeFile = getAsciiFile(emptyDataFile);
 		FileWithDigests fileWithDigests = getFileWithDigests(fileName);
-		readmeFile = readmeFile.replaceAll("\\{GAME\\}", getGameName(fileWithDigests.getName()));
-		readmeFile = readmeFile.replaceAll("\\{SYSTEM\\}", getGameSystem(fileWithDigests.getName()));
-		readmeFile = readmeFile.replaceAll("\\{HASHES\\}", getFileDigests(fileWithDigests));
-		readmeFile = readmeFile.replaceAll("\\{DATE\\}", GAME_DATE_DATE_FORMAT.format(new Date()));
-		readmeFile = readmeFile.replaceAll("\\{YEAR\\}", GAME_YEAR_DATE_FORMAT.format(new Date()));
+		readmeFile = readmeFile.replaceAll("\\{GAME}", getGameName(fileWithDigests.getName()));
+		readmeFile = readmeFile.replaceAll("\\{SYSTEM}", getGameSystem(fileWithDigests.getName()));
+		readmeFile = readmeFile.replaceAll("\\{HASHES}", getFileDigests(fileWithDigests));
+		readmeFile = readmeFile.replaceAll("\\{DATE}", GAME_DATE_DATE_FORMAT.format(new Date()));
+		readmeFile = readmeFile.replaceAll("\\{YEAR}", GAME_YEAR_DATE_FORMAT.format(new Date()));
 		writeFileAscii(filledDataFile, readmeFile);
 	}
 
-	public static String getGameSystem(String fileName) {
+	static String getGameSystem(String fileName) {
 		String system = Constants.EXTENSION_TO_SYSTEM.get(getFileExtension(fileName).toLowerCase());
 		if(system == null) {
 			system = "XXXX";
@@ -907,22 +846,22 @@ public class FileUtils {
 		return system;
 	}
 
-	public static String getGameName(String fileName) {
-		String gameName = fileName;
-		int parentesis = fileName.indexOf('(');
-		int claudator = fileName.indexOf('[');
+	static String getGameName(String fileName) {
 		int dot = fileName.indexOf('.');
 		int cut = fileName.length();
 		if(dot > -1 && dot < cut) {
 			cut = dot;
 		}
-		if(parentesis > -1 && parentesis < cut) {
-			cut = parentesis;
+		int parenthesis = fileName.indexOf('(');
+		if(parenthesis > -1 && parenthesis < cut) {
+			cut = parenthesis;
 		}
-		if(claudator > -1 && claudator < cut) {
-			cut = claudator;
+		int bracket = fileName.indexOf('[');
+		if(bracket > -1 && bracket < cut) {
+			cut = bracket;
 		}
 		int comma = fileName.indexOf(COMMA_THE);
+		String gameName = fileName;
 		if(comma > -1 && comma < cut) {
 			gameName = "The " + gameName.substring(0, comma) + gameName.substring(comma + COMMA_THE.length(), cut);
 		}

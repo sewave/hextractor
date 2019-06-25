@@ -109,14 +109,9 @@ public class TableSearchResult {
 			return false;
 		}
 		if (word == null) {
-			if (other.word != null) {
-				return false;
-			}
+			return other.word == null;
 		}
-		else if (!word.equals(other.word)) {
-			return false;
-		}
-		return true;
+		else return word.equals(other.word);
 	}
 
 }

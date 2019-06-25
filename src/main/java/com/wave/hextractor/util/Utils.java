@@ -1,24 +1,10 @@
 package com.wave.hextractor.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import com.wave.hextractor.object.HexTable;
 import com.wave.hextractor.pojo.OffsetEntry;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * Utility class.
@@ -78,7 +64,7 @@ public class Utils {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void createFile(String file, String content) throws IOException {
-		try(OutputStream os = new FileOutputStream(file);) {
+		try(OutputStream os = new FileOutputStream(file)) {
 			os.write(content.getBytes());
 		}
 	}
@@ -178,7 +164,7 @@ public class Utils {
 	 * @param value the value
 	 * @return the byte[]
 	 */
-	public static final byte[] intToByteArray(int value) {
+	public static byte[] intToByteArray(int value) {
 		return new byte[] {
 				(byte)(value >>> 24),
 				(byte)(value >>> 16),
@@ -193,7 +179,7 @@ public class Utils {
 	 * @param value2 LSB
 	 * @return short v1 * 256 + v2
 	 */
-	public static final int bytesToInt(byte value1, byte value2) {
+	public static int bytesToInt(byte value1, byte value2) {
 		return value1 << 8 & 0xFF00 | value2 & 0xFF;
 	}
 
@@ -205,7 +191,7 @@ public class Utils {
 	 * @param value3 LSB
 	 * @return short v1 + v2 *256 8
 	 */
-	public static final int bytesToInt(byte value1, byte value2, byte value3) {
+	public static int bytesToInt(byte value1, byte value2, byte value3) {
 		return value1 << 16 & 0xFF0000 | value2 << 8 & 0xFF00 | value3 & 0xFF;
 	}
 
@@ -218,7 +204,7 @@ public class Utils {
 	 * @param value4 LSB
 	 * @return short v1 + v2 *256 8
 	 */
-	public static final int bytesToInt(byte value1, byte value2, byte value3, byte value4) {
+	public static int bytesToInt(byte value1, byte value2, byte value3, byte value4) {
 		return value1 << 16 & 0xFF000000 | value2 << 8 & 0xFF0000 | value3 & 0xFF00| value4 & 0xFF;
 	}
 
@@ -242,7 +228,7 @@ public class Utils {
 			}
 			else {
 				if(Constants.HEXCHARS.contains(charString)) {
-					hexLine.append(input.substring(i, i+2));
+					hexLine.append(input, i, i+2);
 					i++;
 				}
 				else {
@@ -382,8 +368,8 @@ public class Utils {
 	 */
 	public static boolean allSameValue(byte[] entryData) {
 		boolean isEquals = true;
-		for(int i = 0; i < entryData.length; i++) {
-			if(entryData[0] != entryData[i]) {
+		for (byte entryDatum : entryData) {
+			if (entryData[0] != entryDatum) {
 				isEquals = false;
 				break;
 			}
@@ -402,7 +388,7 @@ public class Utils {
 	public static String intToHexString(int value, int length) {
 		String num = Utils.fillLeft(Integer.toHexString(value), length).toUpperCase();
 		if (num.length() > length) {
-			num = num.substring(num.length() - length, num.length());
+			num = num.substring(num.length() - length);
 		}
 		return num;
 	}
@@ -463,12 +449,7 @@ public class Utils {
 	 */
 	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
 		List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
-		Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
-			@Override
-			public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-				return o1.getValue().compareTo(o2.getValue());
-			}
-		});
+		list.sort(Comparator.comparing(Map.Entry::getValue));
 
 		Map<K, V> result = new LinkedHashMap<>();
 		for (Map.Entry<K, V> entry : list) {
@@ -593,14 +574,8 @@ public class Utils {
 
 	/**
 	 * Gets the text area using the table.
-	 *
-	 * @param offset the offset
-	 * @param length the length
-	 * @param data
-	 * @param hexTable
-	 * @return the text area
 	 */
-	public static final String getTextArea(int offset, int length, byte[] data, HexTable hexTable) {
+	public static String getTextArea(int offset, int length, byte[] data, HexTable hexTable) {
 		StringBuilder sb = new StringBuilder(length);
 		int end = offset + length;
 		if(end > data.length) {
@@ -620,7 +595,7 @@ public class Utils {
 	 * @param data the data.
 	 * @return the hex area
 	 */
-	public static final String getHexArea(int offset, int length, byte[] data) {
+	public static String getHexArea(int offset, int length, byte[] data) {
 		StringBuilder sb = new StringBuilder(length * Constants.HEX_VALUE_SIZE);
 		int end = offset + length;
 		if(end > data.length) {
@@ -641,7 +616,7 @@ public class Utils {
 	 * @param data the data.
 	 * @return the hex area
 	 */
-	public static final String getHexAreaFixedWidth(int offset, int length, byte[] data, int cols) {
+	public static String getHexAreaFixedWidth(int offset, int length, byte[] data, int cols) {
 		StringBuilder sb = new StringBuilder(length * Constants.HEX_VALUE_SIZE);
 		int end = offset + length;
 		if(end > data.length) {
@@ -670,7 +645,7 @@ public class Utils {
 	 * @param data the data.
 	 * @return the hex area
 	 */
-	public static final String getHexAreaFixedWidthHtml(int offset, int length, byte[] data, int cols) {
+	public static String getHexAreaFixedWidthHtml(int offset, int length, byte[] data, int cols) {
 		StringBuilder sb = new StringBuilder(length * Constants.HEX_VALUE_SIZE);
 		sb.append("<html><body>");
 		int end = offset + length;
@@ -701,8 +676,6 @@ public class Utils {
 
 	/**
 	 * Removes comment lines and joins nonaddress lines togheter
-	 * @param asciiFile
-	 * @return
 	 */
 	public static String[] removeCommentsAndJoin(String asciiFile) {
 		StringBuilder sb = new StringBuilder();
@@ -721,13 +694,11 @@ public class Utils {
 
 	/**
 	 * Compresses 4 6 bit bytes to 3 8 bit bytes
-	 * @param bytes
-	 * @return
 	 */
 	public static byte[] getCompressed4To3Data(byte[] bytes) {
 		byte[] res = new byte[bytes.length];
 		int j = 0;
-		int i = 0;
+		int i;
 		for(i = 0; i <= bytes.length - 4; i += 4) {
 			res[j++] = (byte) (bytes[i] << 2 & 0xFF | bytes[i + 1]>> 4 & 0xFF);
 			res[j++] = (byte) (bytes[i + 1] << 4 & 0xFF | bytes[i + 2] >> 2 & 0xFF);
@@ -756,13 +727,13 @@ public class Utils {
 
 	/**
 	 * Expands 3 bytes to 4 6 bits bytes
-	 * @param bytes
+	 * @param bytes .
 	 * @return expanded data
 	 */
-	public static byte[] getExpanded3To4Data(byte[] bytes) {
+	static byte[] getExpanded3To4Data(byte[] bytes) {
 		byte[] res = new byte[bytes.length * 2];
 		int j = 0;
-		int i = 0;
+		int i;
 		for(i = 0; i <= bytes.length - 3; i += 3) {
 			res[j++] = (byte) (bytes[i] >> 2 & 0x3F);
 			res[j++] = (byte) (((bytes[i] & 0x3) << 4 | (bytes[i + 1] & 0xFF) >> 4) & 0x3F);
@@ -791,7 +762,7 @@ public class Utils {
 	 *
 	 * @param msg the msg
 	 */
-	public static final void log(String msg) {
+	public static void log(String msg) {
 		System.out.println(msg);
 	}
 
@@ -800,7 +771,7 @@ public class Utils {
 	 *
 	 * @param msg the msg
 	 */
-	public static final void logNoNL(String msg) {
+	public static void logNoNL(String msg) {
 		System.out.print(msg);
 	}
 
@@ -809,7 +780,7 @@ public class Utils {
 	 *
 	 * @param e the e
 	 */
-	public static final void logException(Exception e) {
+	public static void logException(Exception e) {
 		e.printStackTrace();
 	}
 
@@ -819,7 +790,7 @@ public class Utils {
 	 * @param value the value
 	 * @return the byte[]
 	 */
-	public static final byte[] shortToBytes(short value) {
+	public static byte[] shortToBytes(short value) {
 		byte[] returnByteArray = new byte[2];
 		returnByteArray[0] = (byte) (value & Constants.MASK_8BIT);
 		returnByteArray[1] = (byte) (value >>> 8 & Constants.MASK_8BIT);

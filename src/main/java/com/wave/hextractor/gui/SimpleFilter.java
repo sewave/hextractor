@@ -1,11 +1,10 @@
 package com.wave.hextractor.gui;
 
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.swing.filechooser.FileFilter;
 
 /**
  * The Class SimpleFilter.

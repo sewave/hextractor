@@ -2,6 +2,7 @@ package com.wave.hextractor.util;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -265,13 +266,13 @@ public class Constants {
 	public static final List<String> EXTENSIONS_GB = Arrays.asList("gb", "gbc");
 
 	/** The Constant EXTENSIONS_TAP. */
-	public static final List<String> EXTENSIONS_TAP = Arrays.asList("tap");
+	public static final List<String> EXTENSIONS_TAP = Collections.singletonList("tap");
 
 	/** The Constant EXTENSIONS_TZX_CDT. */
 	public static final List<String> EXTENSIONS_TZX_CDT = Arrays.asList("tzx", "cdt");
 
 	/** The Constant EXTENSIONS_SMS. */
-	public static final List<String> EXTENSIONS_SMS = Arrays.asList("sms");
+	public static final List<String> EXTENSIONS_SMS = Collections.singletonList("sms");
 
 	/** The Constant FILE_TYPE_OTHER. */
 	public static final String FILE_TYPE_OTHER =  "0";
@@ -293,42 +294,42 @@ public class Constants {
 
 	/** The Constant FILE_TYPE_TZX. */
 	public static final String FILE_TYPE_TZX =  "6";
-		
-	public static final String SYSTEM_SMD =  "Mega Drive";
+
+	static final String SYSTEM_SMD =  "Mega Drive";
+
+	static final String SYSTEM_SMS =  "Master System";
+
+	static final String SYSTEM_SMD_32X = "Mega Drive 32X";
+
+	static final String SYSTEM_SFC =  "Super Nintendo";
+
+	static final String SYSTEM_NES = "NES";
+
+	static final String SYSTEM_GB =  "Game Boy";
+
+	static final String SYSTEM_GBC =  "Game Boy Color";
+
+	static final String SYSTEM_PCE =  "PC Engine";
+
+	static final String SYSTEM_MSX =  "MSX";
+
+	static final String SYSTEM_ZXS =  "ZX Spectrum";
+
+	static final String SYSTEM_CPC =  "Amstrad CPC";
+
+	static final String SYSTEM_GBA =  "Game Boy Advance";
+
+	static final String SYSTEM_SGG =  "Game Gear";
+
+	static final String SYSTEM_SG1K =  "SG-1000";
+
+	static final String SYSTEM_COL =  "Colecovision";
+
+	static final String SYSTEM_NGP =  "Neo Geo Pocket";
 	
-	public static final String SYSTEM_SMS =  "Master System";
+	static final String SYSTEM_NGPC =  "Neo Geo Pocket Color";
 	
-	public static final String SYSTEM_SMD_32X =  "Mega Drive 32X";
-	
-	public static final String SYSTEM_SFC =  "Super Nintendo";
-	
-	public static final String SYSTEM_NES =  "NES";
-	
-	public static final String SYSTEM_GB =  "Game Boy";
-	
-	public static final String SYSTEM_GBC =  "Game Boy Color";
-	
-	public static final String SYSTEM_PCE =  "PC Engine";
-	
-	public static final String SYSTEM_MSX =  "MSX";
-	
-	public static final String SYSTEM_ZXS =  "ZX Spectrum";
-	
-	public static final String SYSTEM_CPC =  "Amstrad CPC";
-	
-	public static final String SYSTEM_GBA =  "Game Boy Advance";
-	
-	public static final String SYSTEM_SGG =  "Game Gear";
-	
-	public static final String SYSTEM_SG1K =  "SG-1000";
-	
-	public static final String SYSTEM_COL =  "Colecovision";
-	
-	public static final String SYSTEM_NGP =  "Neo Geo Pocket";
-	
-	public static final String SYSTEM_NGPC =  "Neo Geo Pocket Color";
-	
-	public static final HashMap<String, String> EXTENSION_TO_SYSTEM = new HashMap<>();
+	static final HashMap<String, String> EXTENSION_TO_SYSTEM = new HashMap<>();
 	
 	static {
 		//Micropcs

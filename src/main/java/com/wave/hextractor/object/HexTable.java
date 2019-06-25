@@ -3,20 +3,15 @@
  */
 package com.wave.hextractor.object;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import com.wave.hextractor.pojo.OffsetEntry;
 import com.wave.hextractor.util.Constants;
 import com.wave.hextractor.util.FileUtils;
 import com.wave.hextractor.util.Utils;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Class for the table operations.
@@ -66,15 +61,11 @@ public class HexTable implements Serializable {
 
 	/**
 	 * Transforms the byte into a String.
-	 * @param aByte
-	 * @param expand
-	 * @param decodeUnknown
-	 * @return
 	 */
 	public String toString(byte aByte, boolean expand, boolean decodeUnknown) {
-		String res = table.get(Byte.valueOf(aByte));
+		String res = table.get(aByte);
 		if(res != null && (res.length() == 1 || expand)) {
-			res = table.get(Byte.valueOf(aByte));
+			res = table.get(aByte);
 		}
 		else {
 			if(decodeUnknown) {
@@ -201,10 +192,6 @@ public class HexTable implements Serializable {
 
 	/**
 	 * Translates a hex string to ascii.
-	 * @param hexString
-	 * @param expand
-	 * @param decodeUnknown
-	 * @return
 	 */
 	public String toAscii(byte[] hexString, boolean expand, boolean decodeUnknown) {
 		StringBuilder sb = new StringBuilder();
@@ -216,9 +203,6 @@ public class HexTable implements Serializable {
 
 	/**
 	 * Translates a hex string to ascii.
-	 * @param hexString
-	 * @param expand
-	 * @return
 	 */
 	public String toAscii(byte[] hexString, boolean expand) {
 		return toAscii(hexString, expand, false);
@@ -226,8 +210,6 @@ public class HexTable implements Serializable {
 
 	/**
 	 * Simple string to hex using table.
-	 * @param aString
-	 * @return
 	 */
 	public byte[] toHex(String aString) {
 		byte[] res = new byte[aString.length()];
@@ -294,7 +276,7 @@ public class HexTable implements Serializable {
 		}
 		sb.append(entry.toString()).append(Constants.NEWLINE);
 		for(int i = entry.getStart(); i <= entry.getEnd(); i++) {
-			Byte hex = Byte.valueOf(hexString[i]);
+			Byte hex = hexString[i];
 			bytesreaded++;
 			if(table.containsKey(hex)) {
 				String value = table.get(hex);
@@ -327,7 +309,7 @@ public class HexTable implements Serializable {
 				}
 			}
 		}
-		sb.append(String.valueOf(Constants.MAX_BYTES) + bytesreaded).append(Constants.NEWLINE);
+		sb.append(Constants.MAX_BYTES).append(bytesreaded).append(Constants.NEWLINE);
 		if(showExtracting) {
 			Utils.log("TOTAL BYTES TO ASCII: " + bytesreaded);
 		}
@@ -555,7 +537,7 @@ public class HexTable implements Serializable {
 		boolean validString = false;
 		StringBuilder word = new StringBuilder();
 		StringBuilder sentence = new StringBuilder();
-		String dataChar = null;
+		String dataChar;
 		List<String> skippedChars = new ArrayList<>();
 		ENTRIES_STATUS status = ENTRIES_STATUS.SEARCHING_START_OF_STRING;
 		long lastTime = System.currentTimeMillis();
@@ -565,14 +547,9 @@ public class HexTable implements Serializable {
 				lastTime = System.currentTimeMillis();
 				Utils.log(searchPercent + "% completed.");
 			}
-			Byte readedByteObj = Byte.valueOf(secondFileBytes[i]);
+			Byte readedByteObj = secondFileBytes[i];
 			String dataCharHex = String.format(Constants.HEX_16_FORMAT, readedByteObj);
-			if(table.containsKey(readedByteObj)) {
-				dataChar = table.get(readedByteObj);
-			}
-			else {
-				dataChar = null;
-			}
+			dataChar = table.getOrDefault(readedByteObj, null);
 			switch(status) {
 			case SEARCHING_START_OF_STRING:
 				if(dataChar != null) {
@@ -716,7 +693,7 @@ public class HexTable implements Serializable {
 
 	/**
 	 * Current search completition percent.
-	 * @return
+	 * @return percent search
 	 */
 	public float getSearchPercent() {
 		return searchPercent;

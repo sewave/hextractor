@@ -1,12 +1,12 @@
 package com.wave.hextractor.pojo;
 
+import com.wave.hextractor.util.Constants;
+import com.wave.hextractor.util.Utils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import com.wave.hextractor.util.Constants;
-import com.wave.hextractor.util.Utils;
 
 /**
  * Offset pair entry.
@@ -105,14 +105,12 @@ public class OffsetEntry implements Comparable<OffsetEntry>, Serializable {
 	 * @param asciiString the ascii string
 	 */
 	public OffsetEntry(String asciiString) {
-		String[] values = asciiString.substring(1).split(String.valueOf(Constants.OFFSET_CHAR_SEPARATOR));
+		String[] values = asciiString.substring(1).split(Constants.OFFSET_CHAR_SEPARATOR);
 		start = Integer.parseInt(values[0], Constants.HEX_RADIX);
 		if (values.length > 1) {
 			end = Integer.parseInt(values[1], Constants.HEX_RADIX);
 			if (values.length > 2) {
-				for (int i = 2; i < values.length; i++) {
-					endChars.add(values[i]);
-				}
+				endChars.addAll(Arrays.asList(values).subList(2, values.length));
 			}
 		}
 	}
@@ -124,7 +122,7 @@ public class OffsetEntry implements Comparable<OffsetEntry>, Serializable {
 	 */
 	@Override
 	public String toString() {
-		return String.valueOf(Constants.ADDR_CHAR) + toEntryString();
+		return Constants.ADDR_CHAR + toEntryString();
 	}
 
 	/**
@@ -149,14 +147,12 @@ public class OffsetEntry implements Comparable<OffsetEntry>, Serializable {
 	 * @return the hex comment
 	 */
 	public String getHexComment() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(Constants.COMMENT_LINE);
-		sb.append(Utils.intToHexString(start, Constants.HEX_ADDR_SIZE));
-		sb.append(Constants.OFFSET_CHAR_SEPARATOR);
-		sb.append(Utils.intToHexString(end, Constants.HEX_ADDR_SIZE));
-		sb.append(Constants.OFFSET_LENGTH_SEPARATOR);
-		sb.append(Utils.intToHexString(end - start + 1, Constants.HEX_ADDR_SIZE));
-		return sb.toString();
+		return Constants.COMMENT_LINE +
+				Utils.intToHexString(start, Constants.HEX_ADDR_SIZE) +
+				Constants.OFFSET_CHAR_SEPARATOR +
+				Utils.intToHexString(end, Constants.HEX_ADDR_SIZE) +
+				Constants.OFFSET_LENGTH_SEPARATOR +
+				Utils.intToHexString(end - start + 1, Constants.HEX_ADDR_SIZE);
 	}
 
 	/**
@@ -205,11 +201,9 @@ public class OffsetEntry implements Comparable<OffsetEntry>, Serializable {
 	 * @return the hex target
 	 */
 	public String getHexTarget() {
-		StringBuilder sb = new StringBuilder(Constants.ADDR_STR);
-		sb.append(Utils.intToHexString(start, Constants.HEX_ADDR_SIZE));
-		sb.append(Constants.OFFSET_LENGTH_SEPARATOR);
-		sb.append(Utils.intToHexString(end, Constants.HEX_ADDR_SIZE));
-		return sb.toString();
+		return Constants.ADDR_STR + Utils.intToHexString(start, Constants.HEX_ADDR_SIZE) +
+				Constants.OFFSET_LENGTH_SEPARATOR +
+				Utils.intToHexString(end, Constants.HEX_ADDR_SIZE);
 	}
 
 	/*

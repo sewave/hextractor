@@ -293,7 +293,7 @@ public class SNESChecksumUtils {
 	 * @return true, if is snes rom hi rom
 	 */
 	private static boolean isSnesRomHiRom(byte[] fileBytes) {
-		boolean isLoRom = false;
+		boolean isLoRom ;
 		boolean isHiRom = false;
 
 		byte[] header = Arrays.copyOfRange(fileBytes, SNES_LOROM_HEADER_OFF,
