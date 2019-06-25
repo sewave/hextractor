@@ -1,5 +1,9 @@
 | [![Build Status](https://travis-ci.com/sewave/hextractor.svg?branch=master)](https://travis-ci.com/sewave/hextractor)
- | [![codecov](https://codecov.io/gh/sewave/hextractor/branch/master/graph/badge.svg)](https://codecov.io/gh/sewave/hextractor) |
+ | [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=com.wave%3Ahextractor&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.wave%3Ahextractor)
+ | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.wave%3Ahextractor&metric=coverage)](https://sonarcloud.io/dashboard?id=com.wave%3Ahextractor)
+ | [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=com.wave%3Ahextractor&metric=bugs)](https://sonarcloud.io/dashboard?id=com.wave%3Ahextractor)
+ | [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=com.wave%3Ahextractor&metric=code_smells)](https://sonarcloud.io/dashboard?id=com.wave%3Ahextractor)
+ | [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=com.wave%3Ahextractor&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=com.wave%3Ahextractor) |
 
 # hextractor
 Tool with different modes to help translate games/files using table files and fixed string length.  
