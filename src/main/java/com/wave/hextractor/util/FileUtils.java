@@ -4,7 +4,6 @@ import com.wave.hextractor.object.HexTable;
 import com.wave.hextractor.pojo.FileWithDigests;
 import com.wave.hextractor.pojo.OffsetEntry;
 import com.wave.hextractor.pojo.TableSearchResult;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -12,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.zip.CRC32;
 
@@ -33,9 +34,10 @@ public class FileUtils {
 	/** The Constant SHA1_DIGEST. */
 	private static final String SHA1_DIGEST = "SHA-1";
 	
-	private static final FastDateFormat GAME_DATE_DATE_FORMAT = FastDateFormat.getInstance("dd/MM/yyyy");
-	private static final FastDateFormat GAME_YEAR_DATE_FORMAT = FastDateFormat.getInstance("yyyy");
-	
+	private static final DateTimeFormatter GAME_DATE_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+	private static final DateTimeFormatter GAME_YEAR_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy");
+
 	private static final String COMMA_THE = ", The";
 	
 	/**
@@ -809,8 +811,8 @@ public class FileUtils {
 		readmeFile = readmeFile.replaceAll("\\{GAME}", getGameName(fileWithDigests.getName()));
 		readmeFile = readmeFile.replaceAll("\\{SYSTEM}", getGameSystem(fileWithDigests.getName()));
 		readmeFile = readmeFile.replaceAll("\\{HASHES}", getFileDigests(fileWithDigests));
-		readmeFile = readmeFile.replaceAll("\\{DATE}", GAME_DATE_DATE_FORMAT.format(new Date()));
-		readmeFile = readmeFile.replaceAll("\\{YEAR}", GAME_YEAR_DATE_FORMAT.format(new Date()));
+		readmeFile = readmeFile.replaceAll("\\{DATE}", LocalDate.now().format(GAME_DATE_DATE_FORMAT));
+		readmeFile = readmeFile.replaceAll("\\{YEAR}", LocalDate.now().format(GAME_YEAR_DATE_FORMAT));
 		writeFileAscii(filledDataFile, readmeFile);
 	}
 

@@ -63,7 +63,7 @@ public class SMDChecksumUtils {
 	 * @param fileBytes the file bytes
 	 * @return the mega drive checksum
 	 */
-	private static int getMegaDriveChecksum(byte[] fileBytes) {
+	public static int getMegaDriveChecksum(byte[] fileBytes) {
 		return Utils.bytesToInt(fileBytes[MEGADRIVE_CHECKSUM_LOCATION],
 				fileBytes[MEGADRIVE_CHECKSUM_LOCATION + 1]) & Constants.MASK_16BIT;
 	}
@@ -74,7 +74,7 @@ public class SMDChecksumUtils {
 	 * @param fileBytes the file bytes
 	 * @return the int
 	 */
-	private static int calculateMegaDriveChecksum(byte[] fileBytes) {
+	public static int calculateMegaDriveChecksum(byte[] fileBytes) {
 		int calculatedChecksum = 0;
 		for (int i = MEGADRIVE_CHECKSUM_START_CALCULATION; i < fileBytes.length; i += 2) {
 			calculatedChecksum += Utils.bytesToInt(fileBytes[i], fileBytes[i + 1]);
@@ -89,7 +89,7 @@ public class SMDChecksumUtils {
 	 * @param calculatedChecksum the calculated checksum
 	 * @param fileBytes the file bytes
 	 */
-	private static void updateMegadriveChecksum(int calculatedChecksum, byte[] fileBytes) {
+	public static void updateMegadriveChecksum(int calculatedChecksum, byte[] fileBytes) {
 		byte[] bytes = Utils.intToByteArray(calculatedChecksum);
 		fileBytes[MEGADRIVE_CHECKSUM_LOCATION] = bytes[2];
 		fileBytes[MEGADRIVE_CHECKSUM_LOCATION + 1] = bytes[3];

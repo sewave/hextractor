@@ -10,19 +10,19 @@ import java.nio.file.Paths;
 public class GBChecksumUtils {
 
 	/** The Constant GAMEBOY_HEADER_CHECKSUM_LOCATION. */
-	public static final int GAMEBOY_HEADER_CHECKSUM_LOCATION = 0x14D;
+	private static final int GAMEBOY_HEADER_CHECKSUM_LOCATION = 0x14D;
 
 	/** The Constant GAMEBOY_HEADER_CHECKSUM_START_CALCULATION. */
-	public static final int GAMEBOY_HEADER_CHECKSUM_START_CALCULATION = 0x134;
+	private static final int GAMEBOY_HEADER_CHECKSUM_START_CALCULATION = 0x134;
 
 	/** The Constant GAMEBOY_HEADER_CHECKSUM_END_CALCULATION. */
-	public static final int GAMEBOY_HEADER_CHECKSUM_END_CALCULATION = 0x14C;
+	private static final int GAMEBOY_HEADER_CHECKSUM_END_CALCULATION = 0x14C;
 
 	/** The Constant GAMEBOY_ROM_CHECKSUM_LOCATION. */
-	public static final int GAMEBOY_ROM_CHECKSUM_LOCATION = 0x14E;
+	private static final int GAMEBOY_ROM_CHECKSUM_LOCATION = 0x14E;
 
 	/** The Constant GAMEBOY_ROM_CHECKSUM_START_CALCULATION. */
-	public static final int GAMEBOY_ROM_CHECKSUM_START_CALCULATION = 0x000;
+	private static final int GAMEBOY_ROM_CHECKSUM_START_CALCULATION = 0x000;
 
 	/**
 	 * Calculate game boy header checksum.
@@ -30,13 +30,13 @@ public class GBChecksumUtils {
 	 * @param fileBytes the file bytes
 	 * @return the int
 	 */
-	private static int calculateGameBoyHeaderChecksum(byte[] fileBytes) {
+	public static int calculateGameBoyHeaderChecksum(byte[] fileBytes) {
 		byte calculatedHeaderChecksum = 0;
 		for (int i = GAMEBOY_HEADER_CHECKSUM_START_CALCULATION; i <= GAMEBOY_HEADER_CHECKSUM_END_CALCULATION; i++) {
 			calculatedHeaderChecksum -= fileBytes[i];
 			calculatedHeaderChecksum -= 1;
 		}
-		return calculatedHeaderChecksum;
+		return calculatedHeaderChecksum & Constants.MASK_8BIT;
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class GBChecksumUtils {
 	 * @param fileBytes the file bytes
 	 * @return the int
 	 */
-	private static int calculateGameBoyRomChecksum(byte[] fileBytes) {
+	public static int calculateGameBoyRomChecksum(byte[] fileBytes) {
 		int calculatedRomChecksum = 0;
 		for (int i = GAMEBOY_ROM_CHECKSUM_START_CALCULATION; i < fileBytes.length; i++) {
 			// Ignore checksum bytes to calculate checksum
@@ -107,7 +107,7 @@ public class GBChecksumUtils {
 	 * @param fileBytes the file bytes
 	 * @return the game boy header checksum
 	 */
-	private static int getGameBoyHeaderChecksum(byte[] fileBytes) {
+	public static int getGameBoyHeaderChecksum(byte[] fileBytes) {
 		return fileBytes[GAMEBOY_HEADER_CHECKSUM_LOCATION] & Constants.MASK_8BIT;
 	}
 
@@ -117,7 +117,7 @@ public class GBChecksumUtils {
 	 * @param fileBytes the file bytes
 	 * @return the game boy rom checksum
 	 */
-	private static int getGameBoyRomChecksum(byte[] fileBytes) {
+	public static int getGameBoyRomChecksum(byte[] fileBytes) {
 		return Utils.bytesToInt(fileBytes[GAMEBOY_ROM_CHECKSUM_LOCATION],
 				fileBytes[GAMEBOY_ROM_CHECKSUM_LOCATION + 1]) & Constants.MASK_16BIT;
 	}
@@ -128,7 +128,7 @@ public class GBChecksumUtils {
 	 * @param calculatedHeaderChecksum the calculated header checksum
 	 * @param fileBytes the file bytes
 	 */
-	private static void updateGameBoyHeaderChecksum(int calculatedHeaderChecksum, byte[] fileBytes) {
+	public static void updateGameBoyHeaderChecksum(int calculatedHeaderChecksum, byte[] fileBytes) {
 		byte[] bytes = Utils.intToByteArray(calculatedHeaderChecksum);
 		fileBytes[GAMEBOY_HEADER_CHECKSUM_LOCATION] = bytes[3];
 	}
@@ -139,7 +139,7 @@ public class GBChecksumUtils {
 	 * @param calculatedRomChecksum the calculated rom checksum
 	 * @param fileBytes the file bytes
 	 */
-	private static void updateGameBoyRomChecksum(int calculatedRomChecksum, byte[] fileBytes) {
+	public static void updateGameBoyRomChecksum(int calculatedRomChecksum, byte[] fileBytes) {
 		byte[] bytes = Utils.intToByteArray(calculatedRomChecksum);
 		fileBytes[GAMEBOY_ROM_CHECKSUM_LOCATION + 1] = bytes[3];
 		fileBytes[GAMEBOY_ROM_CHECKSUM_LOCATION] = bytes[2];
@@ -148,6 +148,6 @@ public class GBChecksumUtils {
 	/**
 	 * Instantiates a new GB checksum utils.
 	 */
-	private GBChecksumUtils() {
+	protected GBChecksumUtils() {
 	}
 }

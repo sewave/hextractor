@@ -205,7 +205,7 @@ public class Utils {
 	 * @return short v1 + v2 *256 8
 	 */
 	public static int bytesToInt(byte value1, byte value2, byte value3, byte value4) {
-		return value1 << 16 & 0xFF000000 | value2 << 8 & 0xFF0000 | value3 & 0xFF00| value4 & 0xFF;
+		return value1 << 24 & 0xFF000000 | value2 << 16 & 0xFF0000 | value3 << 8 & 0xFF00| value4 & 0xFF;
 	}
 
 	/**
