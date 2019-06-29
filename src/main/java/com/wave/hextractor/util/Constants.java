@@ -58,13 +58,7 @@ public class Constants {
 	public static final String EMPTY_OFFSET_FILE = "empty.off";
 
 	/** The Constant MIN_SEARCH_WORD_LENGTH. */
-	public static final int MIN_SEARCH_WORD_LENGTH = 4;
-
-	/** The Constant MIN_SEARCH_WORDS. */
-	public static final int MIN_SEARCH_WORDS = 6;
-
-	/** The Constant MAX_SEARCH_WORDS. */
-	public static final int MAX_SEARCH_WORDS = 12;
+	public static final int MIN_SEARCH_WORD_LENGTH = 3;
 
 	/** The Constant MIN_PRINTABLE_CHAR. */
 	public static final int MIN_PRINTABLE_CHAR = 0x20;
@@ -234,12 +228,6 @@ public class Constants {
 	/** The Constant REGEX_DICTIONARY_CHARS. */
 	public static final String REGEX_DICTIONARY_CHARS = "(\\{|\\})";
 
-	/** The Constant COMMENT_SIZE_MADDR_START. */
-	public static final int COMMENT_SIZE_MADDR_START = 1;
-
-	/** The Constant COMMENT_SIZE_MADDR_END. */
-	public static final int COMMENT_SIZE_MADDR_END = 9;
-
 	/** The Constant MIN_NUM_CHARS_WORD. */
 	public static final int MIN_NUM_CHARS_WORD = 3;
 
@@ -250,26 +238,27 @@ public class Constants {
 	public static final String UTF_8_BOM_LE = "\uFFFE";
 
 	/** The Constant RESERVED_CHARS. */
-	public static final List<String> RESERVED_CHARS = Arrays.asList(String.valueOf(Constants.HEX_CHAR), ADDR_STR,
-			S_MAX_BYTES, String.valueOf(Constants.STR_NUM_CHARS), S_COMMENT_LINE, S_CODEWORD_START, S_CODEWORD_END);
+	public static final List<String> RESERVED_CHARS = Collections.unmodifiableList(Arrays.asList(String.valueOf(Constants.HEX_CHAR), ADDR_STR,
+			S_MAX_BYTES, String.valueOf(Constants.STR_NUM_CHARS), S_COMMENT_LINE, S_CODEWORD_START, S_CODEWORD_END));
 
 	/** The Constant DEFAULT_DICT. */
 	public static final String DEFAULT_DICT = "EngDict.txt";
 
 	/** The Constant EXTENSIONS_MEGADRIVE. */
-	public static final List<String> EXTENSIONS_MEGADRIVE = Arrays.asList("smd", "gen", "bin", "md", "32x");
+	public static final List<String> EXTENSIONS_MEGADRIVE =
+			Collections.unmodifiableList(Arrays.asList("smd", "gen", "bin", "md", "32x"));
 
 	/** The Constant EXTENSIONS_SNES. */
-	public static final List<String> EXTENSIONS_SNES = Arrays.asList("sfc", "smc");
+	public static final List<String> EXTENSIONS_SNES = Collections.unmodifiableList(Arrays.asList("sfc", "smc"));
 
 	/** The Constant EXTENSIONS_GB. */
-	public static final List<String> EXTENSIONS_GB = Arrays.asList("gb", "gbc");
+	public static final List<String> EXTENSIONS_GB = Collections.unmodifiableList(Arrays.asList("gb", "gbc"));
 
 	/** The Constant EXTENSIONS_TAP. */
 	public static final List<String> EXTENSIONS_TAP = Collections.singletonList("tap");
 
 	/** The Constant EXTENSIONS_TZX_CDT. */
-	public static final List<String> EXTENSIONS_TZX_CDT = Arrays.asList("tzx", "cdt");
+	public static final List<String> EXTENSIONS_TZX_CDT = Collections.unmodifiableList(Arrays.asList("tzx", "cdt"));
 
 	/** The Constant EXTENSIONS_SMS. */
 	public static final List<String> EXTENSIONS_SMS = Collections.singletonList("sms");

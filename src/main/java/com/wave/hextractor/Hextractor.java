@@ -3,6 +3,7 @@ package com.wave.hextractor;
 import com.wave.hextractor.gui.HexViewer;
 import com.wave.hextractor.util.*;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -129,135 +130,22 @@ public class Hextractor {
 	 *
 	 * @param args the args
 	 * @param rb the rb
-	 * @throws Exception the exception
+	 * @throws IOException the exception
 	 */
-	private static void manageModes(String[] args, ResourceBundle rb) throws Exception {
+	private static void manageModes(String[] args, ResourceBundle rb) throws IOException {
 		String mode = args[0];
 		switch (args.length) {
 		case 2:
-			if (MODE_FIX_MEGADRIVE_CHECKSUM.equals(mode)) {
-				SMDChecksumUtils.checkUpdateMegaDriveChecksum(args[1]);
-			} else {
-				if (MODE_FIX_GAMEBOY_CHECKSUM.equals(mode)) {
-					GBChecksumUtils.checkUpdateGameBoyChecksum(args[1]);
-				} else {
-					if (MODE_FIX_SNES_CHECKSUM.equals(mode)) {
-						SNESChecksumUtils.checkUpdateSnesChecksum(args[1]);
-					} else {
-						if (MODE_HEX_VIEW.equals(mode)) {
-							HexViewer.view(args[1]);
-						} else {
-							if (MODE_FIX_ZXTAP_CHECKSUM.equals(mode)) {
-								TAPChecksumUtils.checkUpdateZxTapChecksum(args[1]);
-							} else {
-								if (MODE_FIX_ZXTZX_CHECKSUM.equals(mode)) {
-									TAPChecksumUtils.checkUpdateZxTzxChecksum(args[1]);
-								} else {
-									if (MODE_FIX_SMS_CHECKSUM.equals(mode)) {
-										SMSChecksumUtils.checkUpdateSMSChecksum(args[1]);
-									} else {
-										if (MODE_CHECK_LINE_LENGTH.equals(mode)) {
-											FileUtils.checkLineLength(args[1]);
-										} else {
-											if (MODE_GENERATE_FILE_DIGESTS.equals(mode)) {
-												FileUtils.outputFileDigests(args[1]);
-											} else {
-												printUsage(rb);
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+			manageModes2Args(args, rb, mode);
 			break;
 		case 3:
-			if (MODE_CLEAN_ASCII.equals(mode)) {
-				FileUtils.cleanAsciiFile(args[1], args[2]);
-			} else {
-				if (MODE_INSERT_HEX.equals(mode)) {
-					FileUtils.insertHexData(args[1], args[2]);
-				} else {
-					if (MODE_CLEAN_EXTRACTED_FILE.equals(mode)) {
-						FileUtils.cleanExtractedFile(args[1], args[2]);
-					} else {
-						if (MODE_HEX_VIEW.equals(mode)) {
-							HexViewer.view(args[1], args[2]);
-						} else {
-							if (MODE_FIX_ZXTAP_CHECKSUM.equals(mode)) {
-								TAPChecksumUtils.checkUpdateZxTapChecksum(args[1], args[2]);
-							} else {
-								if (MODE_FIX_ZXTZX_CHECKSUM.equals(mode)) {
-									TAPChecksumUtils.checkUpdateZxTzxChecksum(args[1], args[2]);
-								} else {
-									printUsage(rb);
-								}
-							}
-						}
-					}
-				}
-			}
+			manageModes3Args(args, rb, mode);
 			break;
 		case 4:
-			if (MODE_ASCII_TO_HEX.equals(mode)) {
-				FileUtils.insertAsciiAsHex(args[1], args[2], args[3]);
-			} else {
-				if (MODE_SEARCH_RELATIVE_8.equals(mode)) {
-					FileUtils.searchRelative8Bits(args[1], args[2], args[3]);
-				} else {
-					if (CREATE_IPS_PATCH.equals(mode)) {
-						IpsPatchUtils.createIpsPatch(args[1], args[2], args[3]);
-					} else {
-						if (MODE_APPLY_IPS_PATCH.equals(mode)) {
-							IpsPatchUtils.applyIpsPatch(args[1], args[2], args[3]);
-						} else {
-							if (MODE_VERIFY_IPS_PATCH.equals(mode)) {
-								IpsPatchUtils.validateIpsPatch(args[1], args[2], args[3]);
-							} else {
-								if (MODE_EXTRACT_HEX.equals(mode)) {
-									FileUtils.extractHexData(args[1], args[2], args[3]);
-								} else {
-									if (MODE_INSERT_ASCII_4_3.equals(mode)) {
-										FileUtils.insertHex4To3Data(args[1], args[2], args[3]);
-									} else {
-										if (MODE_SEPARATE_CHAR_LENGTH.equals(mode)) {
-											FileUtils.separateCharLength(args[1], args[2], args[3]);
-										} else {
-											if (MODE_INSERT_FILE.equals(mode)) {
-												FileUtils.replaceFileData(args[1], args[2],
-														Integer.valueOf(args[3], Constants.HEX_RADIX));
-											} else {
-												if (MODE_FILL_READ_ME.equals(mode)) {
-													FileUtils.fillGameData(args[1], args[2], args[3]);
-												} else {
-													printUsage(rb);
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+			manageModes4Args(args, rb, mode);
 			break;
 		case 5:
-			if (MODE_EXTRACT_ASCII.equals(mode)) {
-				FileUtils.extractAsciiFile(args[1], args[2], args[3], args[4]);
-			} else {
-				if (MODE_SEARCH_ALL.equals(mode)) {
-					FileUtils.searchAllStrings(args[1], args[2], Integer.parseInt(args[3]), args[4]);
-				} else {
-					if (MODE_EXTRACT_ASCII_3_4.equals(mode)) {
-						FileUtils.extractAscii3To4Data(args[1], args[2], args[3], args[4]);
-					} else {
-						printUsage(rb);
-					}
-				}
-			}
+			manageModes5Args(args, rb, mode);
 			break;
 		case 6:
 			if (MODE_SEARCH_ALL.equals(mode)) {
@@ -275,7 +163,122 @@ public class Hextractor {
 			}
 			break;
 		}
+	}
 
+	private static void manageModes5Args(String[] args, ResourceBundle rb, String mode) throws IOException {
+		if (MODE_EXTRACT_ASCII.equals(mode)) {
+			FileUtils.extractAsciiFile(args[1], args[2], args[3], args[4]);
+		} else {
+			if (MODE_SEARCH_ALL.equals(mode)) {
+				FileUtils.searchAllStrings(args[1], args[2], Integer.parseInt(args[3]), args[4]);
+			} else {
+				if (MODE_EXTRACT_ASCII_3_4.equals(mode)) {
+					FileUtils.extractAscii3To4Data(args[1], args[2], args[3], args[4]);
+				} else {
+					printUsage(rb);
+				}
+			}
+		}
+	}
+
+	private static void manageModes4Args(String[] args, ResourceBundle rb, String mode) throws IOException {
+		switch (mode) {
+			case MODE_ASCII_TO_HEX:
+				FileUtils.insertAsciiAsHex(args[1], args[2], args[3]);
+				break;
+			case MODE_SEARCH_RELATIVE_8:
+				FileUtils.searchRelative8Bits(args[1], args[2], args[3]);
+				break;
+			case CREATE_IPS_PATCH:
+				IpsPatchUtils.createIpsPatch(args[1], args[2], args[3]);
+				break;
+			case MODE_APPLY_IPS_PATCH:
+				IpsPatchUtils.applyIpsPatch(args[1], args[2], args[3]);
+				break;
+			case MODE_VERIFY_IPS_PATCH:
+				IpsPatchUtils.validateIpsPatch(args[1], args[2], args[3]);
+				break;
+			case MODE_EXTRACT_HEX:
+				FileUtils.extractHexData(args[1], args[2], args[3]);
+				break;
+			case MODE_INSERT_ASCII_4_3:
+				FileUtils.insertHex4To3Data(args[1], args[2], args[3]);
+				break;
+			case MODE_SEPARATE_CHAR_LENGTH:
+				FileUtils.separateCharLength(args[1], args[2], args[3]);
+				break;
+			case MODE_INSERT_FILE:
+				FileUtils.replaceFileData(args[1], args[2],
+						Integer.valueOf(args[3], Constants.HEX_RADIX));
+				break;
+			case MODE_FILL_READ_ME:
+				FileUtils.fillGameData(args[1], args[2], args[3]);
+				break;
+			default:
+				printUsage(rb);
+				break;
+		}
+	}
+
+	private static void manageModes3Args(String[] args, ResourceBundle rb, String mode) throws IOException {
+		switch (mode) {
+			case MODE_CLEAN_ASCII:
+				FileUtils.cleanAsciiFile(args[1], args[2]);
+				break;
+			case MODE_INSERT_HEX:
+				FileUtils.insertHexData(args[1], args[2]);
+				break;
+			case MODE_CLEAN_EXTRACTED_FILE:
+				FileUtils.cleanExtractedFile(args[1], args[2]);
+				break;
+			case MODE_HEX_VIEW:
+				HexViewer.view(args[1], args[2]);
+				break;
+			case MODE_FIX_ZXTAP_CHECKSUM:
+				TAPChecksumUtils.checkUpdateZxTapChecksum(args[1], args[2]);
+				break;
+			case MODE_FIX_ZXTZX_CHECKSUM:
+				TAPChecksumUtils.checkUpdateZxTzxChecksum(args[1], args[2]);
+				break;
+			default:
+				printUsage(rb);
+				break;
+		}
+	}
+
+	private static void manageModes2Args(String[] args, ResourceBundle rb, String mode) throws IOException {
+		switch (mode) {
+			case MODE_FIX_MEGADRIVE_CHECKSUM:
+				SMDChecksumUtils.checkUpdateMegaDriveChecksum(args[1]);
+				break;
+			case MODE_FIX_GAMEBOY_CHECKSUM:
+				GBChecksumUtils.checkUpdateGameBoyChecksum(args[1]);
+				break;
+			case MODE_FIX_SNES_CHECKSUM:
+				SNESChecksumUtils.checkUpdateSnesChecksum(args[1]);
+				break;
+			case MODE_HEX_VIEW:
+				HexViewer.view(args[1]);
+				break;
+			case MODE_FIX_ZXTAP_CHECKSUM:
+				TAPChecksumUtils.checkUpdateZxTapChecksum(args[1]);
+				break;
+			case MODE_FIX_ZXTZX_CHECKSUM:
+				TAPChecksumUtils.checkUpdateZxTzxChecksum(args[1]);
+				break;
+			case MODE_FIX_SMS_CHECKSUM:
+				SMSChecksumUtils.checkUpdateSMSChecksum(args[1]);
+				break;
+			case MODE_CHECK_LINE_LENGTH:
+				FileUtils.checkLineLength(args[1]);
+				break;
+			case MODE_GENERATE_FILE_DIGESTS:
+				FileUtils.outputFileDigests(args[1]);
+				break;
+			default:
+				printUsage(rb);
+				break;
+		}
 	}
 
 }

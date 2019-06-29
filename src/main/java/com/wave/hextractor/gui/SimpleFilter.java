@@ -3,7 +3,7 @@ package com.wave.hextractor.gui;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,7 +27,7 @@ public class SimpleFilter extends FileFilter implements Serializable {
 	 * @param message the message
 	 */
 	public SimpleFilter(String ext, String message) {
-		this.exts = Arrays.asList(ext);
+		this.exts = Collections.singletonList(ext);
 		this.message = message;
 	}
 

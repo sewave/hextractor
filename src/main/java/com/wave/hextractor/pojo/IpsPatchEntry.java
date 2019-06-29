@@ -18,9 +18,6 @@ public class IpsPatchEntry {
 	/** The Constant IPS_RLE_DATA_SIZE. */
 	public static final int IPS_RLE_DATA_SIZE = 2;
 
-	/** The Constant IPS_RLE_DATA_BIN_SIZE. */
-	public static final int IPS_RLE_DATA_BIN_SIZE = 2;
-
 	/** The Constant IPS_RLE_MODE. */
 	public static final int IPS_RLE_MODE = 0;
 
@@ -176,26 +173,6 @@ public class IpsPatchEntry {
 	 */
 	public void setData(byte[] data) {
 		this.data = data;
-	}
-
-	/**
-	 * IpsPatchEntry.
-	 *
-	 * @param offset the offset
-	 * @param size the size
-	 */
-	public IpsPatchEntry(int offset, int size) {
-		this.offset = offset;
-		this.size = size;
-	}
-
-	/**
-	 * IpsPatchEntry.
-	 *
-	 * @param offset the offset
-	 */
-	public IpsPatchEntry(int offset) {
-		this.offset = offset;
 	}
 
 	/**

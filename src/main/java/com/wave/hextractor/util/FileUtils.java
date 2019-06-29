@@ -244,25 +244,12 @@ public class FileUtils {
 				content.append(lines[line]).append(Constants.S_NEWLINE);
 
 				// Process
-				Map<Integer, Integer> pointerOffsets = new HashMap<>();
-				byte[] hex = hexTable.toHex(content.toString(), pointerOffsets, entry);
+				byte[] hex = hexTable.toHex(content.toString(), entry);
 				if (Utils.isDebug()) {
 					Utils.log(" TO OFFSET: " + Utils.intToHexString(entry.getStart(), Constants.HEX_ADDR_SIZE));
 				}
 				System.arraycopy(hex, 0, outFileBytes, entry.getStart(), hex.length);
 				totalBytesWritten += hex.length;
-
-				// Insert offsets
-				for (Map.Entry<Integer, Integer> e : pointerOffsets.entrySet()) {
-					byte[] data = Utils.intToByteArray(e.getValue());
-					if (e.getKey() >= entry.getStart() && e.getKey() <= entry.getStart() + hex.length
-							|| e.getKey() + data.length >= entry.getStart()
-							&& e.getKey() + data.length <= entry.getStart() + hex.length) {
-						Utils.log("INSERTING OFFSET " + e.getValue() + "[" + e.getKey() + ":" + e.getKey() + data.length
-								+ "] TO STRING AREA [" + entry.getStart() + ":" + entry.getStart() + hex.length + "]");
-					}
-					System.arraycopy(data, 0, outFileBytes, e.getKey(), data.length);
-				}
 			}
 		}
 		Utils.log("TOTAL BYTES WRITTEN: " + Utils.fillLeft(valueOf(totalBytesWritten), Constants.HEX_ADDR_SIZE)
@@ -393,11 +380,12 @@ public class FileUtils {
 	 */
 	public static List<TableSearchResult> multiSearchRelative8Bits(byte[] fileBytes, String searchString, int expansion) {
 		Set<TableSearchResult>  res = new HashSet<>();
-		String replacement = "";
+		StringBuilder replacement = new StringBuilder();
 		if(searchString.contains(Constants.STR_ASTER)) {
 			for(int i = 0; i < expansion; i++) {
-				replacement += Constants.STR_ASTER;
-				res.addAll(searchRelative8Bits(fileBytes, searchString.replaceAll(Constants.REGEX_STR_ASTER, replacement)));
+				replacement.append(Constants.STR_ASTER);
+				res.addAll(searchRelative8Bits(fileBytes,
+						searchString.replaceAll(Constants.REGEX_STR_ASTER, replacement.toString())));
 			}
 		}
 		else {
@@ -463,11 +451,11 @@ public class FileUtils {
 	public static List<TableSearchResult> multiFindString(byte[] fileBytes, HexTable hexTable, String searchString,
 			boolean ignoreCase, int expansion) {
 		List<TableSearchResult> res = new ArrayList<>();
-		String replacement = "";
 		if (searchString.contains(Constants.STR_ASTER)) {
+			StringBuilder replacement = new StringBuilder();
 			for (int i = 0; i < expansion; i++) {
-				replacement += Constants.STR_ASTER;
-				String searchStrRep = searchString.replaceAll(Constants.REGEX_STR_ASTER, replacement);
+				replacement.append(Constants.STR_ASTER);
+				String searchStrRep = searchString.replaceAll(Constants.REGEX_STR_ASTER, replacement.toString());
 				res.addAll(toTableResults(hexTable, searchStrRep,
 						findString(fileBytes, hexTable, searchStrRep, ignoreCase)));
 			}
@@ -693,20 +681,16 @@ public class FileUtils {
 	 */
 	private static String separateCharLength(String text, HexTable table) {
 		StringBuilder res = new StringBuilder();
-		int length = text.length();
-		for (int i = 0; i < length;) {
+		int i = 0;
+		while(i < text.length()) {
 			String lenChar = text.substring(i, i + 1);
 			int strLen = table.toHex(lenChar)[0];
 			if (strLen == 0) {
 				res.append(lenChar);
 				i++;
 			} else {
-				int endLength = i + 1 + strLen;
-				if (endLength > length) {
-					endLength = length;
-				}
 				res.append(Constants.S_NEWLINE).append(lenChar).append(Constants.S_NEWLINE);
-				res.append(text, i + 1, endLength);
+				res.append(text, i + 1, Math.min(i + 1 + strLen, text.length()));
 				i += strLen + 1;
 			}
 		}

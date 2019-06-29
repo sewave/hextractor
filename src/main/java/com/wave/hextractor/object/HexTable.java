@@ -51,10 +51,10 @@ public class HexTable implements Serializable {
 	}
 
 	/** The table. */
-	private Map<Byte, String> table;
+	private Map<Byte, String> table = new HashMap<>();
 
 	/** The reversed. */
-	private Map<String, Byte> reversed;
+	private Map<String, Byte> reversed = new HashMap<>();
 
 	/** The searchPercentCompleted. */
 	private float searchPercent = 0;
@@ -64,10 +64,7 @@ public class HexTable implements Serializable {
 	 */
 	public String toString(byte aByte, boolean expand, boolean decodeUnknown) {
 		String res = table.get(aByte);
-		if(res != null && (res.length() == 1 || expand)) {
-			res = table.get(aByte);
-		}
-		else {
+		if(res == null || (res.length() > 1 && !expand)) {
 			if(decodeUnknown) {
 				res = Constants.HEX_CHAR + Utils.intToHexString(aByte, 2) + Constants.HEX_CHAR;
 			}
@@ -251,17 +248,6 @@ public class HexTable implements Serializable {
 	 *
 	 * @param hexString the hex string
 	 * @param entry the entry
-	 * @return the string
-	 */
-	public String toAscii(byte[] hexString, OffsetEntry entry) {
-		return toAscii(hexString, entry, true);
-	}
-
-	/**
-	 * Translates to ascii entry to a hex string.
-	 *
-	 * @param hexString the hex string
-	 * @param entry the entry
 	 * @param showExtracting shows current extraction
 	 * @return the string
 	 */
@@ -320,11 +306,10 @@ public class HexTable implements Serializable {
 	 * Transforms the ascii string to hex byte[].
 	 *
 	 * @param string the string
-	 * @param pointerOffsets the pointer offsets
 	 * @param entry the entry
 	 * @return the byte[]
 	 */
-	public byte[] toHex(String string, Map<Integer, Integer> pointerOffsets, OffsetEntry entry) {
+	public byte[] toHex(String string, OffsetEntry entry) {
 		int offset = 0;
 		int offsetStart = 0;
 		byte[] hex = new byte[string.length() * 16];
@@ -373,11 +358,6 @@ public class HexTable implements Serializable {
 							String hexTo = string.substring(i+1, i+1+8);
 							Utils.log("INSERTING OFFSET " +
 									Utils.fillLeft(Integer.toHexString(offsetStart), Constants.HEX_ADDR_SIZE) + " TO " + hexTo);
-							int addrTo = Integer.parseInt(hexTo, Constants.HEX_RADIX);
-							if(pointerOffsets.containsKey(addrTo)) {
-								Utils.log("ERROR!!! DUPLICATED OFFSET ENTRY");
-							}
-							pointerOffsets.put(addrTo, offsetStart);
 							i+=8;
 							nextchar = string.substring(i+1, i+2).charAt(0);
 						}
@@ -454,7 +434,7 @@ public class HexTable implements Serializable {
 					boolean foundCodeWord = false;
 					while(!foundCodeWord && k < string.length() - 2) {
 						k++;
-						foundCodeWord = string.substring(k, k+1).equals(Constants.S_CODEWORD_END);
+						foundCodeWord = Constants.S_CODEWORD_END.equals(string.substring(k, k+1));
 					}
 					byte codeWordValue = hexSpace;
 					if(foundCodeWord) {
@@ -596,7 +576,7 @@ public class HexTable implements Serializable {
 				}
 				else {
 					skippedChars.add(dataCharHex);
-					boolean skippedAreEndings = listContainsFromList(endCharsList, skippedChars);
+					boolean skippedAreEndings = endCharsList.stream().anyMatch(skippedChars::contains);
 					if(skippedChars.size() > numIgnoredChars) {
 						if(sentence.length() > numMinChars) {
 							if(Utils.stringHasWords(dict, word.toString()) || validString && skippedAreEndings) {
@@ -617,7 +597,6 @@ public class HexTable implements Serializable {
 				break;
 			}
 		}
-		//Cleanup?
 		if(entryStart > 0) {
 			offsetEntryList.add(new OffsetEntry(entryStart, secondFileBytes.length - 1, endCharsList));
 		}
@@ -626,24 +605,6 @@ public class HexTable implements Serializable {
 			word.append(oe.toEntryString()).append(Constants.OFFSET_STR_SEPARATOR);
 		}
 		return word.toString();
-	}
-
-	/**
-	 * List contains from list.
-	 *
-	 * @param list1 the list 1
-	 * @param list2 the list 2
-	 * @return true, if successful
-	 */
-	private boolean listContainsFromList(List<String> list1, List<String> list2) {
-		boolean res = false;
-		for(String skippedChar : list2) {
-			if(list1.contains(skippedChar)) {
-				res = true;
-				break;
-			}
-		}
-		return res;
 	}
 
 	/**
