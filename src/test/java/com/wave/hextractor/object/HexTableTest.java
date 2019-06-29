@@ -134,7 +134,7 @@ public class HexTableTest {
         File searchAll = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("files/searchAll.txt")).getFile());
         byte[] secondFileBytes = Files.readAllBytes(searchAll.toPath());
         File dictFile = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("files/TestDict.txt")).getFile());
-        Assert.assertEquals("00000000-0000000A-00-FF,0000000F-00000018-00-FF,00000033-0000003C-00-FF,",
+        Assert.assertEquals("00000000-0000000A-00-FF,0000000C-00000015-00-FF,00000022-0000002B-00-FF,",
                 table.getAllEntries(secondFileBytes, 4, 1,
         Arrays.asList("00", "FF"), dictFile.getAbsolutePath()));
     }

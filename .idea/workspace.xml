@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f2bd93eb-de9a-431f-a67b-142c6baba63d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/test/resources/files/searchAll.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/object/HexTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/object/HexTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/pojo/OffsetEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/pojo/OffsetEntry.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/FileUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/FileUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/Utils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/wave/hextractor/object/HexTableTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/wave/hextractor/object/HexTableTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/wave/hextractor/util/UtilsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/wave/hextractor/util/UtilsTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="f2bd93eb-de9a-431f-a67b-142c6baba63d" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/classes/" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -33,8 +24,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/com/wave/hextractor/util/UtilsTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="190" column="30" selection-start-line="190" selection-start-column="30" selection-end-line="190" selection-end-column="30" />
+            <state relative-caret-position="167">
+              <caret line="191" column="30" selection-start-line="191" selection-start-column="30" selection-end-line="191" selection-end-column="30" />
               <folding>
                 <element signature="e#4353#4354#0" expanded="true" />
                 <element signature="e#4419#4420#0" expanded="true" />
@@ -53,11 +44,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/object/HexTable.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="621" column="13" lean-forward="true" selection-start-line="621" selection-start-column="13" selection-end-line="621" selection-end-column="13" />
+            <state relative-caret-position="136">
+              <caret line="362" column="25" lean-forward="true" selection-start-line="362" selection-start-column="25" selection-end-line="362" selection-end-column="25" />
               <folding>
                 <element signature="e#2159#2160#0" expanded="true" />
                 <element signature="e#2203#2204#0" expanded="true" />
@@ -75,8 +66,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/Utils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="439" column="71" lean-forward="true" selection-start-line="439" selection-start-column="71" selection-end-line="439" selection-end-column="71" />
+            <state relative-caret-position="248">
+              <caret line="439" column="63" selection-start-line="439" selection-start-column="50" selection-end-line="439" selection-end-column="63" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/test/java/com/wave/hextractor/object/HexTableTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="171">
+              <caret line="134" column="30" selection-start-line="134" selection-start-column="15" selection-end-line="134" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -100,18 +100,6 @@
                 <element signature="e#2331#2332#0" expanded="true" />
                 <element signature="e#6968#6969#0" expanded="true" />
                 <element signature="e#7016#7017#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://C:/Program Files/Java/jdk1.8.0_202/src.zip!/java/lang/StringBuilder.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="106">
-              <caret line="130" selection-start-line="130" selection-end-line="130" />
-              <folding>
-                <element signature="e#4211#4212#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -369,18 +357,26 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.UtilsTest.sortByValue">
-    <configuration name="UtilsTest.getCleanedString" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.HexTableTest.getAllEntries">
+    <configuration name="All in hextractor" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hextractor" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="HexTableTest.getAllEntries" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="hextractor" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.wave.hextractor.util.*" />
+          <option name="PATTERN" value="com.wave.hextractor.object.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.wave.hextractor.util" />
-      <option name="MAIN_CLASS_NAME" value="com.wave.hextractor.util.UtilsTest" />
-      <option name="METHOD_NAME" value="getCleanedString" />
+      <option name="PACKAGE_NAME" value="com.wave.hextractor.object" />
+      <option name="MAIN_CLASS_NAME" value="com.wave.hextractor.object.HexTableTest" />
+      <option name="METHOD_NAME" value="getAllEntries" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -434,36 +430,20 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="UtilsTest.stringHasWords" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="hextractor" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.wave.hextractor.util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.wave.hextractor.util" />
-      <option name="MAIN_CLASS_NAME" value="com.wave.hextractor.util.UtilsTest" />
-      <option name="METHOD_NAME" value="stringHasWords" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <list>
-      <item itemvalue="JUnit.UtilsTest.stringHasWords" />
-      <item itemvalue="JUnit.UtilsTest.getCleanedString" />
       <item itemvalue="JUnit.UtilsTest.hexStringListToIntList" />
       <item itemvalue="JUnit.UtilsTest.getHexOffsets" />
       <item itemvalue="JUnit.UtilsTest.sortByValue" />
+      <item itemvalue="JUnit.All in hextractor" />
+      <item itemvalue="JUnit.HexTableTest.getAllEntries" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.HexTableTest.getAllEntries" />
+        <item itemvalue="JUnit.All in hextractor" />
         <item itemvalue="JUnit.UtilsTest.sortByValue" />
         <item itemvalue="JUnit.UtilsTest.getHexOffsets" />
         <item itemvalue="JUnit.UtilsTest.hexStringListToIntList" />
-        <item itemvalue="JUnit.UtilsTest.getCleanedString" />
-        <item itemvalue="JUnit.UtilsTest.stringHasWords" />
       </list>
     </recent_temporary>
   </component>
@@ -489,12 +469,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="UtilsTest_getHexOffsets - 2019.06.29 at 22h 14m 50s.xml">
-      <configuration name="UtilsTest.getHexOffsets" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="UtilsTest_getHexOffsets - 2019.06.29 at 22h 17m 36s.xml">
-      <configuration name="UtilsTest.getHexOffsets" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="UtilsTest_getHexOffsets - 2019.06.29 at 22h 18m 13s.xml">
       <configuration name="UtilsTest.getHexOffsets" configurationId="JUnit" />
     </history-entry>
@@ -519,6 +493,12 @@
     <history-entry file="UtilsTest_sortByValue - 2019.06.29 at 22h 42m 32s.xml">
       <configuration name="UtilsTest.sortByValue" configurationId="JUnit" />
     </history-entry>
+    <history-entry file="All_in_hextractor - 2019.06.29 at 22h 50m 20s.xml">
+      <configuration name="All in hextractor" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="HexTableTest_getAllEntries - 2019.06.29 at 22h 52m 41s.xml">
+      <configuration name="HexTableTest.getAllEntries" configurationId="JUnit" />
+    </history-entry>
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -533,7 +513,7 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.2473525" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2473525" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Learn" order="3" />
@@ -560,34 +540,6 @@
       <window_info anchor="right" id="Palette&#9;" order="5" />
       <window_info anchor="right" id="Coverage" order="6" sideWeight="0.502439" side_tool="true" weight="0.3267776" />
     </layout>
-    <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2473525" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Designer" order="2" />
-      <window_info id="Learn" order="3" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Favorites" order="5" side_tool="true" />
-      <window_info anchor="bottom" id="SonarLint" order="0" weight="0.24549918" />
-      <window_info anchor="bottom" id="Message" order="1" />
-      <window_info anchor="bottom" id="Find" order="2" weight="0.3289689" />
-      <window_info active="true" anchor="bottom" id="Run" order="3" sideWeight="0.49924356" visible="true" weight="0.36988544" />
-      <window_info anchor="bottom" id="Debug" order="4" weight="0.39934534" />
-      <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="7" weight="0.3289689" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.3289689" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50075644" side_tool="true" weight="0.3289689" />
-      <window_info anchor="bottom" id="Version Control" order="10" weight="0.3289689" />
-      <window_info anchor="bottom" id="Messages" order="11" weight="0.3289689" />
-      <window_info anchor="bottom" id="Inspection Results" order="12" visible="true" weight="0.3289689" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="1" weight="0.25" />
-      <window_info anchor="right" id="Palette" order="2" />
-      <window_info anchor="right" id="Ant Build" order="3" sideWeight="0.49756098" weight="0.18986385" />
-      <window_info anchor="right" id="Maven" order="4" />
-      <window_info anchor="right" id="Palette&#9;" order="5" />
-      <window_info anchor="right" id="Coverage" order="6" sideWeight="0.502439" side_tool="true" visible="true" weight="0.3267776" />
-    </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="More tests" />
@@ -953,13 +905,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/wave/hextractor/object/HexTableTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="104" selection-start-line="104" selection-end-line="104" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_202/src.zip!/java/lang/String.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="106">
@@ -1037,29 +982,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/wave/hextractor/util/UtilsTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="190" column="30" selection-start-line="190" selection-start-column="30" selection-end-line="190" selection-end-column="30" />
-          <folding>
-            <element signature="e#4353#4354#0" expanded="true" />
-            <element signature="e#4419#4420#0" expanded="true" />
-            <element signature="e#4737#4738#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/Utils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="439" column="71" lean-forward="true" selection-start-line="439" selection-start-column="71" selection-end-line="439" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/object/HexTable.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="621" column="13" lean-forward="true" selection-start-line="621" selection-start-column="13" selection-end-line="621" selection-end-column="13" />
+        <state relative-caret-position="136">
+          <caret line="362" column="25" lean-forward="true" selection-start-line="362" selection-start-column="25" selection-end-line="362" selection-end-column="25" />
           <folding>
             <element signature="e#2159#2160#0" expanded="true" />
             <element signature="e#2203#2204#0" expanded="true" />
@@ -1070,6 +996,32 @@
             <element signature="e#19963#19964#0" expanded="true" />
             <element signature="e#19990#19991#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/wave/hextractor/util/UtilsTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="167">
+          <caret line="191" column="30" selection-start-line="191" selection-start-column="30" selection-end-line="191" selection-end-column="30" />
+          <folding>
+            <element signature="e#4353#4354#0" expanded="true" />
+            <element signature="e#4419#4420#0" expanded="true" />
+            <element signature="e#4737#4738#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/wave/hextractor/util/Utils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="248">
+          <caret line="439" column="63" selection-start-line="439" selection-start-column="50" selection-end-line="439" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/wave/hextractor/object/HexTableTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="134" column="30" selection-start-line="134" selection-start-column="15" selection-end-line="134" selection-end-column="30" />
         </state>
       </provider>
     </entry>
