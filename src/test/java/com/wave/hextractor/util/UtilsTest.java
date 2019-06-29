@@ -1,11 +1,13 @@
 package com.wave.hextractor.util;
 
+import com.wave.hextractor.pojo.OffsetEntry;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.UUID;
+import java.util.*;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
@@ -68,18 +70,24 @@ public class UtilsTest {
 
 	@Test
 	public void getHexFilledLeft() {
+		Assert.assertEquals("0000", Utils.getHexFilledLeft(0, 4));
 	}
 
 	@Test
 	public void toHexString() {
+		byte[] data = {0, 1, 2, 3, 4};
+		Assert.assertEquals("[00 01 02 03 04 ]", Utils.toHexString(data));
 	}
 
 	@Test
 	public void hexStringToByteArray() {
+		byte[] data = {0, 1, 2, 3, 4};
+		Assert.assertArrayEquals(data, Utils.hexStringToByteArray("0001020304"));
 	}
 
 	@Test
 	public void hexStringCharToByte() {
+		Assert.assertEquals((byte) 0, Utils.hexStringCharToByte("00"));
 	}
 
 	@Test
@@ -105,42 +113,86 @@ public class UtilsTest {
 
 	@Test
 	public void loadHex() {
+		String input = ";Traducciones Wave 2019\n" +
+				"00 01 02 03@00000000:00000003";
+		byte[] data = new byte[4];
+		Utils.loadHex(input, data);
+		byte[] dataEnd = {0, 1, 2, 3};
+		assertArrayEquals(dataEnd, data);
 	}
 
 	@Test
-	public void getOffsets() {
+	public void getOffsets() throws IOException {
+		File file = File.createTempFile("test", "getOffsets.off");
+		file.deleteOnExit();
+		String offsets = "00000000-00000003-FF";
+		FileUtils.writeFileAscii(file.getAbsolutePath(), offsets);
+		OffsetEntry entry = new OffsetEntry(0, 3, Collections.singletonList("FF"));
+		List<OffsetEntry> resEntries = Collections.singletonList(entry);
+		Assert.assertEquals(resEntries, Utils.getOffsets(file.getAbsolutePath()));
+		Assert.assertEquals(resEntries, Utils.getOffsets(offsets));
 	}
 
 	@Test
 	public void getLinesCleaned() {
+		String[] lines = {"aaa~~", "bbb@", "CCC^", "DDD¨"};
+		Utils.getLinesCleaned(lines);
 	}
 
 	@Test
 	public void stringHasWords() {
+		List<String> words = new ArrayList<>();
+		Assert.assertFalse(
+				Utils.stringHasWords(words,"many words"));
+		words.add("many");
+		words.add("words");
+		Assert.assertTrue(
+				Utils.stringHasWords(words,"many words"));
 	}
 
 	@Test
 	public void getCleanedString() {
+		Assert.assertEquals("abcd x'yz", Utils.getCleanedString("´Abcd    X'YZ"));
 	}
 
 	@Test
 	public void allSameValue() {
+		byte[] eq = {1, 1, 1, 1};
+		byte[] neq = {2, 1, 4, 1};
+		Assert.assertTrue(Utils.allSameValue(eq));
+		Assert.assertFalse(Utils.allSameValue(neq));
 	}
 
 	@Test
 	public void intToHexString() {
+		Assert.assertEquals("0001", Utils.intToHexString(1, 4));
 	}
 
 	@Test
 	public void hexStringListToIntList() {
+		String[] hexValues = {"01", "02", "03"};
+		int[] intValues = {1, 2, 3};
+		Assert.assertArrayEquals(intValues, Utils.hexStringListToIntList(hexValues));
 	}
 
 	@Test
 	public void getHexOffsets() {
+		String entries = "0-1,5:6";
+		List<OffsetEntry> offEntries = new ArrayList<>();
+		offEntries.add(new OffsetEntry(0,1, null));
+		offEntries.add(new OffsetEntry(5,10, null));
+		Assert.assertEquals(offEntries, Utils.getHexOffsets(entries));
 	}
 
 	@Test
 	public void sortByValue() {
+		Map<String, String> initMap = new HashMap<>();
+		initMap.put("01", "ZZ");
+		initMap.put("02", "AA");
+		initMap = Utils.sortByValue(initMap);
+		List<String> valuesInit = new ArrayList<>(initMap.values());
+		List<String> valuesSorted = Arrays.asList("AA", "ZZ");
+		Assert.assertEquals(valuesSorted, valuesInit);
 	}
 
 	@Test
@@ -149,10 +201,6 @@ public class UtilsTest {
 
 	@Test
 	public void extractDictionary() {
-	}
-
-	@Test
-	public void translateDictionary() {
 	}
 
 	@Test
@@ -169,10 +217,6 @@ public class UtilsTest {
 
 	@Test
 	public void getHexAreaFixedWidth() {
-	}
-
-	@Test
-	public void getHexAreaFixedWidthHtml() {
 	}
 
 	@Test
@@ -200,17 +244,35 @@ public class UtilsTest {
 
 	@Test
 	public void logNoNL() {
+		boolean ok = true;
+		try {
+			Utils.logNoNL("test");
+		} catch(Exception e) {
+			ok = false;
+		}
+		assertTrue(ok);
 	}
 
 	@Test
 	public void logException() {
+		boolean ok = true;
+		try {
+			Utils.logException(new Exception());
+		} catch(Exception e) {
+			ok = false;
+		}
+		assertTrue(ok);
 	}
 
 	@Test
 	public void shortToBytes() {
+		byte[] bytes16 = {2, 1};
+		assertArrayEquals(bytes16, Utils.shortToBytes((short) 258));
 	}
 
 	@Test
 	public void bytesToHex() {
+		byte[] bytes = {1, 2, 3, 4};
+		Assert.assertEquals("01020304", Utils.bytesToHex(bytes));
 	}
 }

@@ -654,7 +654,7 @@ public class FileUtils {
 		// 3-Check that pairs are length equal, else show a warning
 		for (Map.Entry<String, String> e : dictionary.entrySet()) {
 			if (!Utils.checkLineLength(e.getKey(), e.getValue())) {
-				Utils.log("Error en lineas:");
+				Utils.log("Error in lines:");
 				Utils.log(e.getKey());
 				Utils.log(e.getValue());
 			}

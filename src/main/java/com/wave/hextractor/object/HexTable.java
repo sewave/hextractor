@@ -614,15 +614,15 @@ public class HexTable implements Serializable {
 	 */
 	public String toAsciiTable() {
 		StringBuilder sb = new StringBuilder();
-		for(Map.Entry<Byte, String> entry : Utils.sortByValue(table).entrySet()) {
-			if(SPANISH_CHARS.containsKey(entry.getValue())) {
-				String spaChar = SPANISH_CHARS.get(entry.getValue());
-				sb.append(String.format(Constants.HEX_16_FORMAT, entry.getKey())).append(Constants.TABLE_SEPARATOR).append(spaChar);
+		Utils.sortByValue(table).forEach((key, value) -> {
+			if (SPANISH_CHARS.containsKey(value)) {
+				String spaChar = SPANISH_CHARS.get(value);
+				sb.append(String.format(Constants.HEX_16_FORMAT, key)).append(Constants.TABLE_SEPARATOR).append(spaChar);
 				sb.append(Constants.S_NEWLINE);
 			}
-			sb.append(String.format(Constants.HEX_16_FORMAT, entry.getKey())).append(Constants.TABLE_SEPARATOR).append(entry.getValue());
+			sb.append(String.format(Constants.HEX_16_FORMAT, key)).append(Constants.TABLE_SEPARATOR).append(value);
 			sb.append(Constants.S_NEWLINE);
-		}
+		});
 		return sb.toString();
 	}
 

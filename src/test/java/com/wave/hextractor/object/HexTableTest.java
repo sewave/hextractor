@@ -4,9 +4,13 @@ import com.wave.hextractor.pojo.OffsetEntry;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class HexTableTest {
 
@@ -125,10 +129,14 @@ public class HexTableTest {
     }
 
     @Test
-    public void getAllEntries() {
-        HexTable table = new HexTable(LINES);
-        //TODO search all
-        //table.getAllEntries();
+    public void getAllEntries() throws IOException {
+        HexTable table = new HexTable(0);
+        File searchAll = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("files/searchAll.txt")).getFile());
+        byte[] secondFileBytes = Files.readAllBytes(searchAll.toPath());
+        File dictFile = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("files/TestDict.txt")).getFile());
+        Assert.assertEquals("00000000-0000000A-00-FF,0000000F-00000018-00-FF,00000033-0000003C-00-FF,",
+                table.getAllEntries(secondFileBytes, 4, 1,
+        Arrays.asList("00", "FF"), dictFile.getAbsolutePath()));
     }
 
     @Test

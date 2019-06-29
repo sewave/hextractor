@@ -5,6 +5,8 @@ import com.wave.hextractor.pojo.OffsetEntry;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Utility class.
@@ -336,15 +338,8 @@ public class Utils {
 	 * @return true, if successful
 	 */
 	public static boolean stringHasWords(Collection<String> dict, String sentence) {
-		boolean hasWords = false;
-		sentence = getCleanedString(sentence);
-		for(String word: sentence.toLowerCase().split(Constants.SPACE_STR)) {
-			if(word != null && word.trim().length() > 3 && dict.contains(word)) {
-				hasWords = true;
-				break;
-			}
-		}
-		return hasWords;
+		return Arrays.stream(getCleanedString(sentence).toLowerCase().split(Constants.SPACE_STR)).
+				anyMatch(word -> word != null && word.trim().length() > 3 && dict.contains(word));
 	}
 
 	/**
@@ -367,14 +362,7 @@ public class Utils {
 	 * @return true, if successful
 	 */
 	public static boolean allSameValue(byte[] entryData) {
-		boolean isEquals = true;
-		for (byte entryDatum : entryData) {
-			if (entryData[0] != entryDatum) {
-				isEquals = false;
-				break;
-			}
-		}
-		return isEquals;
+		return IntStream.range(0, entryData.length).map(i->entryData[i]).distinct().count() <= 1;
 	}
 
 	/**
@@ -386,7 +374,7 @@ public class Utils {
 	 * @return the string
 	 */
 	public static String intToHexString(int value, int length) {
-		String num = Utils.fillLeft(Integer.toHexString(value), length).toUpperCase();
+		String num = fillLeft(Integer.toHexString(value), length).toUpperCase();
 		if (num.length() > length) {
 			num = num.substring(num.length() - length);
 		}
@@ -448,14 +436,8 @@ public class Utils {
 	 * @return the map
 	 */
 	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-		List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
-		list.sort(Comparator.comparing(Map.Entry::getValue));
-
-		Map<K, V> result = new LinkedHashMap<>();
-		for (Map.Entry<K, V> entry : list) {
-			result.put(entry.getKey(), entry.getValue());
-		}
-		return result;
+		return map.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+				(oldValue, newValue) -> oldValue, LinkedHashMap::new));
 	}
 
 	/**
@@ -524,31 +506,6 @@ public class Utils {
 			}
 		}
 		return dict;
-	}
-
-	/**
-	 * Translates toTransLines if they are on the
-	 * dictionary.
-	 *
-	 * @param toTransLines the to trans lines
-	 * @param dictionary the dictionary
-	 * @return the string[]
-	 */
-	public static String[] translateDictionary(String[] toTransLines, Map<String, String> dictionary) {
-		String[] translatedLines = new String[toTransLines.length];
-		String currKey = null;
-		for(int i = 0; i < toTransLines.length; i++) {
-			String line = toTransLines[i];
-			translatedLines[i] = line;
-			String aKey = getDictKey(line);
-			if(aKey != null) {
-				currKey = aKey;
-			}
-			if(isDictValue(line) && dictionary.containsKey(currKey)) {
-				translatedLines[i] = dictionary.get(currKey);
-			}
-		}
-		return translatedLines;
 	}
 
 	/**
@@ -637,42 +594,6 @@ public class Utils {
 		return sb.toString();
 	}
 	
-	/**
-	 * Gets the hex area as string 00 01 02 etc.
-	 *
-	 * @param offset the offset
-	 * @param length the length
-	 * @param data the data.
-	 * @return the hex area
-	 */
-	public static String getHexAreaFixedWidthHtml(int offset, int length, byte[] data, int cols) {
-		StringBuilder sb = new StringBuilder(length * Constants.HEX_VALUE_SIZE);
-		sb.append("<html><body>");
-		int end = offset + length;
-		if(end > data.length) {
-			end = data.length;
-		}
-		int curCol = 0;
-		for(int i = offset; i < end; i++) {
-			if(curCol % 2 == 0) {
-				sb.append("<span style=\"color:rgb(1, 253, 136)\">");
-			}
-			sb.append(String.format(Constants.HEX_16_FORMAT, data[i]));
-			if(curCol % 2 == 0) {
-				sb.append("</span>");
-			}
-			if(curCol == cols - 1 && i < end -1) {
-				sb.append("</br>");
-				curCol = 0;
-			}
-			else {
-				sb.append(Constants.SPACE_STR);
-				curCol++;
-			}
-		}
-		sb.append("</body></html>");
-		return sb.toString();
-	}
 
 	/**
 	 * Removes comment lines and joins nonaddress lines togheter

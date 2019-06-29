@@ -4,9 +4,7 @@ import com.wave.hextractor.util.Constants;
 import com.wave.hextractor.util.Utils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Offset pair entry.
@@ -134,7 +132,7 @@ public class OffsetEntry implements Comparable<OffsetEntry>, Serializable {
 		StringBuilder sb = new StringBuilder();
 		sb.append(Utils.fillLeft(Integer.toHexString(start), Constants.HEX_ADDR_SIZE).toUpperCase())
 		.append(Constants.OFFSET_CHAR_SEPARATOR).append(Utils.intToHexString(end, Constants.HEX_ADDR_SIZE));
-		for (String endChar : endChars) {
+		for (String endChar : Optional.ofNullable(endChars).orElse(Collections.emptyList())) {
 			sb.append(Constants.OFFSET_CHAR_SEPARATOR);
 			sb.append(Utils.fillLeft(endChar, Constants.HEX_SIZE).toUpperCase());
 		}
@@ -279,4 +277,18 @@ public class OffsetEntry implements Comparable<OffsetEntry>, Serializable {
 		return new OffsetEntry(numbers[0], numbers[1], Arrays.asList("FF"));
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		OffsetEntry that = (OffsetEntry) o;
+		return start == that.start &&
+				end == that.end &&
+				Objects.equals(endChars, that.endChars);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(start, end, endChars);
+	}
 }
