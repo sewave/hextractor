@@ -1,4 +1,3 @@
-.settings/org.eclipse.jdt.core.prefs
 .project
 .classpath
 bin/
@@ -6,5 +5,5 @@ _readme.txt
 EngDict.txt
 Hextractor.zip
 /target/
-.idea
-.settings
+.idea/
+.settings/

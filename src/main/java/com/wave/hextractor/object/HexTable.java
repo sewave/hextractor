@@ -151,12 +151,14 @@ public class HexTable implements Serializable {
 		StringBuilder sb = new StringBuilder();
 		byte currChar = (byte) (Constants.MIN_PRINTABLE_CHAR - displacement & Constants.MASK_8BIT);
 		for(int i = Constants.MIN_PRINTABLE_CHAR; i <= Constants.MAX_PRINTABLE_CHAR; i++) {
-			sb.setLength(0);
-			sb.append(String.format(Constants.HEX_16_FORMAT, currChar));
-			sb.append(Constants.TABLE_SEPARATOR);
-			sb.append((char) i);
-			sb.append(Constants.S_NEWLINE);
-			tableLines.add(sb.toString());
+			if(!Constants.RESERVED_CHARS.contains(String.valueOf((char) i))) {
+				sb.setLength(0);
+				sb.append(String.format(Constants.HEX_16_FORMAT, currChar));
+				sb.append(Constants.TABLE_SEPARATOR);
+				sb.append((char) i);
+				sb.append(Constants.S_NEWLINE);
+				tableLines.add(sb.toString());
+			}
 			currChar++;
 		}
 		loadLines(tableLines);

@@ -602,11 +602,9 @@ public class Utils {
 		StringBuilder sb = new StringBuilder();
 		for(String line : asciiFile.split(Constants.S_NEWLINE)) {
 			if(!line.contains(Constants.S_COMMENT_LINE)) {
+				sb.append(line);
 				if(line.contains(Constants.ADDR_STR)) {
-					sb.append(line).append(Constants.S_NEWLINE);
-				}
-				else {
-					sb.append(line);
+					sb.append(Constants.S_NEWLINE);
 				}
 			}
 		}

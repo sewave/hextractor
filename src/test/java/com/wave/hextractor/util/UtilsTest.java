@@ -1,5 +1,6 @@
 package com.wave.hextractor.util;
 
+import com.wave.hextractor.object.HexTable;
 import com.wave.hextractor.pojo.OffsetEntry;
 import org.junit.Assert;
 import org.junit.Test;
@@ -197,38 +198,85 @@ public class UtilsTest {
 
 	@Test
 	public void toFileString() {
+		List<OffsetEntry> offEntries = new ArrayList<>();
+		offEntries.add(new OffsetEntry(0,1, Arrays.asList("FF", "00")));
+		offEntries.add(new OffsetEntry(5,10, Arrays.asList("01", "00")));
+		Assert.assertEquals("00000000-00000001-FF-00,00000005-0000000A-01-00", Utils.toFileString(offEntries));
 	}
 
 	@Test
 	public void extractDictionary() {
+		String[] lines = new String[4];
+		lines[0] = ";000000DE{text1}#117#105";
+		lines[1] = "texto1#105";
+		lines[2] = ";000000DE{text2}#117#105";
+		lines[3] = "texto2#105";
+		Map<String, String> resMap = new HashMap<>();
+		resMap.put("text1#105", "texto1#105");
+		resMap.put("text2#105", "texto2#105");
+		Assert.assertEquals(resMap, Utils.extractDictionary(lines));
 	}
 
 	@Test
 	public void checkLineLength() {
+		Assert.assertTrue(Utils.checkLineLength("text1#105", "texto1#105"));
+		Assert.assertFalse(Utils.checkLineLength("text1#105", "texto1#106"));
 	}
 
 	@Test
 	public void getTextArea() {
+		HexTable table = new HexTable(0);
+		byte[] bytes = {0x40, 0x41, 0x42, 0x43, 0x44, 0x45};
+		Assert.assertEquals("ABCD", Utils.getTextArea(1, 4, bytes, table));
 	}
 
 	@Test
 	public void getHexArea() {
+		byte[] bytes = {0x40, 0x41, 0x42, 0x43, 0x44, 0x45};
+		Assert.assertEquals("41 42 43 44 ", Utils.getHexArea(1, 4, bytes));
 	}
 
 	@Test
 	public void getHexAreaFixedWidth() {
+		byte[] bytes = {0x40, 0x41, 0x42, 0x43, 0x44, 0x45};
+		Assert.assertEquals("41 42\n" + "43 44 ", Utils.getHexAreaFixedWidth(1, 4, bytes, 2));
 	}
 
 	@Test
 	public void removeCommentsAndJoin() {
+		String file = ";comment\n@addr\ntext\n;comment2\n@addr2\ntext2";
+		String[] res = {"@addr", "text@addr2", "text2"};
+		Assert.assertArrayEquals(res, Utils.removeCommentsAndJoin(file));
 	}
 
 	@Test
 	public void getCompressed4To3Data() {
+		byte[] bytes = {0, 1, 2, 3, 4};
+		byte[] bytesComp = {0, 16, -125, 4};
+		Assert.assertArrayEquals(bytesComp, Utils.getCompressed4To3Data(bytes));
+
+		byte[] bytes2 = {0, 1, 2, 3, 4, 5};
+		byte[] bytesComp2 = {0, 16, -125, 16};
+		Assert.assertArrayEquals(bytesComp2, Utils.getCompressed4To3Data(bytes2));
+
+		byte[] bytes3 = {0, 1, 2, 3, 4, 5, 6};
+		byte[] bytesComp3 = {0, 16, -125, 16, 81};
+		Assert.assertArrayEquals(bytesComp3, Utils.getCompressed4To3Data(bytes3));
 	}
 
 	@Test
 	public void getExpanded3To4Data() {
+		byte[] bytesComp = {0, 16, -125, 4};
+		byte[] bytesDecomp = {0, 1, 2, 3, 1, 0};
+		Assert.assertArrayEquals(bytesDecomp, Utils.getExpanded3To4Data(bytesComp));
+
+		byte[] bytesComp2 = {0, 16, -125, 16};
+		byte[] bytesDecomp2 = {0, 1, 2, 3, 4, 0};
+		Assert.assertArrayEquals(bytesDecomp2, Utils.getExpanded3To4Data(bytesComp2));
+
+		byte[] bytesComp3 = {0, 16, -125, 16, 81};
+		byte[] bytesDecomp3 = {0, 1, 2, 3, 4, 5, 4};
+		Assert.assertArrayEquals(bytesDecomp3, Utils.getExpanded3To4Data(bytesComp3));
 	}
 
 	@Test
