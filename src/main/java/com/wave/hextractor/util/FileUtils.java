@@ -704,12 +704,7 @@ public class FileUtils {
 	 * @return true, if successful
 	 */
 	public static boolean allFilesExist(String[] files) {
-		boolean res = true;
-		for (String file : files) {
-			File f = new File(file);
-			res &= f.exists() && !f.isDirectory();
-		}
-		return res;
+		return Arrays.stream(files).map(File::new).allMatch((x) -> x.exists() && !x.isDirectory());
 	}
 
 	/**
@@ -809,7 +804,7 @@ public class FileUtils {
 	}
 
 	static String getGameName(String fileName) {
-		int dot = fileName.indexOf('.');
+		int dot = fileName.lastIndexOf('.');
 		int cut = fileName.length();
 		if(dot > -1 && dot < cut) {
 			cut = dot;
