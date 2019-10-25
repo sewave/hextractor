@@ -327,7 +327,8 @@ public class HexTable implements Serializable {
 			hexSpace = 0;
 		}
 		int stringStart = 0;
-		for(int i = 0; i <string.length() && !end; i++) {
+		int i = 0;
+		while(i <string.length() && !end) {
 			next = string.substring(i, i+1).charAt(0);
 			if(incomment) {
 				if(Constants.NEWLINE == next) {
@@ -466,6 +467,7 @@ public class HexTable implements Serializable {
 					break;
 				}
 			}
+			i++;
 		}
 		if(offset > maxsize) {
 			offset = maxsize;
@@ -474,7 +476,7 @@ public class HexTable implements Serializable {
 		if(offset < maxsize) {
 			Utils.log("WARNING!!! STRING TOO SMALL");
 			Utils.log(string.substring(stringStart));
-			for(int i = offset; i < maxsize; i++) {
+			for(int j = offset; j < maxsize; j++) {
 				hex[i] = Constants.PAD_CHAR;
 			}
 		}

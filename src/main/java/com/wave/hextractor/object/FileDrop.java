@@ -1,9 +1,13 @@
 package com.wave.hextractor.object;
 
+import com.wave.hextractor.util.Utils;
+
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class makes it easy to drag and drop files from the operating
@@ -391,30 +395,31 @@ public class FileDrop {
 	 * @param out the out
 	 * @return the file[]
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static File[] createFileArray(BufferedReader bReader, PrintStream out) {
 		try {
-			java.util.List list = new java.util.ArrayList();
-			java.lang.String line;
+			List<File> list = new ArrayList<>();
+			String line;
 			while ((line = bReader.readLine()) != null) {
-				try {
-					// kde seems to append a 0 char to the end of the reader
-					if (ZERO_CHAR_STRING.equals(line)) {
-						continue;
-					}
-
-					java.io.File file = new java.io.File(new java.net.URI(line));
-					list.add(file);
-				} catch (Exception ex) {
-					log(out, "Error with " + line + ": " + ex.getMessage());
-				}
+				readFileLine(out, list, line);
 			}
-
-			return (java.io.File[]) list.toArray(new File[list.size()]);
+			return list.toArray(new File[0]);
 		} catch (IOException ex) {
 			log(out, "FileDrop: IOException");
 		}
 		return new File[0];
+	}
+
+	private static void readFileLine(PrintStream out, List<File> list, String line) {
+		try {
+			// kde seems to append a 0 char to the end of the reader
+			if (ZERO_CHAR_STRING.equals(line)) {
+				return;
+			}
+			File file = new File(new java.net.URI(line));
+			list.add(file);
+		} catch (Exception ex) {
+			log(out, "Error with " + line + ": " + ex.getMessage());
+		}
 	}
 	// END 2007-09-12 Nathan Blomquist -- Linux (KDE/Gnome) support added.
 
@@ -432,7 +437,7 @@ public class FileDrop {
 			dt.addDropTargetListener(dropListener);
 		} // end try
 		catch (java.util.TooManyListenersException e) {
-			e.printStackTrace();
+			Utils.logException(e);
 			log(out, "FileDrop: Drop will not work due to previous error. Do you have another listener attached?");
 		} // end catch
 
@@ -525,29 +530,13 @@ public class FileDrop {
 	 * Removes the drag-and-drop hooks from the component and optionally
 	 * from the all children. You should call this if you add and remove
 	 * components after you've set up the drag-and-drop.
-	 * This will recursively unregister all components contained within
-	 * <var>c</var> if <var>c</var> is a {@link java.awt.Container}.
-	 *
-	 * @param c The component to unregister as a drop target
-	 * @return true, if successful
-	 * @since 1.0
-	 */
-	public static boolean remove(java.awt.Component c) {
-		return remove(null, c, true);
-	}
-
-	/**
-	 * Removes the drag-and-drop hooks from the component and optionally
-	 * from the all children. You should call this if you add and remove
-	 * components after you've set up the drag-and-drop.
 	 *
 	 * @param out Optional {@link java.io.PrintStream} for logging drag and drop messages
 	 * @param c The component to unregister
 	 * @param recursive Recursively unregister components within a container
-	 * @return true, if successful
 	 * @since 1.0
 	 */
-	public static boolean remove(java.io.PrintStream out, java.awt.Component c, boolean recursive) { // Make sure we
+	public static void remove(java.io.PrintStream out, java.awt.Component c, boolean recursive) { // Make sure we
 		// support dnd.
 		if (supportsDnD()) {
 			log(out, "FileDrop: Removing drag-and-drop hooks.");
@@ -557,16 +546,9 @@ public class FileDrop {
 				for (Component comp : comps) {
 					remove(out, comp, true);
 				}
-				return true;
-			} // end if: recursive
-			else {
-				return false;
 			}
-		} // end if: supports DnD
-		else {
-			return false;
 		}
-	} // end remove
+	}
 
 	/* ******** I N N E R I N T E R F A C E L I S T E N E R ******** */
 
@@ -586,7 +568,6 @@ public class FileDrop {
 	 * @since 1.1
 	 */
 	public interface Listener {
-
 		/**
 		 * This method is called when files have been successfully dropped.
 		 *
@@ -594,54 +575,6 @@ public class FileDrop {
 		 * @since 1.0
 		 */
 		void filesDropped(java.io.File[] files);
-
 	} // end inner-interface Listener
 
-	/* ******** I N N E R C L A S S ******** */
-
-	/**
-	 * This is the event that is passed to the
-	 * method in
-	 * your when files are dropped onto
-	 * a registered drop target.
-	 *
-	 * <p>I'm releasing this code into the Public Domain. Enjoy.</p>
-	 *
-	 * @author  Robert Harder
-	 * @author  rob@iharder.net
-	 * @version 1.2
-	 */
-	public static class Event extends java.util.EventObject {
-
-		/** The Constant serialVersionUID. */
-		private static final long serialVersionUID = -6577649858992362236L;
-
-		/** The files. */
-		private java.io.File[] files;
-
-		/**
-		 * Constructs an {@link Event} with the array
-		 * of files that were dropped and the
-		 * {@link FileDrop} that initiated the event.
-		 *
-		 * @param files The array of files that were dropped
-		 * @param source the source
-		 * @since 1.1
-		 */
-		public Event(java.io.File[] files, Object source) {
-			super(source);
-			this.files = files;
-		}
-
-		/**
-		 * Returns an array of files that were dropped on a
-		 * registered drop target.
-		 *
-		 * @return array of files that were dropped
-		 * @since 1.1
-		 */
-		public java.io.File[] getFiles() {
-			return files;
-		}
-	}
 }

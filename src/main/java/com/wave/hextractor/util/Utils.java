@@ -33,8 +33,9 @@ public class Utils {
 		boolean res = true;
 		if(fileName != null) {
 			for(String invalidChar : INVALID_FILE_CHARACTERS) {
-				if(fileName.contains(invalidChar)) {
+				if (fileName.contains(invalidChar)) {
 					res = false;
+					break;
 				}
 			}
 		}
@@ -220,7 +221,8 @@ public class Utils {
 		input = input.toUpperCase();
 		boolean incomment = false;
 		StringBuilder hexLine = new StringBuilder();
-		for(int i = 0; i < input.length(); i++) {
+		int i = 0;
+		while( i < input.length()) {
 			String charString = input.substring(i, i+1);
 			char charGot = charString.charAt(0);
 			if(incomment) {
@@ -277,6 +279,7 @@ public class Utils {
 					}
 				}
 			}
+			i++;
 		}
 	}
 
@@ -403,7 +406,7 @@ public class Utils {
 	 */
 	public static List<OffsetEntry> getHexOffsets(String entries) {
 		List<OffsetEntry> entryList = new ArrayList<>();
-		for(String entryStr : entries.replaceAll(Constants.SPACE_STR, Constants.EMPTY).split(Constants.OFFSET_STR_SEPARATOR)) {
+		for(String entryStr : entries.replace(Constants.SPACE_STR, Constants.EMPTY).split(Constants.OFFSET_STR_SEPARATOR)) {
 			OffsetEntry  entry = null;
 			if(entryStr.contains(Constants.OFFSET_CHAR_SEPARATOR)) {
 				//00001-00003 type init-end (inclusives)

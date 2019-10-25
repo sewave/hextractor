@@ -195,35 +195,10 @@ public class SNESChecksumUtils {
 		} else {
 			Utils.log("With NO SMC header");
 		}
-
-		int cleanedRomSize;
-
-		if (romSize > SNES_03_04MBIT_SIZE) {
-			if (romSize > SNES_05_08MBIT_SIZE) {
-				if (romSize > SNES_09_16MBIT_SIZE) {
-					if (romSize > SNES_17_32MBIT_SIZE) {
-						if (romSize > SNES_33_64MBIT_SIZE) {
-							throw new IllegalArgumentException("Rom size too large!!!!");
-						} else {
-							cleanedRomSize = SNES_33_64MBIT_SIZE;
-						}
-					} else {
-						cleanedRomSize = SNES_17_32MBIT_SIZE;
-					}
-				} else {
-					cleanedRomSize = SNES_09_16MBIT_SIZE;
-				}
-			} else {
-				cleanedRomSize = SNES_05_08MBIT_SIZE;
-			}
-		} else {
-			cleanedRomSize = SNES_03_04MBIT_SIZE;
-		}
-
+		int cleanedRomSize = getCleanedRomSize(romSize);
 		cleanedRom = new byte[cleanedRomSize];
 		// Copy original rom info
 		System.arraycopy(fileBytes, headerSize, cleanedRom, 0, romSize);
-
 		if (romSize != cleanedRomSize) {
 			Utils.log("Expanding rom to " + cleanedRomSize / SNES_ROM_SIZE_1MBIT + " Mbit");
 			// clone last chunk
@@ -231,6 +206,38 @@ public class SNESChecksumUtils {
 					cleanedRomSize - romSize);
 		}
 		return cleanedRom;
+	}
+
+	private static int getCleanedRomSize(int romSize) {
+		int cleanedRomSize;
+		if (romSize > SNES_03_04MBIT_SIZE) {
+			if (romSize > SNES_05_08MBIT_SIZE) {
+				cleanedRomSize = getCleanedRomSizeLarge(romSize);
+			} else {
+				cleanedRomSize = SNES_05_08MBIT_SIZE;
+			}
+		} else {
+			cleanedRomSize = SNES_03_04MBIT_SIZE;
+		}
+		return cleanedRomSize;
+	}
+
+	private static int getCleanedRomSizeLarge(int romSize) {
+		int cleanedRomSize;
+		if (romSize > SNES_09_16MBIT_SIZE) {
+			if (romSize > SNES_17_32MBIT_SIZE) {
+				if (romSize > SNES_33_64MBIT_SIZE) {
+					throw new IllegalArgumentException("Rom size too large!!!!");
+				} else {
+					cleanedRomSize = SNES_33_64MBIT_SIZE;
+				}
+			} else {
+				cleanedRomSize = SNES_17_32MBIT_SIZE;
+			}
+		} else {
+			cleanedRomSize = SNES_09_16MBIT_SIZE;
+		}
+		return cleanedRomSize;
 	}
 
 	/**

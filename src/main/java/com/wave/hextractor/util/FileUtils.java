@@ -200,39 +200,40 @@ public class FileUtils {
 		byte[] outFileBytes = Files.readAllBytes(Paths.get(thirdFile));
 		String[] lines = input.split(Constants.S_NEWLINE);
 		int totalBytesWritten = 0;
-		for (int line = 0; line < lines.length; line++) {
-			if (lines[line] != null && lines[line].contains(Constants.ADDR_STR)) {
-				// Read entry
-				OffsetEntry entry = new OffsetEntry(lines[line]);
+		int line = 0;
+		while (line < lines.length) {
+			String lineStr = lines[line];
+			if (lineStr != null && lineStr.contains(Constants.ADDR_STR)) {
+				OffsetEntry entry = new OffsetEntry(lineStr);
 				line++;
-				// Read content (including end)
 				StringBuilder content = new StringBuilder();
-				// Put lines not starting with |
-				while (!lines[line].contains(Constants.S_MAX_BYTES)) {
-					if (lines[line] != null && lines[line].length() > 0
-							&& !lines[line].contains(Constants.S_COMMENT_LINE)) {
-						content.append(lines[line]);
-						if (lines[line].contains(Constants.S_STR_NUM_CHARS)) {
-							content.append(Constants.S_NEWLINE);
-						}
-					}
-					line++;
-				}
-				// End line
-				content.append(lines[line]).append(Constants.S_NEWLINE);
-
-				// Process
-				byte[] hex = hexTable.toHex(content.toString(), entry);
+				line = getLine(lineStr, line, content);
+				content.append(lineStr).append(Constants.S_NEWLINE);
 				if (Utils.isDebug()) {
 					Utils.log(" TO OFFSET: " + Utils.intToHexString(entry.getStart(), Constants.HEX_ADDR_SIZE));
 				}
+				byte[] hex = hexTable.toHex(content.toString(), entry);
 				System.arraycopy(hex, 0, outFileBytes, entry.getStart(), hex.length);
 				totalBytesWritten += hex.length;
 			}
+			line++;
 		}
 		Utils.log("TOTAL BYTES WRITTEN: " + Utils.fillLeft(valueOf(totalBytesWritten), Constants.HEX_ADDR_SIZE)
 		+ " / " + Utils.intToHexString(totalBytesWritten, Constants.HEX_ADDR_SIZE) + " Hex");
 		Files.write(Paths.get(thirdFile), outFileBytes);
+	}
+
+	private static int getLine(String line, int lineNum, StringBuilder content) {
+		while (!line.contains(Constants.S_MAX_BYTES)) {
+			if (line.length() > 0 && !line.contains(Constants.S_COMMENT_LINE)) {
+				content.append(lineNum);
+				if (line.contains(Constants.S_STR_NUM_CHARS)) {
+					content.append(Constants.S_NEWLINE);
+				}
+			}
+			lineNum++;
+		}
+		return lineNum;
 	}
 
 	/**
@@ -329,7 +330,8 @@ public class FileUtils {
 					"Minimal word length / Longitud minima de palabra : " + Constants.MIN_SEARCH_WORD_LENGTH);
 		}
 		byte[] searchBytes = searchString.getBytes(StandardCharsets.US_ASCII);
-		for (int i = 0; i < fileBytes.length - wordLength; i++) {
+		int i = 0;
+		while (i < fileBytes.length - wordLength) {
 			int displacement = searchBytes[0] - fileBytes[i] & Constants.MASK_8BIT;
 			if (equivalentChars(displacement, searchBytes, Arrays.copyOfRange(fileBytes, i, i + wordLength))) {
 				TableSearchResult tr = new TableSearchResult();
@@ -345,6 +347,7 @@ public class FileUtils {
 			if (res.size() > 999) {
 				break;
 			}
+			i++;
 		}
 		return res;
 	}
@@ -381,8 +384,7 @@ public class FileUtils {
 	 * @return .
 	 * @throws IllegalArgumentException .
 	 */
-	private static List<Integer> findString(byte[] fileBytes, HexTable hexTable, String searchString,
-											boolean ignoreCase) {
+	private static List<Integer> findString(byte[] fileBytes, HexTable hexTable, String searchString, boolean ignoreCase) {
 		List<Integer> res = new ArrayList<>();
 		int wordLength = searchString.length();
 		if (ignoreCase) {
@@ -392,19 +394,13 @@ public class FileUtils {
 			throw new IllegalArgumentException(
 					"Minimal word length / Longitud minima de palabra : " + Constants.MIN_SEARCH_WORD_LENGTH);
 		}
-		for (int i = 0; i < fileBytes.length - wordLength; i++) {
+		int i = 0;
+		while (i < fileBytes.length - wordLength) {
 			String word = hexTable.toAscii(Arrays.copyOfRange(fileBytes, i, i + wordLength), true);
 			if (ignoreCase) {
 				word = word.toUpperCase();
 			}
-			boolean areEqual = true;
-			for (int j = 0; j < wordLength; j++) {
-				if (searchString.charAt(j) != Constants.CHR_ASTER && searchString.charAt(j) != word.charAt(j)) {
-					areEqual = false;
-					break;
-				}
-			}
-			if (areEqual) {
+			if (areEqual(searchString, wordLength, word)) {
 				if (!res.contains(i)) {
 					res.add(i);
 				}
@@ -413,8 +409,20 @@ public class FileUtils {
 			if (res.size() > 999) {
 				break;
 			}
+			i++;
 		}
 		return res;
+	}
+
+	private static boolean areEqual(String searchString, int wordLength, String word) {
+		boolean areEqual = true;
+		for (int j = 0; j < wordLength; j++) {
+			if (searchString.charAt(j) != Constants.CHR_ASTER && searchString.charAt(j) != word.charAt(j)) {
+				areEqual = false;
+				break;
+			}
+		}
+		return areEqual;
 	}
 
 	/**

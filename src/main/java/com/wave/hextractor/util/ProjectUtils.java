@@ -215,6 +215,15 @@ public class ProjectUtils {
 		fileContent.append("copy " + SFILENAMENAME_VAR + " " + TFILENAMENAME_VAR).append(Constants.NEWLINE);
 		fileContent.append(PROG_CALL).append("-ih "+ SCRIPTNAME_VAR +".hex " + TFILENAMENAME_VAR).append(Constants.NEWLINE);
 		fileContent.append(PROG_CALL).append("-h "+ SCRIPTNAME_VAR +".tbl tr_"+ SCRIPTNAME_VAR +".ext " + TFILENAMENAME_VAR).append(Constants.NEWLINE);
+		String checksumMode = getChecksumMode(fileName, fileType);
+		if(checksumMode.length() > 0) {
+			fileContent.append(PROG_CALL).append(checksumMode).append(" ").append(TFILENAMENAME_VAR).append(Constants.NEWLINE);
+		}
+		fileContent.append(PAUSE).append(Constants.NEWLINE);
+		return fileContent.toString();
+	}
+
+	private static String getChecksumMode(String fileName, String fileType) {
 		String checksumMode = Constants.EMPTY;
 		if(Constants.FILE_TYPE_MEGADRIVE.equals(fileType) || fileName.endsWith(".32x")) {
 			checksumMode = Hextractor.MODE_FIX_MEGADRIVE_CHECKSUM;
@@ -244,11 +253,7 @@ public class ProjectUtils {
 				}
 			}
 		}
-		if(checksumMode.length() > 0) {
-			fileContent.append(PROG_CALL).append(checksumMode).append(" ").append(TFILENAMENAME_VAR).append(Constants.NEWLINE);
-		}
-		fileContent.append(PAUSE).append(Constants.NEWLINE);
-		return fileContent.toString();
+		return checksumMode;
 	}
 
 	/**
@@ -349,7 +354,7 @@ public class ProjectUtils {
 		for(String ext : Constants.EXTENSIONS_SNES) {
 			projectName = projectName.replace("."+ext, "sfc");
 		}
-		projectName = projectName.replaceAll(" ", "");
+		projectName = projectName.replace(" ", "");
 		projectName = projectName.replaceAll("(\\(.*\\))", "");
 		projectName = projectName.replaceAll("(\\[.*])", "");
 		projectName = projectName.replaceAll("[^A-Za-z0-9]", "");

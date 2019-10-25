@@ -232,29 +232,29 @@ public class OffsetEntry implements Comparable<OffsetEntry>, Serializable {
 	public void mergeInto(List<OffsetEntry> offEntries) {
 		List<OffsetEntry> result = new ArrayList<>();
 		for (OffsetEntry oEntry : offEntries) {
-			boolean startInside = oEntry.getStart() >= getStart() && oEntry.getStart() <= getEnd();
-			boolean endInside = oEntry.getEnd() >= getStart() && oEntry.getEnd() <= getEnd();
-			// Si esta fuera de rango, se incluye en el resultado
-			if (!startInside && !endInside) {
-				result.add(oEntry);
-			} else {
-				// Uno fuera y uno dentro
-				if ((!startInside || !endInside) && (startInside || endInside)) {
-					if (!startInside) {
-						setStart(oEntry.getStart());
-					}
-					if (!endInside) {
-						setEnd(oEntry.getEnd());
-					}
-				}
-			}
-			// Si ambos estan dentro, el offset se pierde
+			resultMerge(result, oEntry, oEntry.getStart() >= getStart() && oEntry.getStart() <= getEnd(),
+					oEntry.getEnd() >= getStart() && oEntry.getEnd() <= getEnd());
 		}
 		result.add(this);
-
 		// Como iteramos sobre ella, es mejor actualizarla al final
 		offEntries.clear();
 		offEntries.addAll(result);
+	}
+
+	private void resultMerge(List<OffsetEntry> result, OffsetEntry oEntry, boolean startInside, boolean endInside) {
+		// Si esta fuera de rango, se incluye en el resultado
+		if (!startInside && !endInside) {
+			result.add(oEntry);
+		} else {
+			// Uno fuera y uno dentro
+			if (!startInside) {
+				setStart(oEntry.getStart());
+			}
+			if (!endInside) {
+				setEnd(oEntry.getEnd());
+			}
+		}
+		// Si ambos estan dentro, el offset se pierde
 	}
 
 	/**

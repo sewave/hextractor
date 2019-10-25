@@ -602,7 +602,7 @@ public class HexViewer extends JFrame implements ActionListener {
             if(result.matches(REGEXP_OFFSET_ENTRIES)) {
                 lastSelectedEndChars = result;
                 selectedEntry.setEndChars(Arrays.asList(
-                        lastSelectedEndChars.toUpperCase().replaceAll(Constants.SPACE_STR, Constants.EMPTY)
+                        lastSelectedEndChars.toUpperCase().replace(Constants.SPACE_STR, Constants.EMPTY)
                                 .split(Constants.OFFSET_CHAR_SEPARATOR)));
                 selectedEntry.setEnd(offset + asciiTextArea.getCaretPosition());
                 if((selectedEntry.getStart() > 0 || selectedEntry.getEnd() > 0) && selectedEntry == currEntry) {
@@ -653,7 +653,7 @@ public class HexViewer extends JFrame implements ActionListener {
      */
     private void createFrame() {
         setVisible(false);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         setLookAndFeel();
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         createMenu();
@@ -867,9 +867,6 @@ public class HexViewer extends JFrame implements ActionListener {
                 closeApp();
             }
         });
-        /* (non-Javadoc)
-         * @see javax.swing.event.CaretListener#caretUpdate(javax.swing.event.CaretEvent)
-         */
         asciiTextArea.addCaretListener(e -> refreshSelection());
         asciiTextArea.addMouseListener(new MouseAdapter() {
             @Override
@@ -1124,7 +1121,7 @@ public class HexViewer extends JFrame implements ActionListener {
                         asciiTextArea.setCaretPosition(carRightPos);
                         break;
                     case KeyEvent.VK_END:
-                        if ((keyEvent.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                        if ((keyEvent.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
                             offset = fileBytes.length - getViewSize();
                         } else {
                             OffsetEntry selectedEntry = getCaretEntry();
@@ -1134,7 +1131,7 @@ public class HexViewer extends JFrame implements ActionListener {
                         }
                         break;
                     case KeyEvent.VK_HOME:
-                        if ((keyEvent.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                        if ((keyEvent.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
                             offset = 0;
                         } else {
                             getCaretEntry().setStart(offset + asciiTextArea.getCaretPosition());
@@ -1327,22 +1324,22 @@ public class HexViewer extends JFrame implements ActionListener {
         setActions();
 
         //Accelerators
-        openFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
-        newProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
-        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
-        goTo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK));
-        openTable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK));
-        saveTable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
+        openFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
+        newProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));
+        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK));
+        goTo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK));
+        openTable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK));
+        saveTable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
         reloadTable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0));
-        searchRelative.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK));
-        searchAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK));
-        extract.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_DOWN_MASK));
-        find.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
-        openOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
-        saveOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        searchRelative.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK));
+        searchAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK));
+        extract.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_DOWN_MASK));
+        find.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK));
+        openOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+        saveOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
         nextOffset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0));
         prevOffset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
-        clearOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK));
+        clearOffsets.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK));
         about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0));
         help.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
         view16Cols.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
@@ -1826,6 +1823,10 @@ public class HexViewer extends JFrame implements ActionListener {
             }
         });
         searchAllWinSearchButton.setAction(new AbstractAction(rb.getString(KeyConstants.KEY_SEARCH_ALL_WIN_SEARCH_BUTTON)) {
+            private void runSearchAllThreadAction() {
+                searchAllThreadAction();
+            }
+
             private static final long serialVersionUID = -1221167224371368933L;
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1835,8 +1836,7 @@ public class HexViewer extends JFrame implements ActionListener {
                 });
                 if(searchAllWinEndCharsInput.getText() != null && searchAllWinEndCharsInput.getText().length() > 0 &&
                         searchAllWinEndCharsInput.getText().matches(REGEXP_OFFSET_ENTRIES)) {
-                    Thread searchAllThreadInstance = new Thread(() -> searchAllThreadAction());
-                    searchAllThreadInstance.start();
+                    new Thread(this::runSearchAllThreadAction).start();
                 }
                 else {
                     JOptionPane.showMessageDialog(asciiTextArea.getParent(),
