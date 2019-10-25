@@ -201,39 +201,40 @@ public class FileUtils {
 		String[] lines = input.split(Constants.S_NEWLINE);
 		int totalBytesWritten = 0;
 		int line = 0;
-		while (line < lines.length) {
-			String lineStr = lines[line];
-			if (lineStr != null && lineStr.contains(Constants.ADDR_STR)) {
-				OffsetEntry entry = new OffsetEntry(lineStr);
+		while ( line < lines.length) {
+			if (lines[line] != null && lines[line].contains(Constants.ADDR_STR)) {
+				// Read entry
+				OffsetEntry entry = new OffsetEntry(lines[line]);
 				line++;
+				// Read content (including end)
 				StringBuilder content = new StringBuilder();
-				line = getLine(lineStr, line, content);
-				content.append(lineStr).append(Constants.S_NEWLINE);
+				// Put lines not starting with |
+				while (!lines[line].contains(Constants.S_MAX_BYTES)) {
+					if (lines[line] != null && lines[line].length() > 0
+							&& !lines[line].contains(Constants.S_COMMENT_LINE)) {
+						content.append(lines[line]);
+						if (lines[line].contains(Constants.S_STR_NUM_CHARS)) {
+							content.append(Constants.S_NEWLINE);
+						}
+					}
+					line++;
+				}
+				// End line
+				content.append(lines[line]).append(Constants.S_NEWLINE);
+
+				// Process
+				byte[] hex = hexTable.toHex(content.toString(), entry);
 				if (Utils.isDebug()) {
 					Utils.log(" TO OFFSET: " + Utils.intToHexString(entry.getStart(), Constants.HEX_ADDR_SIZE));
 				}
-				byte[] hex = hexTable.toHex(content.toString(), entry);
 				System.arraycopy(hex, 0, outFileBytes, entry.getStart(), hex.length);
 				totalBytesWritten += hex.length;
 			}
 			line++;
 		}
 		Utils.log("TOTAL BYTES WRITTEN: " + Utils.fillLeft(valueOf(totalBytesWritten), Constants.HEX_ADDR_SIZE)
-		+ " / " + Utils.intToHexString(totalBytesWritten, Constants.HEX_ADDR_SIZE) + " Hex");
+				+ " / " + Utils.intToHexString(totalBytesWritten, Constants.HEX_ADDR_SIZE) + " Hex");
 		Files.write(Paths.get(thirdFile), outFileBytes);
-	}
-
-	private static int getLine(String line, int lineNum, StringBuilder content) {
-		while (!line.contains(Constants.S_MAX_BYTES)) {
-			if (line.length() > 0 && !line.contains(Constants.S_COMMENT_LINE)) {
-				content.append(lineNum);
-				if (line.contains(Constants.S_STR_NUM_CHARS)) {
-					content.append(Constants.S_NEWLINE);
-				}
-			}
-			lineNum++;
-		}
-		return lineNum;
 	}
 
 	/**
