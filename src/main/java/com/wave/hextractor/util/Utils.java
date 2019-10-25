@@ -491,7 +491,7 @@ public class Utils {
 	 * @param transFileLines the trans file lines
 	 * @return the map
 	 */
-	public static Map<String, String> extractDictionary(String[] transFileLines) {
+	public static Map<String, String> extractDictionary(List<String> transFileLines) {
 		Map<String, String> dict = new HashMap<>();
 		String currKey = null;
 		for(String line : transFileLines) {

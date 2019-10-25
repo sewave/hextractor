@@ -111,7 +111,7 @@ public class HexTableTest {
     public void toAscii2() {
         HexTable table = new HexTable(LINES);
         byte[] data = new byte[]{0, 1, 2, 3, 4};
-        OffsetEntry entry = new OffsetEntry(0, 4, Arrays.asList("FF"));
+        OffsetEntry entry = new OffsetEntry(0, 4, Collections.singletonList("FF"));
         String ascii = "@00000000-00000004-FF\n" +
                 ";00000000{abc{ab}~04~}#011#005\n" +
                 "abc{ab}~04~#005\n" +
@@ -124,7 +124,7 @@ public class HexTableTest {
     public void toHex1() {
         HexTable table = new HexTable(LINES);
         byte[] data = new byte[]{0, 1, 2, 3, 4};
-        OffsetEntry entry = new OffsetEntry(0, 4, Arrays.asList("FF"));
+        OffsetEntry entry = new OffsetEntry(0, 4, Collections.singletonList("FF"));
         Assert.assertArrayEquals(data, table.toHex("abc{ab}~04~#005\n|5\n", entry));
     }
 
@@ -169,6 +169,6 @@ public class HexTableTest {
     @Test
     public void getSearchPercent() {
         HexTable table = new HexTable(LINES);
-        Assert.assertTrue(table.getSearchPercent() == 0);
+        Assert.assertEquals(0, table.getSearchPercent(), 0.0);
     }
 }

@@ -136,8 +136,8 @@ public class UtilsTest {
 
 	@Test
 	public void getLinesCleaned() {
-		String[] lines = {"aaa~~", "bbb@", "CCC^", "DDD¨"};
-		Utils.getLinesCleaned(lines);
+		String[] lines = {"aaa~01~", "b~02~bb@", "CC~03~C^", "DDD~04~¨"};
+		Assert.assertEquals("aaa\nb bb\nCC C^\nDDD ¨\n", Utils.getLinesCleaned(lines).toString());
 	}
 
 	@Test
@@ -206,11 +206,11 @@ public class UtilsTest {
 
 	@Test
 	public void extractDictionary() {
-		String[] lines = new String[4];
-		lines[0] = ";000000DE{text1}#117#105";
-		lines[1] = "texto1#105";
-		lines[2] = ";000000DE{text2}#117#105";
-		lines[3] = "texto2#105";
+		List<String> lines = new ArrayList<>();
+		lines.add(";000000DE{text1}#117#105");
+		lines.add("texto1#105");
+		lines.add(";000000DE{text2}#117#105");
+		lines.add("texto2#105");
 		Map<String, String> resMap = new HashMap<>();
 		resMap.put("text1#105", "texto1#105");
 		resMap.put("text2#105", "texto2#105");

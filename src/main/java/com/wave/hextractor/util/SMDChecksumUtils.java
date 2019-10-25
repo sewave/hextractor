@@ -31,7 +31,7 @@ public class SMDChecksumUtils {
 		byte[] fileBytes = Files.readAllBytes(Paths.get(inputFile));
 		Utils.log("Fixing Megadrive checksum for \"" + inputFile + "\".");
 		if (checkUpdateMegaDriveChecksum(fileBytes)) {
-			FileUtils.writeFileBytes(inputFile, fileBytes);
+			Files.write(Paths.get(inputFile), fileBytes);
 		}
 	}
 

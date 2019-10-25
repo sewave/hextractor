@@ -94,16 +94,8 @@ public class FileUtils {
 	 * @return .
 	 * @throws FileNotFoundException .
 	 */
-	public static String getAsciiFile(String filename) throws FileNotFoundException {
-		Scanner scanner = new Scanner(new File(filename), Constants.UTF8_ENCODING);
-		String input = scanner.useDelimiter("\\A").next();
-		scanner.close();
-		input = input.replace(Constants.NEWLINE + valueOf(Constants.CRETURN),
-				valueOf(Constants.NEWLINE));
-		input = input.replace(Constants.CRETURN + valueOf(Constants.NEWLINE),
-				valueOf(Constants.NEWLINE));
-		input = input.replace(valueOf(Constants.CRETURN), valueOf(Constants.NEWLINE));
-		return input;
+	public static String getAsciiFile(String filename) throws IOException {
+		return String.join(valueOf(Constants.NEWLINE), Files.readAllLines(Paths.get(filename)));
 	}
 
 	/**
@@ -161,21 +153,7 @@ public class FileUtils {
 			byte[] compData = Utils.getCompressed4To3Data(hexTable.toHex(entryDataAndOffset[0]));
 			System.arraycopy(compData, 0, outFileBytes, offEntry.getStart(), compData.length);
 		}
-		writeFileBytes(outputFile, outFileBytes);
-	}
-
-	/**
-	 * Writes all the bytes to the filename.</br>
-	 * <b>Overwrites the file if exists.</b>
-	 *
-	 * @param filename file to write to.
-	 * @param b file bytes.
-	 * @throws IOException the exception
-	 */
-	static void writeFileBytes(String filename, byte[] b) throws IOException {
-		try (FileOutputStream stream = new FileOutputStream(filename)) {
-			stream.write(b);
-		}
+		Files.write(Paths.get(outputFile), outFileBytes);
 	}
 
 	/**
@@ -203,7 +181,7 @@ public class FileUtils {
 		Utils.log("Inserting hex file \"" + firstFile + FILES_SEPARATOR + secondFile + "\".");
 		byte[] b = Files.readAllBytes(Paths.get(secondFile));
 		Utils.loadHex(getAsciiFile(firstFile), b);
-		writeFileBytes(secondFile, b);
+		Files.write(Paths.get(secondFile), b);
 	}
 
 	/**
@@ -254,7 +232,7 @@ public class FileUtils {
 		}
 		Utils.log("TOTAL BYTES WRITTEN: " + Utils.fillLeft(valueOf(totalBytesWritten), Constants.HEX_ADDR_SIZE)
 		+ " / " + Utils.intToHexString(totalBytesWritten, Constants.HEX_ADDR_SIZE) + " Hex");
-		writeFileBytes(thirdFile, outFileBytes);
+		Files.write(Paths.get(thirdFile), outFileBytes);
 	}
 
 	/**
@@ -423,6 +401,7 @@ public class FileUtils {
 			for (int j = 0; j < wordLength; j++) {
 				if (searchString.charAt(j) != Constants.CHR_ASTER && searchString.charAt(j) != word.charAt(j)) {
 					areEqual = false;
+					break;
 				}
 			}
 			if (areEqual) {
@@ -498,6 +477,7 @@ public class FileUtils {
 			if (searchBytes[i] != Constants.BYTE_ASTER
 					&& (searchBytes[i] & Constants.MASK_8BIT) != (fileBytes[i] + displacement & Constants.MASK_8BIT)) {
 				res = false;
+				break;
 			}
 		}
 		return res;
@@ -546,7 +526,7 @@ public class FileUtils {
 										String dictFile, String extractFile) throws IOException {
 		String entries = hexTable.getAllEntries(fileBytes,
 				Constants.MIN_NUM_CHARS_WORD, numIgnoredChars, Arrays.asList(endChars.toUpperCase()
-						.replaceAll(Constants.SPACE_STR, Constants.EMPTY).split(Constants.OFFSET_CHAR_SEPARATOR)),
+						.replace(Constants.SPACE_STR, Constants.EMPTY).split(Constants.OFFSET_CHAR_SEPARATOR)),
 				dictFile);
 		if (entries != null && entries.length() > 0) {
 			extractAsciiFile(hexTable, fileBytes, extractFile, entries, false);
@@ -624,7 +604,7 @@ public class FileUtils {
 	 * @return the clean offsets
 	 * @throws FileNotFoundException the exception
 	 */
-	public static String getCleanOffsets(String fileName) throws FileNotFoundException {
+	public static String getCleanOffsets(String fileName) throws IOException {
 		return getCleanOffsetsString(getAsciiFile(fileName));
 	}
 
@@ -643,22 +623,14 @@ public class FileUtils {
 	 * @param toCheckFile the to check file
 	 * @throws FileNotFoundException the exception
 	 */
-	public static void checkLineLength(String toCheckFile) throws FileNotFoundException {
+	public static void checkLineLength(String toCheckFile) throws IOException {
 		Utils.log("Checking file lines of \"" + toCheckFile);
-		// 1-Read utf8 file
-		String[] transFileLines = getAsciiFile(toCheckFile).split(Constants.S_NEWLINE);
-
-		// 2-Extract "dictionary"
-		Map<String, String> dictionary = Utils.extractDictionary(transFileLines);
-
-		// 3-Check that pairs are length equal, else show a warning
-		for (Map.Entry<String, String> e : dictionary.entrySet()) {
-			if (!Utils.checkLineLength(e.getKey(), e.getValue())) {
-				Utils.log("Error in lines:");
-				Utils.log(e.getKey());
-				Utils.log(e.getValue());
-			}
-		}
+		Map<String, String> dictionary = Utils.extractDictionary(Files.readAllLines(Paths.get(toCheckFile)));
+		dictionary.entrySet().stream().filter(x -> !Utils.checkLineLength(x.getKey(), x.getValue())).forEach(e -> {
+			Utils.log("Error in lines:");
+			Utils.log(e.getKey());
+			Utils.log(e.getValue());
+		});
 	}
 
 	/**
@@ -704,7 +676,7 @@ public class FileUtils {
 	 * @return true, if successful
 	 */
 	public static boolean allFilesExist(String[] files) {
-		return Arrays.stream(files).map(File::new).allMatch((x) -> x.exists() && !x.isDirectory());
+		return Arrays.stream(files).map(File::new).allMatch(x -> x.exists() && !x.isDirectory());
 	}
 
 	/**
@@ -715,7 +687,7 @@ public class FileUtils {
 		byte[] baseData = Files.readAllBytes(Paths.get(baseFile));
 		byte[] replacementData = Files.readAllBytes(Paths.get(replacementFile));
 		System.arraycopy(replacementData, 0, baseData, offset, replacementData.length);
-		writeFileBytes(baseFile, baseData);
+		Files.write(Paths.get(baseFile), baseData);
 	}
 
 	/**
@@ -804,28 +776,20 @@ public class FileUtils {
 	}
 
 	static String getGameName(String fileName) {
-		int dot = fileName.lastIndexOf('.');
-		int cut = fileName.length();
+		String cleanFileName = fileName.replaceAll("\\[.*]", "").replaceAll("\\(.*\\)", "");
+		int dot = cleanFileName.lastIndexOf('.');
+		int cut = cleanFileName.length();
 		if(dot > -1 && dot < cut) {
 			cut = dot;
 		}
-		int parenthesis = fileName.indexOf('(');
-		if(parenthesis > -1 && parenthesis < cut) {
-			cut = parenthesis;
-		}
-		int bracket = fileName.indexOf('[');
-		if(bracket > -1 && bracket < cut) {
-			cut = bracket;
-		}
-		int comma = fileName.indexOf(COMMA_THE);
-		String gameName = fileName;
+		int comma = cleanFileName.indexOf(COMMA_THE);
 		if(comma > -1 && comma < cut) {
-			gameName = "The " + gameName.substring(0, comma) + gameName.substring(comma + COMMA_THE.length(), cut);
+			cleanFileName = "The " + cleanFileName.substring(0, comma) + cleanFileName.substring(comma + COMMA_THE.length(), cut);
 		}
 		else {
-			gameName = gameName.substring(0, cut);
+			cleanFileName = cleanFileName.substring(0, cut);
 		}
-		return gameName.trim();
+		return cleanFileName.trim();
 	}
 
 }

@@ -239,15 +239,6 @@ public class TAPChecksumUtils {
 		}
 
 		/**
-		 * Sets the checksum.
-		 *
-		 * @param checksum the new checksum
-		 */
-		public void setChecksum(byte checksum) {
-			dataBlock[dataBlock.length - 1] = checksum;
-		}
-
-		/**
 		 * Gets the checksum.
 		 *
 		 * @return the checksum
@@ -384,7 +375,8 @@ public class TAPChecksumUtils {
 	 */
 	private static List<ZxTapDataBlock> getDataBlocks(byte[] fileBytes) {
 		List<ZxTapDataBlock> res = new ArrayList<>();
-		for(int i = 0; i < fileBytes.length;) {
+		int i = 0;
+		while(i < fileBytes.length) {
 			ZxTapDataBlock zxTapDataBlock = new ZxTapDataBlock();
 			res.add(zxTapDataBlock);
 			int dataBlockLength = Utils.bytesToInt(fileBytes[i + 1], fileBytes[i]);
@@ -404,7 +396,8 @@ public class TAPChecksumUtils {
 	 */
 	private static List<ZxTapDataBlock> getTzxTapDataBlocks(byte[] fileBytes) {
 		List<ZxTapDataBlock> res = new ArrayList<>();
-		for(int i = TZX_HEADER_SIZE; i < fileBytes.length;) {
+		int i = TZX_HEADER_SIZE;
+		while(i < fileBytes.length) {
 			byte tzxBlockType = fileBytes[i];
 			int bytesLength = 1;
 			i++;
@@ -529,7 +522,7 @@ public class TAPChecksumUtils {
 		else {
 			Utils.log("");
 		}
-		FileUtils.writeFileBytes(inputFile, checkUpdateZxTapChecksum(Files.readAllBytes(Paths.get(inputFile)), false, originalFileBytes));
+		Files.write(Paths.get(inputFile), checkUpdateZxTapChecksum(Files.readAllBytes(Paths.get(inputFile)), false, originalFileBytes));
 	}
 
 	/**
@@ -559,7 +552,7 @@ public class TAPChecksumUtils {
 		else {
 			Utils.log("");
 		}
-		FileUtils.writeFileBytes(inputFile, checkUpdateZxTapChecksum(Files.readAllBytes(Paths.get(inputFile)),
+		Files.write(Paths.get(inputFile), checkUpdateZxTapChecksum(Files.readAllBytes(Paths.get(inputFile)),
 				true, originalFileBytes));
 	}
 }

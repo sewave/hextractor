@@ -29,14 +29,15 @@ public class IpsPatchUtils {
 	 * @param patchFile file name of the patch to create.
 	 * @throws IOException I/O error.
 	 */
-	public static void createIpsPatch(String originalFile, String modifiedFile, String patchFile) throws IOException {
+	public static boolean createIpsPatch(String originalFile, String modifiedFile, String patchFile) throws IOException {
 		Utils.log("Creating ips patch for \"" + modifiedFile + "\"\n based on \"" + originalFile + "\" "
 				+ "\n to ips file \"" + patchFile + "\"");
 		byte[] originalFileBytes = Files.readAllBytes(Paths.get(originalFile));
 		byte[] modifiedFileBytes = Files.readAllBytes(Paths.get(modifiedFile));
 		List<IpsPatchEntry> patchEntries = new ArrayList<>();
 		int offsetStart = -1;
-		for (int i = 0; i < originalFileBytes.length; i++) {
+		byteZeroPatch(originalFileBytes, modifiedFileBytes, patchEntries);
+		for (int i = 1; i < originalFileBytes.length; i++) {
 			if (originalFileBytes[i] != modifiedFileBytes[i]) {
 				if (i - offsetStart == Constants.IPS_PATCH_MAX_SIZE) {
 					patchEntries.add(createIpsEntry(modifiedFileBytes, offsetStart, i));
@@ -58,6 +59,20 @@ public class IpsPatchUtils {
 		if(offsetStart > 0) {
 			patchEntries.add(createIpsEntry(modifiedFileBytes, offsetStart, originalFileBytes.length));
 		}
+		finalPatch(modifiedFileBytes, originalFileBytes, patchEntries);
+		Files.write(Paths.get(patchFile), generatePatchFile(patchEntries));
+		boolean valid = validateIpsPatch(originalFile, modifiedFile, patchFile);
+		FileUtils.outputFileDigests(originalFile);
+		return valid;
+	}
+
+	private static void byteZeroPatch(byte[] originalFileBytes, byte[] modifiedFileBytes, List<IpsPatchEntry> patchEntries) {
+		if(originalFileBytes[0] != modifiedFileBytes[0]) {
+			patchEntries.add(createIpsEntry(modifiedFileBytes, 0, 1));
+		}
+	}
+
+	private static void finalPatch(byte[] modifiedFileBytes, byte[] originalFileBytes, List<IpsPatchEntry> patchEntries) {
 		if (modifiedFileBytes.length > originalFileBytes.length) {
 			// Final patch, rom extended
 			for (int i = originalFileBytes.length; i < modifiedFileBytes.length; i += Constants.IPS_PATCH_MAX_SIZE / 64) {
@@ -68,9 +83,6 @@ public class IpsPatchUtils {
 				patchEntries.add(createIpsEntry(modifiedFileBytes, i, end));
 			}
 		}
-		FileUtils.writeFileBytes(patchFile, generatePatchFile(patchEntries));
-		validateIpsPatch(originalFile, modifiedFile, patchFile);
-		FileUtils.outputFileDigests(originalFile);
 	}
 
 	/**
@@ -106,7 +118,7 @@ public class IpsPatchUtils {
 	public static void applyIpsPatch(String originalFile, String modifiedFile, String patchFile) throws IOException {
 		Utils.log("Applying ips patch \"" + patchFile + "\"\n on file \"" + originalFile + "\" "
 				+ "\n to output file  \"" + modifiedFile + "\"");
-		FileUtils.writeFileBytes(modifiedFile, applyIpsPatch(originalFile, getPatchEntries(patchFile)));
+		Files.write(Paths.get(modifiedFile), applyIpsPatch(originalFile, getPatchEntries(patchFile)));
 	}
 
 	/**
@@ -117,15 +129,19 @@ public class IpsPatchUtils {
 	 * @param patchFile patch file.
 	 * @throws IOException I/O error.
 	 */
-	public static void validateIpsPatch(String originalFile, String modifiedFile, String patchFile) throws IOException {
+	public static boolean validateIpsPatch(String originalFile, String modifiedFile, String patchFile) throws IOException {
+		boolean valid;
 		Utils.log("Verifying ips patch \"" + patchFile + "\"\n on file \"" + originalFile + "\" " + "\n to file \""
 				+ modifiedFile + "\"");
 		if (validateIpsPatch(Files.readAllBytes(Paths.get(originalFile)), Files.readAllBytes(Paths.get(modifiedFile)),
 				Files.readAllBytes(Paths.get(patchFile)))) {
+			valid = true;
 			Utils.log("IPS patch correct!");
 		} else {
+			valid = false;
 			Utils.log("IPS patch NOT CORRECT!");
 		}
+		return valid;
 	}
 
 	/**
@@ -266,7 +282,8 @@ public class IpsPatchUtils {
 	 */
 	private static List<IpsPatchEntry> getPatchEntries(byte[] patchBytes) {
 		List<IpsPatchEntry> patchEntries = new ArrayList<>();
-		for (int i = Constants.IPS_HEADER.length(); i < patchBytes.length - Constants.IPS_EOF.length();) {
+		int i = Constants.IPS_HEADER.length();
+		while (i < patchBytes.length - Constants.IPS_EOF.length()) {
 			IpsPatchEntry entry = new IpsPatchEntry();
 			entry.setOffset(Utils.bytesToInt(patchBytes[i], patchBytes[i + 1], patchBytes[i + 2]));
 			i += IpsPatchEntry.IPS_OFFSET_SIZE;

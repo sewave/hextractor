@@ -76,7 +76,7 @@ public class Constants {
 	public static final String IPS_EOF = "EOF";
 
 	/** The Constant IPS_PATCH_MAX_SIZE. */
-	public static final int IPS_PATCH_MAX_SIZE = 0xFFFF;
+	public static final int IPS_PATCH_MAX_SIZE = 65535;
 
 	/** The Constant MASK_16BIT. */
 	public static final int MASK_16BIT = 0xFFFF;
@@ -317,6 +317,8 @@ public class Constants {
 	static final String SYSTEM_NGP =  "Neo Geo Pocket";
 	
 	static final String SYSTEM_NGPC =  "Neo Geo Pocket Color";
+
+	static final String SYSTEM_SPV =  "Supervision";
 	
 	static final HashMap<String, String> EXTENSION_TO_SYSTEM = new HashMap<>();
 	
@@ -328,6 +330,9 @@ public class Constants {
 		EXTENSION_TO_SYSTEM.put("tap", SYSTEM_ZXS);
 		EXTENSION_TO_SYSTEM.put("tzx", SYSTEM_ZXS);
 		EXTENSION_TO_SYSTEM.put("cdt", SYSTEM_CPC);
+
+		//Watara
+		EXTENSION_TO_SYSTEM.put("sv", SYSTEM_SPV);
 		
 		//Sega
 		EXTENSION_TO_SYSTEM.put("smd", SYSTEM_SMD);

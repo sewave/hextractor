@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -23,8 +22,8 @@ public class FileUtilsTest {
 		assertEquals("Fantasy Zone", FileUtils.getGameName("Fantasy Zone (J).nes"));
 		assertEquals("The King of Kings",
 				FileUtils.getGameName("King of Kings, The (Wisdom Tree) (V5.0 CHR 1.3) [!].nes"));
-		assertEquals("The Adventures of Tintin - Prisoners of the Sun",
-				FileUtils.getGameName("Adventures of Tintin, The - Prisoners of the Sun (E).smc"));
+		assertEquals("The Adventures of Tintin - Prisoners of the .Sun",
+				FileUtils.getGameName("Adventures of Tintin, The - Prisoners of the .Sun (E).smc"));
 		assertEquals("The Blues Brothers - Jukebox Adventure",
 				FileUtils.getGameName("Blues Brothers, The - Jukebox Adventure (U).gb"));
 		assertEquals("The Blues Brothers . Jukebox Adventure",
@@ -34,8 +33,9 @@ public class FileUtilsTest {
 	@Test
 	public void getFileExtension() {
 		assertEquals("nes", FileUtils.getFileExtension("Crash 'n the Boys - Street Challenge (U) [!].nes"));
-		assertEquals("bin", FileUtils.getFileExtension("Spot Goes to Hollywood (U) (REV01) [!].bin"));
+		assertEquals("bin", FileUtils.getFileExtension("Spot Goes to Hollywood (U) (REV01) .[!].bin"));
 		assertEquals("smc", FileUtils.getFileExtension("Adventures of Tintin, The - Prisoners of the Sun (E).smc"));
+		assertEquals("smc", FileUtils.getFileExtension(new File("Adventures of Tintin, The - Prisoners of the Sun (E).smc")));
 	}
 
 	@Test
@@ -85,6 +85,7 @@ public class FileUtilsTest {
 		assertEquals(Constants.SYSTEM_CPC, FileUtils.getGameSystem("test.cdt"));
 		assertEquals(Constants.SYSTEM_NGP, FileUtils.getGameSystem("test.ngp"));
 		assertEquals(Constants.SYSTEM_NGPC, FileUtils.getGameSystem("test.ngc"));
+		assertEquals(Constants.SYSTEM_SPV, FileUtils.getGameSystem("watara.sv"));
 	}
 
 	@Test
@@ -125,7 +126,7 @@ public class FileUtilsTest {
 		System.setProperty("logLevel", "DEBUG");
 		FileUtils.extractAscii3To4Data(tableFile.getAbsolutePath(), dataFile.getAbsolutePath(), extFile.getAbsolutePath(), "0-6-FF");
 		String decompStr = ";~0A~~02~$*~0A~20-~00~~00~\n" +
-				"~0A~~02~$*~0A~20-~00~~00~@00000000:00000006\n";
+				"~0A~~02~$*~0A~20-~00~~00~@00000000:00000006";
 		Assert.assertEquals(decompStr, FileUtils.getAsciiFile(extFile.getAbsolutePath()));
 		System.setProperty("logLevel", "");
 	}
@@ -154,20 +155,10 @@ public class FileUtilsTest {
 
 		File outFile = File.createTempFile("out", "insertHex4To3Data.ext");
 		outFile.deleteOnExit();
-		FileUtils.writeFileBytes(outFile.getAbsolutePath(), dest);
+		Files.write(outFile.toPath(), dest);
 
 		FileUtils.insertHex4To3Data(tableFile.getAbsolutePath(), extFile.getAbsolutePath(), outFile.getAbsolutePath());
 		Assert.assertArrayEquals(data, Arrays.copyOfRange(Files.readAllBytes(outFile.toPath()), 0, data.length));
-	}
-
-	@Test
-	public void writeFileBytes() throws IOException {
-		byte[] data = new byte[5];
-		new Random().nextBytes(data);
-		File file = File.createTempFile("test", "outputFileDigests.tst");
-		file.deleteOnExit();
-		FileUtils.writeFileBytes(file.getAbsolutePath(), data);
-		Assert.assertArrayEquals(data, Files.readAllBytes(file.toPath()));
 	}
 
 	@Test
@@ -188,7 +179,7 @@ public class FileUtilsTest {
 		FileUtils.writeFileAscii(hexDataFile.getAbsolutePath(), "01 02 03 04@00000000:00000003");
 		File hexFile = File.createTempFile("dest", "insertHexData.tst");
 		hexFile.deleteOnExit();
-		FileUtils.writeFileBytes(hexFile.getAbsolutePath(), dataOrig);
+		Files.write(hexFile.toPath(), dataOrig);
 		FileUtils.insertHexData(hexDataFile.getAbsolutePath(), hexFile.getAbsolutePath());
 		Assert.assertArrayEquals(data, Files.readAllBytes(hexFile.toPath()));
 	}
@@ -211,7 +202,7 @@ public class FileUtilsTest {
 		File hexFile = File.createTempFile("dest", "insertAsciiAsHex.tst");
 		hexFile.deleteOnExit();
 		byte[] empty = new byte[5];
-		FileUtils.writeFileBytes(hexFile.getAbsolutePath(), empty);
+		Files.write(hexFile.toPath(), empty);
 
 		FileUtils.insertAsciiAsHex(tableFile.getAbsolutePath(), asciiDataFile.getAbsolutePath(), hexFile.getAbsolutePath());
 		byte[] data = {0x61, 0x62, 0x63, 0x64, (byte) 0xFF};
@@ -227,8 +218,19 @@ public class FileUtilsTest {
 	}
 
 	@Test
-	public void cleanAsciiFile() {
-
+	public void cleanAsciiFile() throws IOException {
+		File extFile = File.createTempFile("table", ".ext");
+		extFile.deleteOnExit();
+		String asciiFile = "@00000000-00000004-FF\n" +
+				";00008BB4{abcd~FF~}#028#022\n" +
+				"abcd~FF~#005\n" +
+				"|5\n" +
+				";otro comment";
+		FileUtils.writeFileAscii(extFile.getAbsolutePath(), asciiFile);
+		File extFileClean = File.createTempFile("extFileClean", ".ext");
+		extFileClean.deleteOnExit();
+		FileUtils.cleanAsciiFile(extFile.getAbsolutePath(), extFileClean.getAbsolutePath());
+		Assert.assertEquals("abcd\n", new String(Files.readAllBytes(extFileClean.toPath())));
 	}
 
 	@Test
@@ -276,11 +278,43 @@ public class FileUtilsTest {
 	}
 
 	@Test
-	public void checkLineLength() {
+	public void checkLineLength() throws IOException {
+		String asciiFile = "@00000000-00000004-FF\n" +
+				";00008BB4{abcd~FF~}#028#022\n" +
+				"abcd~FF~#005\n" +
+				"|5";
+		File checkFile = File.createTempFile("origin", "insertAsciiAsHex.tst");
+		checkFile.deleteOnExit();
+		FileUtils.writeFileAscii(checkFile.getAbsolutePath(), asciiFile);
+		boolean ok;
+		try {
+			FileUtils.checkLineLength(checkFile.getAbsolutePath());
+			ok = true;
+		}
+		catch(Exception e) {
+			ok = false;
+		}
+		Assert.assertTrue(ok);
 	}
 
 	@Test
-	public void separateCharLength() {
+	public void separateCharLength() throws IOException {
+		File tableFile = File.createTempFile("table", "insertAsciiAsHex.tbl");
+		tableFile.deleteOnExit();
+		HexTable table = new HexTable(0);
+		FileUtils.writeFileAscii(tableFile.getAbsolutePath(), table.toAsciiTable());
+
+		String asciiFile = "abcd~FF~";
+		File asciiDataFile = File.createTempFile("origin", "insertAsciiAsHex.tst");
+		asciiDataFile.deleteOnExit();
+		FileUtils.writeFileAscii(asciiDataFile.getAbsolutePath(), asciiFile);
+
+		File asciiFileOut = File.createTempFile("dest", "insertAsciiAsHex.tst");
+		asciiFileOut.deleteOnExit();
+
+		FileUtils.separateCharLength(asciiDataFile.getAbsolutePath(), tableFile.getAbsolutePath(), asciiFileOut.getAbsolutePath());
+
+		Assert.assertEquals("\na\nbcd~FF~", FileUtils.getAsciiFile(asciiFileOut.getAbsolutePath()));
 	}
 
 	@Test

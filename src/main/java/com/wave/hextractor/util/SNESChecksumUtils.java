@@ -152,7 +152,7 @@ public class SNESChecksumUtils {
 				off += SNES_SMC_HEADER_SIZE;
 			}
 			System.arraycopy(internalHeader, 0, fileBytesRaw, off, SNES_INT_HEADER_LEN);
-			FileUtils.writeFileBytes(inputFile, fileBytesRaw);
+			Files.write(Paths.get(inputFile), fileBytesRaw);
 		} else {
 			Utils.log("Checksum correct, not overwriting it.");
 		}
@@ -358,19 +358,23 @@ public class SNESChecksumUtils {
 					Utils.log("Invalid ROM size: " + snesSize);
 					res = false;
 				}
-				if (length < minSize || length > maxSize) {
-					Utils.log("Size mismatch, File (Expanded): " + length / SNES_ROM_SIZE_1MBIT
-							+ " MBit, ROM info: " + minSize / SNES_ROM_SIZE_1MBIT + " - "
-							+ maxSize / SNES_ROM_SIZE_1MBIT + " MBit");
-				}
-				if (res) {
-					Utils.log("Size correct, File (Expanded): " + length / SNES_ROM_SIZE_1MBIT
-							+ " MBit, ROM info: " + minSize / SNES_ROM_SIZE_1MBIT + " - "
-							+ maxSize / SNES_ROM_SIZE_1MBIT + " MBit");
-				}
+				logRomResults(length, minSize, maxSize, res);
 			}
 		}
 		return res;
+	}
+
+	private static void logRomResults(int length, int minSize, int maxSize, boolean res) {
+		if (length < minSize || length > maxSize) {
+			Utils.log("Size mismatch, File (Expanded): " + length / SNES_ROM_SIZE_1MBIT
+					+ " MBit, ROM info: " + minSize / SNES_ROM_SIZE_1MBIT + " - "
+					+ maxSize / SNES_ROM_SIZE_1MBIT + " MBit");
+		}
+		if (res) {
+			Utils.log("Size correct, File (Expanded): " + length / SNES_ROM_SIZE_1MBIT
+					+ " MBit, ROM info: " + minSize / SNES_ROM_SIZE_1MBIT + " - "
+					+ maxSize / SNES_ROM_SIZE_1MBIT + " MBit");
+		}
 	}
 
 	/**

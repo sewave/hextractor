@@ -185,8 +185,8 @@ public class HexTable implements Serializable {
 	 * @param tableFile the table file
 	 * @throws FileNotFoundException the exception
 	 */
-	public HexTable(String tableFile) throws FileNotFoundException {
-		loadLines(Arrays.asList(FileUtils.getAsciiFile(tableFile).replaceAll(Constants.UTF_8_BOM_BE, Constants.EMPTY).replaceAll(Constants.UTF_8_BOM_LE, Constants.EMPTY).split(String.valueOf(Constants.NEWLINE))));
+	public HexTable(String tableFile) throws IOException {
+		loadLines(Arrays.asList(FileUtils.getAsciiFile(tableFile).replace(Constants.UTF_8_BOM_BE, Constants.EMPTY).replace(Constants.UTF_8_BOM_LE, Constants.EMPTY).split(String.valueOf(Constants.NEWLINE))));
 	}
 
 	/**

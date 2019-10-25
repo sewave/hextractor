@@ -97,7 +97,7 @@ public class GBChecksumUtils {
 		}
 		if (checksumModified) {
 			Utils.log("Writing file.");
-			FileUtils.writeFileBytes(inputFile, fileBytes);
+			Files.write(Paths.get(inputFile), fileBytes);
 		}
 	}
 
