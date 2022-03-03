@@ -1,5 +1,4 @@
- ![Build Status](https://github.com/sewave/hextractor/actions/workflows/maven.yml/badge.svg?branch=master)
- ![Code Scan](https://github.com/sewave/hextractor/actions/workflows/codescan.yml/badge.svg?branch=master)
+  ![Build Status](https://github.com/sewave/hextractor/actions/workflows/maven.yml/badge.svg?branch=master)
   [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=com.wave%3Ahextractor&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.wave%3Ahextractor)
   [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.wave%3Ahextractor&metric=coverage)](https://sonarcloud.io/dashboard?id=com.wave%3Ahextractor)
   [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=com.wave%3Ahextractor&metric=bugs)](https://sonarcloud.io/dashboard?id=com.wave%3Ahextractor)
